@@ -1,5 +1,5 @@
 <?php
-namespace occ2\flashes;
+namespace app\Base\traits;
 
 /**
  * trait that extend flash message functionality
@@ -7,7 +7,7 @@ namespace occ2\flashes;
  * if used in control put flashes.latte into your control folder
  *
  * @author Milan Onderka
- * @version 1.0.0
+ * @version 1.1.0
  */
 trait TFlashMessage
 {
