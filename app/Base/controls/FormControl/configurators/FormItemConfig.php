@@ -1,6 +1,7 @@
 <?php
-namespace occ2\FormControl;
+namespace app\Base\controls\FormControl\configurators;
 
+use app\Base\controls\FormControl\exceptions\FormBuilderException;
 use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 
@@ -8,7 +9,7 @@ use Nette\Utils\Strings;
  * FormItemConfig
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class FormItemConfig
 {
