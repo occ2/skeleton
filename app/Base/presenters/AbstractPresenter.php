@@ -1,9 +1,9 @@
 <?php
-namespace occ2\inventar\presenters;
+namespace app\Base\presenters;
 
+use app\Base\events\Event as BaseEvent;
+use app\Base\traits\TFlashMessage;
 use Nette\Application\UI\Presenter as NPresenter;
-use occ2\inventar\events\BaseEvent;
-use occ2\flashes\TFlashMessage;
 use Nette\Localization\ITranslator;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
@@ -14,7 +14,7 @@ use Nette\Utils\ArrayHash;
  * parent of all presenters
  *
  * @author Milan Onderka
- * @version 1.0.0
+ * @version 1.1.0
  */
 abstract class AbstractPresenter extends NPresenter
 {
@@ -33,20 +33,19 @@ abstract class AbstractPresenter extends NPresenter
           THIS="this",
           ACTION_DEFAULT="default",
           BREADCRUMBS="breadcrumbs",
-          SIGN_IN_LINK=":User:Main:signIn";
+          SIGN_IN_LINK=":User:Main:signIn",
+          HOMEPAGE_LINK=":User:Main:default";
         
     /** @persistent */
     public $backlink = '';
         
     /**
-     * @inject
-     * @var \occ2\inventar\controls\INavbar
+     * @inject @var \app\Base\factories\INavbar
      */
     public $navbarFactory;
 
     /**
-     * @inject
-     * @var \occ2\breadcrumbs\IBreadcrumbs
+     * @inject @var \app\Base\factories\IBreadcrumbs
      */
     public $breadcrumbsFactory;
     
@@ -81,7 +80,7 @@ abstract class AbstractPresenter extends NPresenter
     /**
      * @var string
      */
-    public static $titlePrefix="INVENTAR.CLOUD - ";
+    public static $titlePrefix="SKELETON - ";
 
     /**
      * @var string
@@ -97,7 +96,19 @@ abstract class AbstractPresenter extends NPresenter
      * @var bool
      */
     public static $allowAnnotationAcl=true;
-    
+
+    /**
+     * @var array
+     */
+    public static $snippetList=[
+        'title',
+        'flashes',
+        'flashesSnippet',
+        'breadcrumbs',
+        'navbar',
+        'content'
+    ];
+
     /**
      * startup processes
      * @return void
@@ -118,7 +129,7 @@ abstract class AbstractPresenter extends NPresenter
     }
     
     /**
-     * @return \occ2\inventar\controls\Navbar
+     * @return \app\Base\controls\Navbar\Navbar
      */
     public function createComponentNavbar()
     {
@@ -126,12 +137,12 @@ abstract class AbstractPresenter extends NPresenter
     }
 
     /**
-     * @return \occ2\breadcrumbs\Breadcrumbs
+     * @return \app\Base\controls\Breadcrumbs\Breadcrumbs
      */
     public function createComponentBreadcrumbs()
     {
         $breadcrumbs = $this->breadcrumbsFactory->create();
-        $breadcrumbs->addItem("home","base.breadcrumbs.home", $this->link(":User:Main:default"),false);
+        $breadcrumbs->addItem("home","base.breadcrumbs.home", $this->link(static::HOMEPAGE_LINK),false);
         return $breadcrumbs;
     }
     
@@ -140,10 +151,22 @@ abstract class AbstractPresenter extends NPresenter
      * @param string $anchor
      * @param \occ2\inventar\events\BaseEvent $event
      * @return void
+     * @deprecated since version 1.1.0
      */
     public function fireEvent(string $anchor, BaseEvent $event=null)
     {
-        //return $this->eventDispather->dispatch($anchor, $event);
+        return $this->eventDispather->dispatch($anchor, $event);
+    }
+
+    /**
+     * fire event
+     * @param string $anchor
+     * @param \occ2\inventar\events\BaseEvent $event
+     * @return mixed
+     */
+    public function on(string $anchor, BaseEvent $event=null)
+    {
+        return $this->eventDispather->dispatch($anchor, $event);
     }
     
     /**
@@ -169,6 +192,7 @@ abstract class AbstractPresenter extends NPresenter
      * translation simplifier
      * @param string $text
      * @return string
+     * @deprecated since version 1.1.0
      */
     public function text(string $text) : string
     {
@@ -180,30 +204,52 @@ abstract class AbstractPresenter extends NPresenter
     }
 
     /**
-     * alias for translator simplifier
+     * translation simplifier
      * @param string $text
      * @return string
      */
     public function _(string $text) : string
     {
-        return $this->text($text);
+        if($this->translator instanceof ITranslator){
+            return $this->translator->translate($text);
+        } else {
+            return $text;
+        }
     }
 
-    public function reload(){
-        $this->redrawControl('title');
-        $this->redrawControl('flashes');
-        $this->redrawControl('flashesSnippet');
-        $this->redrawControl('breadcrumbs');
-        $this->redrawControl('navbar');
-        $this->redrawControl('content');
+    /**
+     * reload all, one or more snippets
+     * @param array | string | null $snippets
+     * @return void
+     */
+    public function reload($snippets=null) {
+        if($snippets==null){
+            foreach(self::$snippetList as $snippet){
+                $this->redrawControl($snippet);
+            }
+        } elseif (is_array($snippets)) {
+            foreach($snippets as $snippet){
+                $this->redrawControl($snippet);
+            }
+        } else {
+            $this->redrawControl($snippet);
+        }
+        return;
     }
 
+    /**
+     * @return void
+     */
     protected function getAnnotationsConfig()
     {
         $this->getActionsConfig();
         $this->getHandlersConfig();
+        return;
     }
 
+    /**
+     * @return void
+     */
     protected function getActionsConfig()
     {
         $classType = ClassType::from(static::class);
@@ -216,6 +262,9 @@ abstract class AbstractPresenter extends NPresenter
         return;
     }
 
+    /**
+     * @return void
+     */
     protected function getHandlersConfig()
     {
         $classType = ClassType::from(static::class);
@@ -228,6 +277,9 @@ abstract class AbstractPresenter extends NPresenter
         return;
     }
 
+    /**
+     * @return void
+     */
     protected function annotationsTitle()
     {
         if(array_key_exists($this->getAction(),$this->actionsConfig)){
@@ -235,8 +287,12 @@ abstract class AbstractPresenter extends NPresenter
                 $this->title = $this->actionsConfig[$this->getAction()]["title"][0];
             }
         }
+        return;
     }
 
+    /**
+     * @return void
+     */
     protected function annotationsAcl()
     {
         if(isset($this->actionsConfig[$this->getAction()]["acl"])){
@@ -245,8 +301,13 @@ abstract class AbstractPresenter extends NPresenter
         if(count($this->getSignal())>1 && isset($this->handlersConfig[$this->getSignal()[1]]["acl"])){
             $this->testAcl($this->handlersConfig[$this->getSignal()[1]]["acl"][0]);
         }
+        return void;
     }
 
+    /**
+     * @param ArrayHash $config
+     * @return void
+     */
     protected function testAcl(ArrayHash $config)
     {
         if(isset($config->resource)){
@@ -258,6 +319,11 @@ abstract class AbstractPresenter extends NPresenter
         return;
     }
 
+    /**
+     * @param bool $loggedIn
+     * @param ArrayHash $config
+     * @return void
+     */
     protected function testLoggedIn(bool $loggedIn,ArrayHash $config)
     {
         if($loggedIn==true){
@@ -269,6 +335,11 @@ abstract class AbstractPresenter extends NPresenter
         return;
     }
 
+    /**
+     * @param string $resource
+     * @param ArrayHash $config
+     * @return void
+     */
     protected function testPrivilege(string $resource,ArrayHash $config)
     {
         if(isset($config->privilege)){
