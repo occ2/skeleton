@@ -1,9 +1,17 @@
 <?php
-namespace occ2\model;
+namespace app\Base\traits;
 
 use Nette\Security\User;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+/**
+ * TFacadePermissions
+ *
+ * trait that extend Facades to test permissions on method
+ *
+ * @author Milan Onderka <milan_onderka@occ2.cz>
+ * @version 1.1.0
+ */
 trait TFacadePermissions{
     /**
      * @var \Nette\Security\User
@@ -20,8 +28,19 @@ trait TFacadePermissions{
      */
     protected $annotationConfig=[];
 
+    /**
+     * @var string
+     */
     public static $defaultPrivilege="read";
+
+    /**
+     * @var string
+     */
     public static $defaultAclErrorMessage="base.error.notPermitted";
+
+    /**
+     * @var string
+     */
     public static $defaultAclErrorCode=403;
 
     /**
@@ -113,7 +132,18 @@ trait TFacadePermissions{
         return true;
     }
 
-    protected function aclError($exceptionClass,$message,$code,$eventAnchor,$eventClass,$data)
+    /**
+     * throw acl error
+     * @param string $exceptionClass
+     * @param string $message
+     * @param int $code
+     * @param string $eventAnchor
+     * @param string $eventClass
+     * @param array | ArrayHash $data
+     * @return boolean
+     * @throws type
+     */
+    protected function aclError(string $exceptionClass,string $message,int $code,string $eventAnchor,string $eventClass,$data)
     {
         $this->testEvent();
         if($eventAnchor!=null && $eventClass!=null){
@@ -126,6 +156,9 @@ trait TFacadePermissions{
         }
     }
 
+    /**
+     * @return void
+     */
     protected function getAnnotationConfig()
     {
         $classType = ClassType::from(static::class);
@@ -136,6 +169,9 @@ trait TFacadePermissions{
         return;
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function testUser()
     {
         if(!$this->user instanceof Nette\Security\User){
@@ -143,6 +179,9 @@ trait TFacadePermissions{
         }
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function testEvent()
     {
         if(!$this->ed instanceof EventDispatcher){
@@ -151,12 +190,15 @@ trait TFacadePermissions{
     }
 
     /**
+     * do acl test
+     *
+     * MUST be run first on every ACL tested method
      * @param string $method
      * @param array $data
      * @param int $id
      * @return boolean
      */
-    protected function _acl($method,$data=[],$id=null)
+    protected function _acl(string $method,array $data=[],$id=null)
     {
         if(count($this->annotationConfig)){
             $this->getAnnotationConfig();
