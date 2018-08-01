@@ -1,6 +1,7 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\configurators;
 
+use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 
@@ -8,7 +9,7 @@ use Nette\Utils\Strings;
  * FormItemConfig
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class GridColumnsConfig
 {
@@ -146,8 +147,13 @@ class GridColumnsConfig
         $anchor = Strings::firstLower($name);
         return $this->columns($anchor);
     }
-    
-    protected function columns($anchor)
+
+    /**
+     * @param string $anchor
+     * @return mixed
+     * @throws GridBuilderException
+     */
+    protected function columns(string $anchor)
     {
         if (!in_array($anchor, static::CONFIG_ITEMS)) {
             throw new GridBuilderException("Error: invalid column config", GridBuilderException::INVALID_COLUMN_CONFIG);

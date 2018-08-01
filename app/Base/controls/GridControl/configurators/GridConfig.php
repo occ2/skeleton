@@ -1,5 +1,5 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\configurators;
 
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
@@ -9,7 +9,7 @@ use Nette\Utils\ArrayHash;
  * GridConfig
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class GridConfig
 {
