@@ -1,10 +1,10 @@
 <?php
-namespace occ2\control;
+namespace app\Base\controls\Control;
 
+use app\Base\traits\TFlashMessage;
 use Nette\Application\UI\Control as NControl;
 use Contributte\EventDispatcher\EventDispatcher;
 use Nette\Localization\ITranslator;
-use occ2\flashes\TFlashMessage;
 
 /**
  * parent of all controls
@@ -59,12 +59,14 @@ abstract class Control extends NControl
         if (property_exists($this, "_modal")) {
             $this->template->modal = $this->_modal;
         }
+        return;
     }
 
     /**
      * translate text if translator set
      * @param string $text
      * @return string
+     * @deprecated since version 1.1.0
      */
     public function text(string $text):string
     {
@@ -78,7 +80,7 @@ abstract class Control extends NControl
      */
     public function _(string $text) : string
     {
-        return $this->text($text);
+        return $this->_translator instanceof ITranslator ? $this->_translator->translate($text) : $text;
     }
 
     /**
@@ -99,8 +101,14 @@ abstract class Control extends NControl
         return $this->_translator;
     }
 
-    public function on(string $eventName,$dataContainer)
+    /**
+     * fire event
+     * @param string $eventName
+     * @param \app\Base\controls\Control\ControlEventData $data
+     * @return mixed
+     */
+    public function on(string $eventName, ControlEventData $data)
     {
-
+        return $this->_eventDispatcher->dispatch($eventName, $data);
     }
 }
