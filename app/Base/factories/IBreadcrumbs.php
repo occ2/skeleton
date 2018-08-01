@@ -10,7 +10,7 @@ namespace app\Base\factories;
 interface IBreadcrumbs
 {
     /**
-     * @return \occ2\breadcrumbs\Breadcrumbs
+     * @return \app\Base\controls\Breadcrumbs\Breadcrumbs
      */
     public function create();
 }
