@@ -11,5 +11,10 @@ use Nette\Application\UI\Presenter;
  */
 interface IProcessor
 {
+    /**
+     * additional process of form
+     * @param FormControl $form
+     * @param Presenter $presenter
+     */
     public function process(FormControl $form, Presenter $presenter);
 }
