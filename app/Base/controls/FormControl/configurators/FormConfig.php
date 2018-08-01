@@ -1,5 +1,5 @@
 <?php
-namespace occ2\FormControl;
+namespace app\Base\controls\FormControl\configurators;
 
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
@@ -24,11 +24,14 @@ class FormConfig
         "events"=>"setEvents"
     ];
 
+    /**
+     * @var array
+     */
     protected $renderers=[
         "form"=>"rForm",
         "error"=>"rError",
         "group"=>"rGroup",
-        "controls"=>"rCOntrols",
+        "controls"=>"rControls",
         "pair"=>"rPair",
         "control"=>"rControl",
         "label"=>"rLabel",
@@ -58,6 +61,9 @@ class FormConfig
         return;
     }
 
+    /**
+     * @return void
+     */
     protected function renderer()
     {
         foreach ($this->renderers as $key=>$anchor) {
