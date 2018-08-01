@@ -1,5 +1,5 @@
 <?php
-namespace occ2\inventar\controls;
+namespace app\Base\controls\Navbar;
 
 use Nette\Application\UI\Control;
 
@@ -8,10 +8,10 @@ use Nette\Application\UI\Control;
  *
  * @author Milan Onderka
  * @property array $config
+ * @version 1.1.0
  */
 class Navbar extends Control
-{
-      
+{     
     /**
      * @var array
      */
