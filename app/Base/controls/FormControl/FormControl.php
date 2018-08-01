@@ -26,7 +26,7 @@ use Nette\Application\BadRequestException;
  * contribute/event-dispatcher
  *
  * @author Milan Onderka
- * @version 1.0.0
+ * @version 1.1.0
  */
 abstract class FormControl extends Control
 {
