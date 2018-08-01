@@ -1,0 +1,62 @@
+<nav class="navbar navbar-expand-{$config['expand']} navbar-{$config['colorScheme']} bg-{$config['backgroundScheme']}">
+    <a class="navbar-brand ajax" href="/">
+        <img src="{$basePath}{$config['imageSrc']}" width="{$config['imageWidth']}" height="{$config['imageHeight']}"{if $config['title']!=null} alt="{$config['title']|translate}"{/if}>
+    </a> 
+    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            {foreach $data as $key=>$column}
+                {if !isset($column['children']) || $column['children']==false}
+                    {ifset $column['resource']}
+                        {if $user->isAllowed($column['resource'],'read')}
+                            <li class="nav-item">
+                                <a class="{if $presenter->linkCurrent}active{/if} nav-link ajax" href="{plink $column['href']}">{$column['name']|translate}</a>
+                            </li>                        
+                        {/if}
+                    {else}
+                        <li class="nav-item">
+                            <a class="{if $presenter->linkCurrent}active{/if} nav-link ajax" href="{plink $column['href']}">{$column['name']|translate}</a>
+                        </li>
+                    {/ifset}
+                {else}
+                    {ifset $column['resource']}
+                        {if $user->isAllowed($column['resource'],'read')}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="{ifset $column['href']}{plink $column['href']}{/ifset}" id="{$key}DropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{$column['name']|translate}</a>
+                                <div class="dropdown-menu" aria-labelledby="{$key}DropdownMenuLink">
+                                    {foreach $column['children'] as $child}
+                                        {ifset $child['resource']}
+                                            {if $user->isAllowed($child['resource'],'read')}
+                                                <a class="dropdown-item ajax" href="{plink $child['href']}">{$child['name']|translate}</a>
+                                            {/if}
+                                        {else}
+                                            <a class="dropdown-item ajax" href="{plink $child['href']}">{$child['name']|translate}</a>
+                                        {/ifset}
+                                    {/foreach}
+                                </div>
+                            </li>                        
+                        {/if}
+                    {else}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="{ifset $column['href']}{plink $column['href']}{/ifset}" id="{$key}DropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{$column['name']|translate}</a>
+                            <div class="dropdown-menu" aria-labelledby="{$key}DropdownMenuLink">
+                                {foreach $column['children'] as $child}
+                                    {ifset $child['resource']}
+                                        {if $user->isAllowed($child['resource'],'read')}
+                                            <a class="dropdown-item ajax" href="{plink $child['href']}">{$child['name']|translate}</a>
+                                        {/if}
+                                    {else}
+                                        <a class="dropdown-item ajax" href="{plink $child['href']}">{$child['name']|translate}</a>
+                                    {/ifset}                                
+                                {/foreach}
+                            </div>
+                        </li>
+                    {/ifset}
+                {/if}
+            {/foreach}
+        </ul>
+    </div>
+</nav>

@@ -1,0 +1,90 @@
+parameters:
+    defaultUserConfigs:
+        -   
+            key:    "userNotifyAdminChange"
+            comment:    "user.settings.notifyAdminChange"
+            value:  true
+            type:   bool
+        -   
+            key:    "userNotifyChangePassword"
+            comment:    "user.settings.notifyChangePassword"
+            value:  true
+            type:   bool
+        -   
+            key:    "userNotifyAdminChangePassword"
+            comment:    "user.settings.notifyAdminChangePassword"
+            value:  true
+            type:   bool
+        -   
+            key:    "userNotifyChangeStatus"
+            comment:    "user.settings.notifyChangeStatus"
+            value:  true
+            type:   bool
+        -   
+            key:    "userNotifyChangeConfig"
+            comment:    "user.settings.notifyChangeConfig"
+            value:  true
+            type:   bool
+        -   
+            key:    "userNotifyResetConfig"
+            comment:    "user.settings.notifyResetConfig"
+            value:  true
+            type:   bool
+        -   
+            key:    "userNotifyReloadConfig"
+            comment:    "user.settings.notifyReloadConfig"
+            value:  true
+            type:   bool
+        -   
+            key:    "userNotifyAddRole"
+            comment:    "user.settings.notifyAddRole"
+            value:  true
+            type:   bool
+        -   
+            key:    "userNotifyRemoveRole"
+            comment:    "user.settings.notifyRemoveRole"
+            value:  true
+            type:   bool
+
+    acl:
+        roles:
+            user.roles.manager:
+        resources:
+            users:
+        allow:
+            -   
+                resource:
+                    -   users
+                role:
+                    -   user.roles.manager
+                privilege:
+                    -   add
+                    -   read
+                    -   write
+                    -   delete
+
+    navbar:
+        user:
+            name:   "user.navbar.user"
+            resource:   profile
+            children:
+                profile:
+                    name:   "user.navbar.profile"
+                    href:   ":User:Profile:default"
+                    resource:   profile
+                config:
+                    name:   "user.navbar.config"
+                    href:   ":User:Profile:config"
+                    resource:   profile
+                password:
+                    name:   "user.navbar.password"
+                    href:   ":User:Profile:password"
+                    resource:   profile
+                users:
+                    name:   "user.navbar.management"
+                    href:   ":User:Manager:default" 
+                    resource:   users
+                signout:   
+                    name:   "user.navbar.signOut"
+                    href:   ":User:Main:signOut"
+                    resource:   profile

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        {ifset $title}<title n:inner-snippet="title">{$title}</title>{/ifset}
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" type="text/css"  href="{$basePath}/css/bootstrap.min.css">
+
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/nprogress.css">        
+        <link rel="stylesheet" type="text/css"  href="{$basePath}/css/style.css">
+        
+        {block scripts}
+            <script src="{$basePath}/js/jquery-3.1.1.min.js"></script>
+            <script src="{$basePath}/js/bootstrap.bundle.min.js"></script>
+            <script defer src="{$basePath}/js/fontawesome-all.js"></script>
+            <script src="{$basePath}/js/nette/netteForms.js"></script>
+            <script src="{$basePath}/js/nette/nette.ajax.js"></script>
+            <script src="{$basePath}/js/nette/history.ajax.js"></script>
+            <script src="{$basePath}/js/nprogress.js"></script>
+            <script src="{$basePath}/js/main.js"></script>
+            <script>
+                $.nette.ext('nprogress',  {
+                    start: function() {
+                        window.NProgress.start();
+                    },
+                    complete: function() {
+                        window.NProgress.done();
+                    }
+                });
+            </script>
+        {/block}
+    </head>
+
+    <body>      
+        <div class="container-fluid"> 
+            <div class="row">
+                <div class="col-12">
+                    {snippet navbar}
+                        {control navbar}
+                    {/snippet}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    {snippet breadcrumbs}
+                        {control breadcrumbs}
+                    {/snippet}
+                </div>
+            </div>          
+            <div class="row">
+                <div class="col-0 col-sm-0 col-md-1 col-lg-2 col-xl-2"></div>
+                <div class="col-12 col-sm-12 col-md-10 col-lg-8 col-xl-8">
+                    <div class="alert alert-danger" role="alert">
+                        <h1 class="alert-heading">
+                            <span class="fa fa-lg fa-exclamation-triangle"> </span>
+                            {('base.error.500.title')|translate}
+                        </h1>
+                        <p>{('base.error.500.content')|translate}</p>
+                        <hr>
+                        <p class="mb-0">{('base.error.500.footer')|translate}</p>
+                    </div>
+                </div>
+                <div class="col-0 col-sm-0 col-md-1 col-lg-2 col-xl-2">
+                </div>
+            </div>               
+        </div>               
+    </body>
+</html>

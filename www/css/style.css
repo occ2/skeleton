@@ -1,0 +1,144 @@
+#nprogress .spinner {
+  display: block;
+  position: fixed;
+  z-index: 99999;
+  top: 50%;
+  right: 50%;
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, .5);
+  margin-left: -30px;
+  margin-top: -30px;
+}
+
+#nprogress .spinner-icon {
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  color: navy;
+  border: solid 2px transparent;
+  border-top-color: #fff;
+  border-left-color: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 20px;
+
+  -webkit-animation: nprogress-spinner 400ms linear infinite;
+          animation: nprogress-spinner 400ms linear infinite;
+}
+
+.no-spinner #nprogress .spinner {
+  display: none;
+}
+
+.nprogress-custom-parent {
+  overflow: hidden;
+  position: relative;
+}
+
+.nprogress-custom-parent #nprogress .spinner,
+.nprogress-custom-parent #nprogress .bar {
+  position: absolute;
+}
+
+@-webkit-keyframes nprogress-spinner {
+  0%   { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+@keyframes nprogress-spinner {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.focused{
+    z-index: 9999;
+    position:absolute;
+}
+
+.foreground{
+    z-index: 999;
+    position:absolute;  
+    background-color: #fff;
+}
+
+.unfocused{
+    display: none;
+}
+
+.close-flash{
+    position: absolute;
+    top: 0.2em;
+    right: 0.2em;
+    color:  #666;
+    font-size: 1em;
+    font-weight: normal;
+}
+
+#page-cover {
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 990;
+    top: 0;
+    left: 0;
+    text-align: center;
+}
+
+.pageCover{
+    opacity: 0.6;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 990;
+    top: 0;
+    left: 0;
+    text-align: center;    
+}
+
+.table{
+    margin-bottom: 0.2em;
+}
+
+.table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th{
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+}
+
+.alert{
+    padding-top: 0.4em;
+    padding-bottom: 0.4em;
+}
+
+.flashes{
+    z-index: 9995;
+}
+
+.width25{
+    width:25%;
+    margin-left:37.5%;
+}    
+.width50{
+    width:50%;
+    margin-left:25%;
+}
+.width75{
+    width:75%;
+    margin-left:12.5%;
+}
+.width100{
+    width:100%;
+}
+
+.width33{
+    width:33%;
+    margin-left:33%;
+}
+
+.width66{
+    width:66%;
+    margin-left:17.5%;
+}

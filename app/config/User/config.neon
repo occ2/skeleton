@@ -1,0 +1,68 @@
+orm.annotations:
+    paths:
+        - %appDir%/User/models/entities
+
+parameters:
+    module:
+        user:   User
+services:
+    # mappers
+    usersMapper:   occ2\inventar\User\models\mappers\UsersMapper(@Nette\Database\Context)
+    rolesMapper:   occ2\inventar\User\models\mappers\RolesMapper(@Nette\Database\Context)
+    usersHistoryMapper: occ2\inventar\User\models\mappers\UsersHistoryMapper(@Nette\Database\Context)
+    usersConfigMapper:  occ2\inventar\User\models\mappers\UsersConfigMapper(@Nette\Database\Context)
+
+    # repositories
+    usersRepository:   occ2\inventar\User\models\repositories\Users(@usersMapper)
+    rolesRepository:   occ2\inventar\User\models\repositories\Roles(@rolesMapper)
+    usersHistoryRepository:   occ2\inventar\User\models\repositories\UsersHistory(@usersHistoryMapper)
+    usersConfigRepository:  occ2\inventar\User\models\repositories\UsersConfig(@usersConfigMapper)
+
+    # facades
+    #authenticator:   occ2\inventar\User\models\AuthenticatorFacade(@datetimeFactory,@usersRepository,@rolesRepository,@usersConfigRepository,@events.dispatcher,%authenticator%)
+    authorizator:   occ2\inventar\User\models\AuthorizatorFacade(%acl%)
+    usersFacade:    \occ2\inventar\User\models\facades\Profiles(@Nettrine\ORM\EntityManager,@events.dispatcher,@user,%users%,%defaultUserConfigs%)
+    usersConfigFacade: occ2\inventar\User\models\UsersConfigFacade(@datetimeFactory,@user,@events.dispatcher,@usersConfigRepository,%users%,%defaultUserConfigs%)
+    usersRolesFacade:   occ2\inventar\User\models\RolesFacade(@datetimeFactory,@user,@events.dispatcher,@rolesRepository,@authorizator,%users%,)
+    
+    # ORM facades
+    authenticator:   occ2\inventar\User\models\facades\User
+
+    # forms
+    - \occ2\inventar\User\controls\forms\ISignInForm
+    - \occ2\inventar\User\controls\forms\IRegisterForm
+    - \occ2\inventar\User\controls\forms\IResetPassForm
+    - \occ2\inventar\User\controls\forms\IControlQuestionForm
+    - \occ2\inventar\User\controls\forms\IControlRecaptchaForm
+    - \occ2\inventar\User\controls\forms\IExpiredPassForm
+    - \occ2\inventar\User\controls\forms\ISettingsForm
+    - \occ2\inventar\User\controls\forms\IChangePassForm
+    - \occ2\inventar\User\controls\forms\IUserForm
+
+    # grids
+    - \occ2\inventar\User\controls\grids\IUsersGrid
+    - \occ2\inventar\User\controls\grids\IUserHistoryGrid
+    - \occ2\inventar\User\controls\grids\IUserConfigGrid
+    - \occ2\inventar\User\controls\grids\IUserRolesGrid
+
+    # processors
+    - \occ2\inventar\User\controls\forms\SignInFormProcessor
+    - \occ2\inventar\User\controls\forms\RegisterFormProcessor
+    - \occ2\inventar\User\controls\forms\ResetPassFormProcessor
+    - \occ2\inventar\User\controls\forms\ControlQuestionFormProcessor
+    - \occ2\inventar\User\controls\forms\ControlRecaptchaFormProcessor
+    - \occ2\inventar\User\controls\forms\ExpiredPassFormProcessor
+    - \occ2\inventar\User\controls\forms\ChangePassFormProcessor
+    - \occ2\inventar\User\controls\forms\SettingsFormProcessor
+    - \occ2\inventar\User\controls\forms\UserFormProcessor
+    - \occ2\inventar\User\controls\grids\UsersGridProcessor
+    - \occ2\inventar\User\controls\grids\UserHistoryGridProcessor
+    - \occ2\inventar\User\controls\grids\UserConfigGridProcessor
+    - \occ2\inventar\User\controls\grids\UserRolesGridProcessor
+
+    # events
+    -   \occ2\inventar\User\models\events\AuthenticationSubscriber
+    -   
+        class:  \occ2\inventar\User\models\events\UsersSubscriber
+        setup:
+            -   setDefaultConfigs(%defaultUserConfigs%)

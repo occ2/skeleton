@@ -1,0 +1,92 @@
+parameters:
+    module:
+    languages:
+        default:    "cz"
+        supported:
+            cz:   "cz"
+            en:   "en"
+
+    authenticator:
+        maxAttempts:    5
+        randomPasswordLength:   8
+        passwordExpiration: "+90 Days"
+    users:
+        passwordExpiration: %authenticator.passwordExpiration%
+        secretLength:   8
+        randomPasswordLength:   %authenticator.randomPasswordLength%
+        defaultRoles:
+            -   authenticated
+
+application:
+    errorPresenter: Error
+    catchExceptions: yes
+    mapping:
+        *: ['occ2\inventar', '*', 'presenters\*Presenter']
+
+translation:
+    default: cz
+    fallback: [cz, cz]
+
+session:
+	expiration: 14 days
+
+extensions:
+    console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    dbal: Nettrine\DBAL\DI\DbalExtension
+    orm: Nettrine\ORM\DI\OrmExtension
+    orm.annotations: Nettrine\ORM\DI\OrmAnnotationsExtension
+    orm.console: Nettrine\ORM\DI\OrmConsoleExtension
+    logging: Contributte\Logging\DI\TracyLoggingExtension
+    tracy.bluescreens: Contributte\Tracy\DI\TracyBlueScreensExtension
+    parsedown: Contributte\Parsedown\DI\ParsedownExtraExtension
+    events: Contributte\EventDispatcher\DI\EventDispatcherExtension
+    translation: Kdyby\Translation\DI\TranslationExtension
+    recaptcha: Contributte\ReCaptcha\DI\ReCaptchaExtension
+    ajaxHistory: VojtechDobes\NetteAjax\HistoryExtension
+    # console setup on https://github.com/contributte/console/blob/master/.docs/README.md#usage
+
+orm.annotations:
+    paths:
+
+console:
+    name: "invantar.cloud"
+    version: 1.0
+    catchExceptions: true
+    autoExit: true
+    url: "https://inventar"
+    lazy: true
+    #helperSet: @customHelperSet
+    #helpers:
+    #  - Contributte\Console\Helper\ContainerHelper
+
+recaptcha:
+    secretKey:  '6LfSBBUUAAAAADVBdf4Xc0SSlOLbnkjgqApXXZcc'
+    siteKey:    '6LfSBBUUAAAAAAlGClm_mN3FRRVqiP9Lg-w-ie4C'
+
+parsedown:
+    helper: parsedown
+
+events:
+    autoload:   true
+    lazy:   true
+
+logging:
+    logDir: %appDir%/../log
+
+services:
+    # factories
+    datetime:    Contributte\Utils\DatetimeFactory
+    router: app\Base\factories\RouterFactory::createRouter(%languages%,%module%)
+    mailer: app\Base\factories\MailFactory(@Nette\Localization\ITranslator,%mailer%)
+
+    
+    # navbar
+    -   
+        implement:  \app\Base\factories\IBreadcrumbs
+    -   
+        implement:  \app\Base\factoriesINavbar
+        setup:
+            -   setData(%navbar%)
+
+    # forms
+    - \AlesWita\FormRenderer\Factory(@Nette\Localization\ITranslator)

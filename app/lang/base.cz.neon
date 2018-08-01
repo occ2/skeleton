@@ -1,0 +1,41 @@
+application:
+    name:   "INVANTAR.CLOUD - Inventář v Cloudu"
+shared:
+    all:    "Vše"
+    yes:    "Ano"
+    no:     "Ne"
+    question:   "Otázka"
+logger:
+    status:
+        info:   "Informace"
+        success:    "Úspěch"
+        warning:    "Varování"
+        danger: "Chyba"
+        exception:  "Vyjímka"
+breadcrumbs:
+    home:   "Domů"
+roles:
+    guest:  "Host"
+    authenticated:  "Přihlášený uživatel"
+    administrator:  "Administrátor"
+error:
+    '403':
+        title:  "403 - Neautorizovaný přístup"
+        content:    "Pokoušíte se vstoupit do části aplikace, kde nemáte příslušná oprávnění."
+        footer: "V případě komplikací kontaktujte administrátora admin@inventar.cloud"
+    '404':
+        title:  "404 - Nenalezeno"
+        content:    "Část aplikace, kterou požadujete nebyla nalezena. Zkontrolujte prosím adresu URL."
+        footer: "V případě komplikací kontaktujte administrátora admin@inventar.cloud"
+    '405':
+        title:  "405 - Nepovolená metoda"
+        content:    "Aplikace byla dotázána způsobem, který není povolen. Pro vyřešení problémů hledejte chybu v API dokumentace"
+        footer: "V případě komplikací kontaktujte administrátora admin@inventar.cloud"
+    '410':
+        title:  "410 - Zdroj už není dostupný"
+        content:    "Část aplikace, kterou požadujete už není dostupná."
+        footer: "V případě komplikací kontaktujte administrátora admin@inventar.cloud"
+    '500':
+        title:  "500 - Interní chyba aplikace"
+        content:    "Došlo k interní chybě aplikace. Zkuste prosím požadavek později"
+        footer: "V případě komplikací kontaktujte administrátora admin@inventar.cloud"

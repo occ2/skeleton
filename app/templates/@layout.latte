@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html{ifset $locale} lang='{$locale}'{/ifset}>
+    <head>
+        <meta charset="utf-8">
+        {ifset $title}<title n:inner-snippet="title">{$title}</title>{/ifset}
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" type="text/css"  href="{$basePath}/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/happy.min.css">
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/bootstrap-datepicker.min.css">
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/datagrid.min.css">
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/datagrid-spinners.min.css">
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/bootstrap-select.min.css">
+        <link rel="stylesheet" type="text/css" href="{$basePath}/css/nprogress.css">        
+        <link rel="stylesheet" type="text/css"  href="{$basePath}/css/style.css">
+        
+        {block scripts}
+            <script src="{$basePath}/js/jquery-3.1.1.min.js"></script>
+            <script src="{$basePath}/js/bootstrap.bundle.min.js"></script>
+            <script defer src="{$basePath}/js/fontawesome-all.js"></script>
+            <script src="{$basePath}/js/nette/netteForms.js"></script>
+            <script src="{$basePath}/js/nette/nette.ajax.js"></script>
+            <script src="{$basePath}/js/nette/history.ajax.js"></script>
+            <script src="{$basePath}/js/nette/liveValidation.js"></script>
+            <script src="{$basePath}/js/happy.min.js"></script>
+            <script src="{$basePath}/js/bootstrap-datepicker.min.js"></script>
+            <script src="{$basePath}/js/locales/bootstrap-datepicker.{$locale}.min.js"></script>
+            <script src="{$basePath}/js/jquery-ui-sortable.min.js"></script>
+            <script src="{$basePath}/js/datagrid.min.js"></script>
+            <script src="{$basePath}/js/datagrid-instant-url-refresh.min.js"></script>
+            <script src="{$basePath}/js/datagrid-spinners.min.js"></script>
+            <script src="{$basePath}/js/bootstrap-select.min.js"></script>
+            <script src='https://www.google.com/recaptcha/api.js'></script>
+            <script src="{$basePath}/js/nprogress.js"></script>
+            <script src="{$basePath}/js/main.js"></script>
+            <script>
+                $(document).ready(function(){
+                    $.nette.init();
+                    $('*[data-provide="datepicker"]').datepicker(
+                        {
+                            language: {$locale}
+                        });                       
+                });
+            </script>
+            <script>
+                $.nette.ext('nprogress',  {
+                    start: function() {
+                        window.NProgress.start();
+                    },
+                    complete: function() {
+                        window.NProgress.done();
+                    }
+                });
+                $.nette.ext("modals", {
+                    before: function() {
+                        this.wasModalOpenedBeforeAjaxRequest = this.isModalOpened();
+                    },
+                    success: function(payload) {
+                        if (payload.isModal) {
+                            if (!this.wasModalOpenedBeforeAjaxRequest) {
+                                $('.modal-ajax').modal('show');
+                            } else {
+                                $('.modal-ajax').addClass('in').css({'display': 'block'}).modal('show');
+                                $('.modal-backdrop').removeClass('fade');
+                                $('.modal-backdrop:not(:last)').remove();
+                                window.setTimeout(function() {
+                                    $('.modal-backdrop').addClass('fade');
+                                }, 200);
+                            }
+                        } else {
+                            $('.modal-ajax').modal('hide');
+                        }
+                    }
+                }, {
+                    wasModalOpenedBeforeAjaxRequest: false,
+                    isModalOpened: function() {
+                        return ($('.modal.fade.in').length > 0);
+                    }
+                });
+            </script>
+        {/block}
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    {snippet navbar}
+                        {control navbar}
+                    {/snippet}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    {snippet breadcrumbs}
+                        {control breadcrumbs}
+                    {/snippet}
+                </div>
+            </div>
+            {snippetArea flashes}
+                <div class="row">
+                    <div class="col-12">    
+                        {include '../templates/flashes.latte'}
+                    </div>
+                </div>
+            {/snippetArea}                
+            <div class="row">
+                <div class="col-12">
+                    <br>
+                {snippet content}
+                    {include content}
+                {/snippet}
+                </div>
+            </div>                
+        </div>
+                
+    {snippet modal}
+        {if $presenter->isAjax()}
+            {ifset #modal}
+                <div class="modal fade modal-ajax">
+                    <div class="modal-dialog{ifset $modalSize} modal-{$modalSize}{/ifset}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button class="close" data-dismiss="modal">&times;</button>
+                                
+                                {ifset #modalHeader}{block modalHeader}
+                                    {ifset #title}<h3 class="modal-title">
+                                        {block|striptags}{include #title}{/block}
+                                    </h3>{/ifset}
+                                {/block}{/ifset}
+                            </div>
+                            <div class="modal-body">
+                                {include #modal}
+                            </div>
+                            {ifset #modalFooter}
+                                <div class="modal-footer">
+                                    {include #modalFooter}
+                                </div>
+                            {/ifset}
+                        </div>
+                    </div>
+                </div>
+            {/ifset}
+        {/if}
+    {/snippet}                
+    </body>
+</html>

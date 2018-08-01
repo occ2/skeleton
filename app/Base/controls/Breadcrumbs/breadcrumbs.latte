@@ -1,0 +1,15 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    {foreach  $data as $key=>$value}
+        {if !$value->active}
+            <li data-key="{$key}" class="breadcrumb-item active" aria-current="page">
+                {$value->name|translate}
+            </li>
+        {else}
+            <li data-key="{$key}" class="breadcrumb-item">
+                <a {if $value->ajax==true}class="ajax"{/if} href="{$value->href}">{$value->name|translate}</a>
+            </li>
+        {/if}
+    {/foreach}
+  </ol>
+</nav>
