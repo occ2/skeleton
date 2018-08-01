@@ -1,5 +1,5 @@
 <?php
-namespace occ2\breadcrumbs;
+namespace app\Base\controls\Breadcrumbs;
 
 use Nette\Application\UI\Control,
     Nette\Utils\ArrayHash;
@@ -8,7 +8,7 @@ use Nette\Application\UI\Control,
  * Breadcrumbs
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class Breadcrumbs extends Control
 {
