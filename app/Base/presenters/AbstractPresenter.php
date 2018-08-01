@@ -33,6 +33,7 @@ abstract class AbstractPresenter extends NPresenter
           THIS="this",
           ACTION_DEFAULT="default",
           BREADCRUMBS="breadcrumbs",
+          NAVBAR="navbar",
           SIGN_IN_LINK=":User:Main:signIn",
           HOMEPAGE_LINK=":User:Main:default";
         
