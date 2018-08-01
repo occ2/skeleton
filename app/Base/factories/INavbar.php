@@ -10,7 +10,7 @@ namespace app\Base\factories;
 interface INavbar
 {
     /**
-     * @return \occ2\inventar\controls\Navbar
+     * @return \app\Base\controls\Navbar\Navbar
      */
     public function create();
 }
