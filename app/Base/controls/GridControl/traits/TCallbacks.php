@@ -1,16 +1,20 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\traits;
 
+use app\Base\controls\GridControl\exceptions\GridCallbackException;
 use Nette\Utils\Callback;
 
 /**
  * TCallbacks
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 trait TCallbacks
 {
+    /**
+     * @var array
+     */
     protected $callbacks;
     
     /**
