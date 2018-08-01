@@ -1,6 +1,7 @@
 <?php
-namespace occ2\FormControl;
+namespace app\Base\controls\FormControl\builders;
 
+use app\Base\controls\FormControl\exceptions\FormBuilderException;
 use Nette\Application\UI\Form;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Property;
@@ -8,6 +9,7 @@ use Nette\Utils\Callback;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
 use Nette\Forms\Controls\TextBase;
+use \Nette\Application\UI\Control;
 
 /**
  * EntityFormBuilder
@@ -40,6 +42,9 @@ class FormBuilder implements IFormBuilder
      */
     protected $classType;
 
+    /**
+     * @var \Nette\Application\UI\Control
+     */
     public $object;
 
     /**
@@ -57,6 +62,9 @@ class FormBuilder implements IFormBuilder
      */
     protected $loadOptionsCallback;
 
+    /**
+     * @var \Nette\Localization\ITranslator
+     */
     protected $translator=null;
 
     /**
@@ -69,6 +77,11 @@ class FormBuilder implements IFormBuilder
         return isset($this->object->{$name}) ? $this->object->{$name} : false;
     }
 
+    /**
+     * translator setter
+     * @param \Nette\Localization\ITranslator $translator
+     * @return $this
+     */
     public function setTranslator(\Nette\Localization\ITranslator $translator)
     {
         $this->translator = $translator;
@@ -79,6 +92,7 @@ class FormBuilder implements IFormBuilder
      * text
      * @param string $text
      * @return string
+     * @deprecated since version 1.1.0
      */
     protected function text(string $text)
     {
@@ -86,10 +100,20 @@ class FormBuilder implements IFormBuilder
     }
 
     /**
-     * set form control object
-     * @param type $object
+     * simplifier of translation
+     * @param string $text
+     * @return string
      */
-    public function setObject($object)
+    public function _(string $text)
+    {
+        return $this->translator instanceof \Nette\Localization\ITranslator ?  $this->translator->translate($text): $text;
+    }
+
+    /**
+     * set form control object
+     * @param Control $object
+     */
+    public function setObject(Control $object)
     {
         $this->object = $object;
         $this->classType = ClassType::from($object);
@@ -161,6 +185,11 @@ class FormBuilder implements IFormBuilder
         }
     }
 
+    /**
+     * @param TextBase $element
+     * @param \app\Base\controls\FormControl\builders\FormItemConfig $config
+     * @return TextBase
+     */
     protected function setupText(TextBase $element, FormItemConfig $config):TextBase
     {
         $config->leftIcon==null ?: $element->setOption("left-addon", Html::el("i")->setAttribute("class", FormControl::$_iconPrefix . $config->leftIcon));
@@ -385,6 +414,12 @@ class FormBuilder implements IFormBuilder
         return $form->addSubmit($config->name, $config->label);
     }
 
+    /**
+     * add recaptcha control
+     * @param Form $form
+     * @param \app\Base\controls\FormControl\builders\FormItemConfig $config
+     * @return \Nette\Forms\Controls\BaseControl
+     */
     protected function addRecaptcha(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
     {
         $element = $form->addReCaptcha(
