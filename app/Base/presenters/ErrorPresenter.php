@@ -1,12 +1,18 @@
 <?php
-namespace occ2\inventar\presenters;
+namespace app\Base\presenters;
 
+use app\Base\traits\TFlashMessage;
 use Nette\Application\UI\Presenter;
 use Nette\Application\BadRequestException;
 use Tracy\Debugger;
-use occ2\flashes\TFlashMessage;
 
-class ErrorPresenter extends Presenter
+/**
+ * Error presenter
+ *
+ * @author Milan Onderka <milan_onderka@occ2.cz>
+ * @version 1.1.0
+ */
+final class ErrorPresenter extends Presenter
 {
     use TFlashMessage;
     /**
@@ -17,17 +23,22 @@ class ErrorPresenter extends Presenter
 
     /**
      * @inject
-     * @var \occ2\inventar\controls\INavbar
+     * @var \app\Base\factories\INavbar
      */
     public $navbarFactory;
 
     /**
      * @inject
-     * @var \occ2\breadcrumbs\IBreadcrumbs
+     * @var \app\Base\factories\IBreadcrumbs
      */
     public $breadcrumbsFactory;
-    
-    public function renderDefault( $exception)
+
+    /**
+     * render exception
+     * @param \Exception $exception
+     * @return void
+     */
+    public function renderDefault(\Exception $exception)
     {
         $code = in_array($exception->getCode(), array(403, 404, 405, 410, 500)) ? $exception->getCode() : 'other';
         $this->template->code = $code;
@@ -42,14 +53,14 @@ class ErrorPresenter extends Presenter
 
         }
 
-        if ($this->isAjax()) { // AJAX request? Note this error in payload.
+        if ($this->isAjax()) { // AJAX request? Note this error in bar dumped
             bdump($exception);          
         }
         return;
     }
 
     /**
-     * @return \occ2\inventar\controls\Navbar
+     * @return \app\Base\controls\Navbar\Navbar
      */
     public function createComponentNavbar()
     {
@@ -57,7 +68,7 @@ class ErrorPresenter extends Presenter
     }
 
     /**
-     * @return \occ2\breadcrumbs\Breadcrumbs
+     * @return \app\Base\controls\Breadcrumbs\Breadcrumbs
      */
     public function createComponentBreadcrumbs()
     {
