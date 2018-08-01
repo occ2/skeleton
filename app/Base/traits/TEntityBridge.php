@@ -9,12 +9,21 @@ use Nette\Reflection\ClassType;
 /**
  * TEntityBridge
  *
+ * trait that extend Doctrine2 entity to be convertable from/to array or ArrayHash
+ *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
 trait TEntityBridge
 {
-    public static function from($arr,$ignoreUndefinedSetter=false)
+    /**
+     * create entity from array or ArrayHash
+     * @param array | ArrayHash $arr
+     * @param boolean $ignoreUndefinedSetter
+     * @return \static
+     * @throws EntityException
+     */
+    public static function from($arr,bool $ignoreUndefinedSetter=false)
     {
         $obj = new static;
         foreach ($arr as $key=>$value){
@@ -30,7 +39,13 @@ trait TEntityBridge
         return $obj;
     }
 
-    public function toArray($ignoreUndefinedGetter=true)
+    /**
+     * convert entity to array
+     * @param bool $ignoreUndefinedGetter
+     * @return array
+     * @throws EntityException
+     */
+    public function toArray(bool $ignoreUndefinedGetter=true): array
     {
         $res = [];
         $ref = new ClassType(static::class);
@@ -47,7 +62,13 @@ trait TEntityBridge
         return $res;
     }
 
-    public function toArrayHash($ignoreUndefinedGetter=true)
+    /**
+     * convdert entity to ArrayHash
+     * @param bool $ignoreUndefinedGetter
+     * @return ArrayHash
+     * @throws EntityException
+     */
+    public function toArrayHash(bool $ignoreUndefinedGetter=true): ArrayHash
     {
         $res = new ArrayHash();
         $ref = new ClassType(static::class);
