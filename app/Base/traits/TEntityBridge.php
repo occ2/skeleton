@@ -1,7 +1,7 @@
 <?php
-namespace occ2\model;
+namespace app\Base\traits;
 
-use occ2\model\EntityException;
+use app\Base\exceptions\EntityException;
 use Nette\Utils\Strings;
 use Nette\Utils\ArrayHash;
 use Nette\Reflection\ClassType;
