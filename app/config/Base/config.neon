@@ -21,7 +21,7 @@ application:
     errorPresenter: Error
     catchExceptions: yes
     mapping:
-        *: ['occ2\inventar', '*', 'presenters\*Presenter']
+        *: ['app', '*', 'presenters\*Presenter']
 
 translation:
     default: cz
@@ -49,15 +49,12 @@ orm.annotations:
     paths:
 
 console:
-    name: "invantar.cloud"
+    name: "skeleton"
     version: 1.0
     catchExceptions: true
     autoExit: true
-    url: "https://inventar"
+    url: "https://skeleton"
     lazy: true
-    #helperSet: @customHelperSet
-    #helpers:
-    #  - Contributte\Console\Helper\ContainerHelper
 
 recaptcha:
     secretKey:  '6LfSBBUUAAAAADVBdf4Xc0SSlOLbnkjgqApXXZcc'
@@ -84,7 +81,7 @@ services:
     -   
         implement:  \app\Base\factories\IBreadcrumbs
     -   
-        implement:  \app\Base\factoriesINavbar
+        implement:  \app\Base\factories\INavbar
         setup:
             -   setData(%navbar%)
 
