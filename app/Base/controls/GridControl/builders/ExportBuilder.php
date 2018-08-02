@@ -7,7 +7,7 @@ use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridConfig;
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use app\Base\controls\GridControl\builders\GridBuilder;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Export\Export;
 use Nette\Utils\ArrayHash;
 
@@ -35,11 +35,6 @@ class ExportBuilder implements IAdditionalGridBuilder
      * @var GridControl
      */
     protected $object;
-
-    /**
-     * @var array
-     */
-    protected $callbacks;
 
     /**
      * @param GridControl $object

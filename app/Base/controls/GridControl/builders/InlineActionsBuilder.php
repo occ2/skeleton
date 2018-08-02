@@ -7,7 +7,7 @@ use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridConfig;
 use app\Base\controls\GridControl\builders\GridBuilder;
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\InlineEdit\InlineEdit;
 use Nette\Utils\ArrayHash;
 use Nette\Forms\Container;

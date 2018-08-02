@@ -7,7 +7,7 @@ use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridConfig;
 use app\Base\controls\GridControl\builders\GridBuilder;
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\GroupAction\GroupAction;
 use Ublaboo\DataGrid\GroupAction\GroupSelectAction;
 use Ublaboo\DataGrid\GroupAction\GroupMultiSelectAction;
@@ -47,11 +47,6 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
      * @var GridControl
      */
     protected $object;
-
-    /**
-     * @var array
-     */
-    protected $callbacks;
 
     /**
      * @param GridControl $object

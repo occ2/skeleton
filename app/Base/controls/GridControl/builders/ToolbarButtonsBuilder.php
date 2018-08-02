@@ -1,7 +1,13 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\builders;
 
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\traits\TCallbacks;
+use app\Base\controls\GridControl\builders\IAdditionalGridBuilder;
+use app\Base\controls\GridControl\GridControl;
+use app\Base\controls\GridControl\configurators\GridConfig;
+use app\Base\controls\GridControl\builders\GridBuilder;
+use app\Base\controls\GridControl\exceptions\GridBuilderException;
+use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Toolbar\ToolbarButton;
 use Nette\Utils\ArrayHash;
 
@@ -9,17 +15,35 @@ use Nette\Utils\ArrayHash;
  * ToolbarButtonsBuilder
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class ToolbarButtonsBuilder implements IAdditionalGridBuilder
 {
     use TCallbacks;
-    
+
+    /**
+     * @var DataGrid
+     */
     protected $grid;
+
+    /**
+     * @var GridControl
+     */
     protected $object;
+
+    /**
+     * @var GridConfig
+     */
     protected $configurator;
-    
-    public function __construct($object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)
+
+    /**
+     * @param GridControl $object
+     * @param DataGrid $grid
+     * @param GridConfig $configurator
+     * @param array $callbacks
+     * @return void
+     */
+    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, array $callbacks)
     {
         $this->object = $object;
         $this->grid = $grid;
@@ -27,12 +51,21 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
         $this->configurator = $configurator;
         return;
     }
-    
+
+    /**
+     * build toolbar btns
+     * @return vod
+     */
     public function build()
     {
         return $this->addToolbarButtons($this->grid);
     }
-    
+
+    /**
+     * add toolbar buttons
+     * @param DataGrid $grid
+     * @return void
+     */
     protected function addToolbarButtons(DataGrid $grid)
     {
         $buttons = $this->configurator->getToolbarButton(true);
@@ -42,8 +75,15 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
         }
         return;
     }
-    
-    protected function addButton(DataGrid $grid, ArrayHash $config)
+
+    /**
+     * add toolbar button
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return ToolbarButton
+     * @throws GridBuilderException
+     */
+    protected function addButton(DataGrid $grid, ArrayHash $config): ToolbarButton
     {
         if (!isset($config->name)) {
             throw new GridBuilderException("ERROR: Toolbar button name must be set", GridBuilderException::UNDEFINED_BUTTON_NAME);
@@ -80,10 +120,16 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
             );
         }
         $this->setupButton($button, $config);
-        return;
+        return $button;
     }
-    
-    protected function setupButton(ToolbarButton $button, $config)
+
+    /**
+     * setup toolbar button
+     * @param ToolbarButton $button
+     * @param ArrayHash $config
+     * @return ToolbarButton
+     */
+    protected function setupButton(ToolbarButton $button, ArrayHash $config)
     {
         !isset($config->icon) ?: $button->setIcon($config->icon);
         !isset($config->class) ?: $button->setClass($config->class);

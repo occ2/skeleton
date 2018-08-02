@@ -7,10 +7,10 @@ use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridConfig;
 use app\Base\controls\GridControl\builders\GridBuilder;
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
-use Nette\Utils\ArrayHash;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Column\MultiAction;
+use Nette\Utils\ArrayHash;
 
 /**
  * ActionsBuilder
@@ -46,7 +46,7 @@ class ActionsBuilder implements IAdditionalGridBuilder
      * @param GridControl $object
      * @param DataGrid $grid
      * @param GridConfig $configurator
-     * @param ArrayHash $callbacks
+     * @param array $callbacks
      * @return void
      */
     public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)

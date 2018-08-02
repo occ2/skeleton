@@ -2,7 +2,7 @@
 namespace app\Base\controls\GridControl\builders;
 
 use app\Base\controls\GridControl\GridControl;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 
 /**
  * IGridBuilder interface
@@ -13,7 +13,7 @@ interface IGridBuilder
 {
     /**
      * set GridControl parent object reference
-     * @param \app\Base\controls\GridControl\GridControl $object
+     * @param GridControl $object
      */
     public function setObject(GridControl $object);
     

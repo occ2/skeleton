@@ -7,11 +7,11 @@ use app\Base\controls\GridControl\builders\ColumnBuilder;
 use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridConfig;
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
+use app\Base\controls\GridControl\DataGrid;
 use Nette\Utils\ArrayHash;
 use Nette\Localization\ITranslator;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
-use Ublaboo\DataGrid\DataGrid;
 
 /**
  * GridBuilder

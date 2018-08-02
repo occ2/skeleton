@@ -2,7 +2,8 @@
 namespace app\Base\controls\GridControl\builders;
 
 use app\Base\controls\GridControl\GridControl;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\configurators\GridConfig;
+use app\Base\controls\GridControl\DataGrid;
 use Nette\Utils\ArrayHash;
 
 /**
@@ -15,8 +16,8 @@ interface IAdditionalGridBuilder
     /**
      * @param GridControl $object
      * @param DataGrid $grid
-     * @param \app\Base\controls\GridControl\builders\GridConfig $configurator
-     * @param ArrayHash $callbacks
+     * @param GridConfig $configurator
+     * @param array $callbacks
      */
     public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks);
 

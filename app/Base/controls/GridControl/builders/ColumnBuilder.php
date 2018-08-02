@@ -7,7 +7,7 @@ use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridColumnsConfig;
 use app\Base\controls\GridControl\builders\GridBuilder;
 use app\Base\controls\GridControl\builders\FilterBuilder;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Column\Column;
 use Ublaboo\DataGrid\Column\ColumnStatus;
 use Ublaboo\DataGrid\Column\ColumnDateTime;
