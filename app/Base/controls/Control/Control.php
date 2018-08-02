@@ -2,6 +2,7 @@
 namespace app\Base\controls\Control;
 
 use app\Base\traits\TFlashMessage;
+use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
 use Nette\Application\UI\Control as NControl;
 use Contributte\EventDispatcher\EventDispatcher;
 use Nette\Localization\ITranslator;
@@ -107,7 +108,7 @@ abstract class Control extends NControl
      * @param \app\Base\controls\Control\ControlEventData $data
      * @return mixed
      */
-    public function on(string $eventName, ControlEventData $data)
+    public function on(string $eventName, BaseEvent $data)
     {
         return $this->_eventDispatcher->dispatch($eventName, $data);
     }
