@@ -14,6 +14,7 @@ use Ublaboo\DataGrid\GroupAction\GroupMultiSelectAction;
 use Ublaboo\DataGrid\GroupAction\GroupTextAction;
 use Ublaboo\DataGrid\GroupAction\GroupTextareaAction;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Strings;
 
 /**
  * GroupActionsBuilder
@@ -123,6 +124,12 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
             $action->onSelect[] = function ($ids) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object);
             };
+        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+            $action->onSelect[] = function($ids) use ($t,$grid) {
+                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
+                $class = GridControl::$_symfonyEventClass;
+                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids],$eventName));
+            };
         }
         return $action;
     }
@@ -148,6 +155,12 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         if ($this->checkCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name)) {
             $action->onSelect[] = function ($ids, $option) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $option);
+            };
+        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+            $action->onSelect[] = function($ids,$option) use ($t,$grid) {
+                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
+                $class = GridControl::$_symfonyEventClass;
+                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids,"option"=>$option],$eventName));
             };
         }
         return $action;
@@ -175,6 +188,12 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
             $action->onSelect[] = function ($ids, $options) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $options);
             };
+        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+            $action->onSelect[] = function($ids,$options) use ($t,$grid) {
+                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
+                $class = GridControl::$_symfonyEventClass;
+                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids,"options"=>$options],$eventName));
+            };
         }
         return $action;
     }
@@ -195,6 +214,12 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
             $action->onSelect[] = function ($ids, $value) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $value);
             };
+        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+            $action->onSelect[] = function($ids,$value) use ($t,$grid) {
+                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
+                $class = GridControl::$_symfonyEventClass;
+                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids,"value"=>$value],$eventName));
+            };
         }
         return $action;
     }
@@ -214,6 +239,12 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         if ($this->checkCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name)) {
             $action->onSelect[] = function ($ids, $value) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $value);
+            };
+        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+            $action->onSelect[] = function($ids,$value) use ($t,$grid) {
+                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
+                $class = GridControl::$_symfonyEventClass;
+                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids,"value"=>$value],$eventName));
             };
         }
         return $action;
