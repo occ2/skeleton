@@ -11,6 +11,7 @@ use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Column\MultiAction;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Strings;
 
 /**
  * ActionsBuilder
@@ -113,6 +114,16 @@ class ActionsBuilder implements IAdditionalGridBuilder
                     $grid,
                     $t->object
                 );
+            };
+        } elseif(array_key_exists("action" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+            $eventName = $this->object->_symfonyEvents["action" . Strings::firstUpper($config->name)];
+            $class = GridControl::$_symfonyRowEventClass;
+            $action = $grid->addActionCallback(
+                    $config->name,
+                    !isset($config->label) ? "" : $config->label
+            );
+            $action->onClick[] = function ($id) use ($t,$grid,$eventName,$class) {
+                return $t->object->on($eventName, new $class($id,null,$grid,$t,$eventName));
             };
         } else {
             $action = $grid->addAction(
