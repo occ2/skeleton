@@ -1,5 +1,5 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl;
 
 use Ublaboo\DataGrid\DataGrid as UGrid;
 use Ublaboo\DataGrid\Toolbar\ToolbarButton;
@@ -9,7 +9,7 @@ use Ublaboo\DataGrid\Exception\DataGridException;
  * DataGrid
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class DataGrid extends UGrid
 {
@@ -30,9 +30,15 @@ class DataGrid extends UGrid
 		return $this->toolbar_buttons[$key] = new ToolbarButton($this, $href, $text, $params);
 	}
 
+        /**
+         * inline edit handler override
+         * @param mixed $id
+         * @return void
+         */
         public function handleInlineEdit($id)
         {
             parent::handleInlineEdit($id);
             $this->redrawControl();
+            return;
         }
 }
