@@ -1,9 +1,9 @@
 <?php
 namespace app\Base\controls\GridControl\events;
 
+use app\Base\controls\GridControl\DataGrid;
 use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
 use Nette\Application\UI\Control;
-use Ublaboo\DataGrid\DataGrid;
 
 /**
  * GridRowEventData
@@ -14,12 +14,12 @@ use Ublaboo\DataGrid\DataGrid;
 class GridRowEventData extends BaseEvent
 {
     /**
-     * @var \Nette\Application\UI\Control
+     * @var Control
      */
     public $control;
 
     /**
-     * @var \Ublaboo\DataGrid\DataGrid
+     * @var DataGrid
      */
     public $datagrid;
 
