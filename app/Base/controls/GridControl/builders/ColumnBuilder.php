@@ -1,31 +1,62 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\builders;
 
+use app\Base\controls\GridControl\traits\TCallbacks;
+use app\Base\controls\GridControl\builders\IAdditionalGridBuilder;
+use app\Base\controls\GridControl\GridControl;
+use app\Base\controls\GridControl\configurators\GridColumnsConfig;
+use app\Base\controls\GridControl\builders\GridBuilder;
+use app\Base\controls\GridControl\builders\FilterBuilder;
 use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\Column\Column;
+use Ublaboo\DataGrid\Column\ColumnStatus;
+use Ublaboo\DataGrid\Column\ColumnDateTime;
+use Ublaboo\DataGrid\Column\ColumnText;
+use Ublaboo\DataGrid\Column\ColumnNumber;
+use Ublaboo\DataGrid\Column\ColumnLink;
+use Ublaboo\DataGrid\Column\ColumnStatus;
 use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 use Nette\Utils\ArrayHash;
-use Ublaboo\DataGrid\Column\Column;
-use Ublaboo\DataGrid\Column\ColumnStatus;
+use Nette\Localization\ITranslator;
 
 /**
  * ColumnBuilder
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
-class ColumnBuilder
+class ColumnBuilder implements IAdditionalGridBuilder
 {
     use TCallbacks;
-    
+
+    /**
+     * @var DataGrid
+     */
     protected $grid;
-    
+
+    /**
+     * @var Property
+     */
     protected $property;
-    
+
+    /**
+     * @var GridControl
+     */
     protected $object;
-    
+
+    /**
+     * @var ITranslator
+     */
     protected $translator;
-    
+
+    /**
+     * @param GridControl $object
+     * @param DataGrid $grid
+     * @param Property $property
+     * @param array $callbacks
+     * @return void
+     */
     public function __construct(GridControl $object, DataGrid $grid, Property $property, $callbacks)
     {
         $this->object = $object;
@@ -34,12 +65,21 @@ class ColumnBuilder
         $this->callbacks = $callbacks;
         return;
     }
-    
+
+    /**
+     * @return void
+     */
     public function build()
     {
         return $this->addColumns($this->grid, $this->property);
     }
-    
+
+    /**
+     * add columns
+     * @param DataGrid $grid
+     * @param Property $property
+     * @return void
+     */
     protected function addColumns(DataGrid $grid, Property $property)
     {
         if ($property->getName()!="name" &&
@@ -59,8 +99,14 @@ class ColumnBuilder
             return;
         }
     }
-    
-    protected function addColumnText(DataGrid $grid, GridColumnsConfig $config)
+
+    /**
+     * add text column
+     * @param DataGrid $grid
+     * @param GridColumnsConfig $config
+     * @return ColumnText
+     */
+    protected function addColumnText(DataGrid $grid, GridColumnsConfig $config): ColumnText
     {
         $column = $grid->addColumnText(
             $config->name,
@@ -70,8 +116,14 @@ class ColumnBuilder
         $this->setupColumn($grid, $column, $config);
         return $column;
     }
-    
-    protected function addColumnDatetime(DataGrid $grid, GridColumnsConfig $config)
+
+    /**
+     * add datetime column
+     * @param DataGrid $grid
+     * @param GridColumnsConfig $config
+     * @return
+     */
+    protected function addColumnDatetime(DataGrid $grid, GridColumnsConfig $config): ColumnDateTime
     {
         $column = $grid->addColumnDateTime(
             $config->name,
@@ -84,8 +136,14 @@ class ColumnBuilder
         $this->setupColumn($grid, $column, $config);
         return $column;
     }
-    
-    protected function addColumnNumber(DataGrid $grid, GridColumnsConfig $config)
+
+    /**
+     * add column number
+     * @param DataGrid $grid
+     * @param GridColumnsConfig $config
+     * @return ColumnNumber
+     */
+    protected function addColumnNumber(DataGrid $grid, GridColumnsConfig $config): ColumnNumber
     {
         $column = $grid->addColumnNumber(
             $config->name,
@@ -101,8 +159,14 @@ class ColumnBuilder
         $this->setupColumn($grid, $column, $config);
         return $column;
     }
-    
-    protected function addColumnLink(DataGrid $grid, GridColumnsConfig $config)
+
+    /**
+     * add link column
+     * @param DataGrid $grid
+     * @param GridColumnsConfig $config
+     * @return ColumnLink
+     */
+    protected function addColumnLink(DataGrid $grid, GridColumnsConfig $config): ColumnLink
     {
         $column = $grid->addColumnLink(
             $config->name,
@@ -124,8 +188,14 @@ class ColumnBuilder
         $this->setupColumn($grid, $column, $config);
         return $column;
     }
-    
-    protected function addColumnStatus(DataGrid $grid, GridColumnsConfig $config)
+
+    /**
+     * add status column
+     * @param DataGrid $grid
+     * @param GridColumnsConfig $config
+     * @return ColumnStatus
+     */
+    protected function addColumnStatus(DataGrid $grid, GridColumnsConfig $config): ColumnStatus
     {
         $t = $this;
         $column = $grid->addColumnStatus(
@@ -151,7 +221,14 @@ class ColumnBuilder
         $this->setupColumn($grid, $column, $config);
         return $column;
     }
-    
+
+    /**
+     * setup column status
+     * @param ColumnStatus $column
+     * @param ArrayHash $option
+     * @param type $key
+     * @return ColumnStatus
+     */
     protected function setupColumnStatus(ColumnStatus $column, ArrayHash $option,$key)
     {
         $key = isset($option->key) ? $option->key : $key;
@@ -166,7 +243,14 @@ class ColumnBuilder
         $o->endOption();
         return $column;
     }
-    
+
+    /**
+     * setup column
+     * @param DataGrid $grid
+     * @param Column $column
+     * @param GridColumnsConfig $config
+     * @return Column
+     */
     protected function setupColumn(DataGrid $grid, Column $column, GridColumnsConfig $config)
     {
         $t = $this;
@@ -243,8 +327,15 @@ class ColumnBuilder
         
         return $column;
     }
-    
-    protected function setupCallbacks(DataGrid $grid, Column $column, $config)
+
+    /**
+     * setup callbacks
+     * @param DataGrid $grid
+     * @param Column $column
+     * @param GridColumnsConfig $config
+     * @return Column
+     */
+    protected function setupCallbacks(DataGrid $grid, Column $column, GridColumnsConfig $config)
     {
         $t = $this;
         if ($this->checkCallback(GridBuilder::COLUMN_RENDERER_CALLBACK, $config->name)) {
@@ -275,8 +366,14 @@ class ColumnBuilder
         
         return $column;
     }
-    
-    protected function addFilters($column, $config)
+
+    /**
+     * add filters
+     * @param Column $column
+     * @param GridColumnsConfig $config
+     * @return mixed
+     */
+    protected function addFilters(Column $column, GridColumnsConfig $config)
     {
         $b = new FilterBuilder($this->object, $column, $config, $this->callbacks);
         return $b->build();
