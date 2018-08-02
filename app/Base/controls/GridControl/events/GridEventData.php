@@ -36,16 +36,22 @@ class GridEventData extends BaseEvent
     public $control;
 
     /**
+     * @var mixed
+     */
+    public $data;
+
+    /**
      * @param mixed $data
      * @param string $event
      * @return type
      */
-    public function __construct(DataGrid $datagrid, Control $control, Form $form=null, $event=null)
+    public function __construct(DataGrid $datagrid, Control $control, Form $form=null, $event=null, $data=null)
     {
         $this->datagrid = $datagrid;
         $this->event = $event;
         $this->form = $form;
         $this->control = $control;
+        $this->data = $data;
         return;
     }
 }
