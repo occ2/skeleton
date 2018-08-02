@@ -1,9 +1,19 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\builders;
 
+use app\Base\controls\GridControl\traits\TCallbacks;
+use app\Base\controls\GridControl\builders\IAdditionalGridBuilder;
+use app\Base\controls\GridControl\GridControl;
+use app\Base\controls\GridControl\configurators\GridConfig;
+use app\Base\controls\GridControl\builders\GridBuilder;
+use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use Ublaboo\DataGrid\DataGrid;
-use Nette\Utils\ArrayHash;
 use Ublaboo\DataGrid\GroupAction\GroupAction;
+use Ublaboo\DataGrid\GroupAction\GroupSelectAction;
+use Ublaboo\DataGrid\GroupAction\GroupMultiSelectAction;
+use Ublaboo\DataGrid\GroupAction\GroupTextAction;
+use Ublaboo\DataGrid\GroupAction\GroupTextareaAction;
+use Nette\Utils\ArrayHash;
 
 /**
  * GroupActionsBuilder
@@ -22,16 +32,35 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         "text"=>"addText",
         "textarea"=>"addTextArea"
     ];
-    
+
+    /**
+     * @var DataGrid
+     */
     protected $grid;
-    
+
+    /**
+     * @var GridConfig
+     */
     protected $configurator;
-    
+
+    /**
+     * @var GridControl
+     */
     protected $object;
-    
+
+    /**
+     * @var array
+     */
     protected $callbacks;
-    
-    public function __construct($object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)
+
+    /**
+     * @param GridControl $object
+     * @param DataGrid $grid
+     * @param GridConfig $configurator
+     * @param array $callbacks
+     * @return void
+     */
+    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, array $callbacks)
     {
         $this->object = $object;
         $this->grid = $grid;
@@ -39,13 +68,22 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         $this->callbacks = $callbacks;
         return;
     }
-    
+
+    /**
+     * build multiactions
+     * @return void
+     */
     public function build()
     {
         $this->addActions($this->grid);
         return;
     }
-    
+
+    /**
+     * add actions
+     * @param DataGrid $grid
+     * @return void
+     */
     protected function addActions(DataGrid $grid)
     {
         $configs = $this->configurator->getGroupAction(true);
@@ -54,8 +92,15 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         }
         return;
     }
-    
-    protected function addAction(DataGrid $grid, ArrayHash $config)
+
+    /**
+     * add one group action
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return GroupAction
+     * @throws GridBuilderException
+     */
+    protected function addAction(DataGrid $grid, ArrayHash $config): GroupAction
     {
         if (!isset($config->name) || empty($config->name)) {
             throw new GridBuilderException("ERROR: Undefined group action name", GridBuilderException::UNDEFINED_GROUP_ACTION_NAME);
@@ -68,8 +113,14 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         $this->setupAction($action, $config);
         return $action;
     }
-    
-    protected function addSimple(DataGrid $grid, ArrayHash $config)
+
+    /**
+     * add simple group action
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return GroupAction
+     */
+    protected function addSimple(DataGrid $grid, ArrayHash $config): GroupAction
     {
         $t = $this;
         $action = $grid->addGroupAction(isset($config->label) ? $this->object->text($config->label) : $config->name);
@@ -80,8 +131,15 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         }
         return $action;
     }
-    
-    protected function addSelect(DataGrid $grid, ArrayHash $config)
+
+    /**
+     * add group select action
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return GroupSelectAction
+     * @throws GridBuilderException
+     */
+    protected function addSelect(DataGrid $grid, ArrayHash $config): GroupSelectAction
     {
         $t = $this;
         if (!$this->checkCallback(GridBuilder::GROUP_ACTION_OPTIONS_CALLBACK, $config->name)) {
@@ -99,8 +157,15 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         }
         return $action;
     }
-    
-    protected function addMultiSelect(DataGrid $grid, ArrayHash $config)
+
+    /**
+     * add group multiselect action
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return GroupMultiSelectAction
+     * @throws GridBuilderException
+     */
+    protected function addMultiSelect(DataGrid $grid, ArrayHash $config): GroupMultiSelectAction
     {
         $t = $this;
         if (!$this->checkCallback(GridBuilder::GROUP_ACTION_OPTIONS_CALLBACK, $config->name)) {
@@ -118,8 +183,14 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         }
         return $action;
     }
-    
-    protected function addText(DataGrid $grid, ArrayHash $config)
+
+    /**
+     * add group text action
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return GroupTextAction
+     */
+    protected function addText(DataGrid $grid, ArrayHash $config): GroupTextAction
     {
         $t = $this;
         $action = $grid->addGroupTextAction(
@@ -132,8 +203,14 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         }
         return $action;
     }
-    
-    protected function addTextArea(DataGrid $grid, ArrayHash $config)
+
+    /**
+     * add group textarea action
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return GroupTextareaAction
+     */
+    protected function addTextArea(DataGrid $grid, ArrayHash $config): GroupTextareaAction
     {
         $t = $this;
         $action = $grid->addGroupTextareaAction(
@@ -146,7 +223,13 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         }
         return $action;
     }
-    
+
+    /**
+     * setup action
+     * @param GroupAction $action
+     * @param ArrayHash $config
+     * @return GroupAction
+     */
     protected function setupAction(GroupAction $action, ArrayHash $config)
     {
         !isset($config->class) ?: $action->setClass($config->class);
