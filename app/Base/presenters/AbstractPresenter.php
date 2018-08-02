@@ -9,6 +9,7 @@ use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
 use Nette\Http\IResponse;
 use Nette\Utils\ArrayHash;
+use Nette\Reflection\AnnotationsParser;
 
 /**
  * parent of all presenters
@@ -116,6 +117,10 @@ abstract class AbstractPresenter extends NPresenter
      */
     public function startup()
     {
+         if($this->context->getService("cache.storage") instanceof IStorage){
+            AnnotationsParser::setCacheStorage($this->getPresenter()->context->getService("cache.storage"));
+        }
+
         if(static::$allowAnnotationAcl || static::$allowAnnotationTitles){
             $this->getAnnotationsConfig();
         }
