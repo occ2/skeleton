@@ -13,6 +13,7 @@ use Nette\Utils\ArrayHash;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Application\UI\Form;
+use Nette\Utils\Strings;
 
 /**
  * InlineActionsBuilder
@@ -108,11 +109,17 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
                 };
             }
             if(!$this->checkCallback(GridBuilder::INLINE_FORM_ADD_SUBMIT_CALLBACK)){
-                throw new GridBuilderException("ERROR: Invalid or undefined inline add submit callback",GridBuilderException::INVALID_INLINE_ADD_SUBMIT_CALLBACK);
-            } else {
                 $inline->onSubmit[] = function(ArrayHash $values) use ($t) {
                     $this->invokeCallback(GridBuilder::INLINE_FORM_ADD_SUBMIT_CALLBACK, null,$values,$t->object);
                 };
+            } elseif (array_key_exists("inlineAddSubmit",$this->object->_symfonyEvents)) {
+                $inline->onSubmit[] = function(ArrayHash $values) use ($t,$grid) {
+                    $eventName = $t->object->_symfonyEvents["inlineAddSubmit"];
+                    $class = GridControl::$_symfonyRowEventClass;
+                    return $t->object->on($eventName, new $class(null,$values,$grid,$t->object,$eventName));
+                };
+            } else {
+                throw new GridBuilderException("ERROR: Invalid or undefined inline add submit callback or event",GridBuilderException::INVALID_INLINE_ADD_SUBMIT_CALLBACK);
             }
             $this->setupCustomRedraw($inline,$grid);
             !isset($config->topPosition) ?: $inline->setPositionTop($config->topPosition);
@@ -162,11 +169,17 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             }
 
             if(!$this->checkCallback(GridBuilder::INLINE_FORM_EDIT_SUBMIT_CALLBACK)){
-                throw new GridBuilderException("ERROR: Invalid or undefined inline edit submit callback",GridBuilderException::INVALID_INLINE_EDIT_SUBMIT_CALLBACK);
-            } else {
                 $inline->onSubmit[] = function($id, ArrayHash $values) use ($t) {
                     $this->invokeCallback(GridBuilder::INLINE_FORM_EDIT_SUBMIT_CALLBACK, null,$id,$values,$t->object);
                 };
+            } elseif (array_key_exists("inlineEditSubmit",$this->object->_symfonyEvents)) {
+                $inline->onSubmit[] = function($id, ArrayHash $values) use ($t,$grid) {
+                    $eventName = $t->object->_symfonyEvents["inlineEditSubmit"];
+                    $class = GridControl::$_symfonyRowEventClass;
+                    return $t->object->on($eventName, new $class($id,$values,$grid,$t->object,$eventName));
+                };
+            } else {
+                throw new GridBuilderException("ERROR: Invalid or undefined inline edit submit callback",GridBuilderException::INVALID_INLINE_EDIT_SUBMIT_CALLBACK);
             }
             $this->setupCustomRedraw($inline,$grid);
             !isset($config->icon) ? $inline->setIcon("edit") : $inline->setIcon($config->icon);
