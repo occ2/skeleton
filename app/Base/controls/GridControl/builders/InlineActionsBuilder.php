@@ -1,18 +1,24 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\builders;
 
+use app\Base\controls\GridControl\traits\TCallbacks;
+use app\Base\controls\GridControl\builders\IAdditionalGridBuilder;
+use app\Base\controls\GridControl\GridControl;
+use app\Base\controls\GridControl\configurators\GridConfig;
+use app\Base\controls\GridControl\builders\GridBuilder;
+use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\InlineEdit\InlineEdit;
 use Nette\Utils\ArrayHash;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Application\UI\Form;
-use Ublaboo\DataGrid\InlineEdit\InlineEdit;
 
 /**
  * InlineActionsBuilder
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class InlineActionsBuilder implements IAdditionalGridBuilder
 {
@@ -28,9 +34,24 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
         "radiolist"=>"addItemRadioList"
     ];
 
+    /**
+     * @var GridControl
+     */
     protected $object;
+
+    /**
+     * @var DataGrid
+     */
     protected $grid;
+
+    /**
+     * @var GridConfig
+     */
     protected $configurator;
+
+    /**
+     * @var array
+     */
     protected $callbacks;
 
     /**
@@ -41,7 +62,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
      * @param ArrayHash $callbacks
      * @return void
      */
-    public function __construct($object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)
+    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)
     {
         $this->object = $object;
         $this->grid = $grid;
