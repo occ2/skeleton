@@ -10,6 +10,7 @@ use app\Base\controls\GridControl\builders\GridBuilder;
 use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Export\Export;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Strings;
 
 /**
  * ExportBuilder
@@ -90,9 +91,33 @@ class ExportBuilder implements IAdditionalGridBuilder
         $filtered = isset($config->filtered) ? $config->filtered : false;
         if ($this->checkCallback(GridBuilder::EXPORT_CALLBACK, $config->name)) {
             return $this->addCallbackExport($grid, $config, $filtered);
+        } elseif(array_key_exists("export" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)){
+            return $this->addExportEvent($grid, $config, $filtered);
         } else {
             return $this->addCSVExport($grid, $config, $filtered);
         }
+    }
+
+    /**
+     * add export event support
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @param bool $filtered
+     * @return mixed
+     */
+    protected function addExportEvent(DataGrid $grid, ArrayHash $config, bool $filtered){
+        $t = $this;
+        $export = $grid->addExportCallback(
+            isset($config->label) ? $this->object->text($config->label) : "",
+            function ($data_source, $grid) use ($t,$config) {
+                $eventName = $t->object->_symfonyEvents["export" . Strings::firstUpper($config->name)];
+                $class = GridControl::$_symfonyEventClass;
+                return $t->object->on($eventName, new $class($grid,$t->object,null,$data_source,$eventName));
+            },
+            $filtered
+        );
+        $this->setupExport($export, $config);
+        return $export;
     }
 
     /**
