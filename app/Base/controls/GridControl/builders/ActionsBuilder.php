@@ -1,30 +1,55 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\builders;
 
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\traits\TCallbacks;
+use app\Base\controls\GridControl\builders\IAdditionalGridBuilder;
+use app\Base\controls\GridControl\GridControl;
+use app\Base\controls\GridControl\configurators\GridConfig;
+use app\Base\controls\GridControl\builders\GridBuilder;
+use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use Nette\Utils\ArrayHash;
+use Ublaboo\DataGrid\DataGrid;
+use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Column\MultiAction;
-use Nette\Utils\Callback;
 
 /**
  * ActionsBuilder
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class ActionsBuilder implements IAdditionalGridBuilder
 {
     use TCallbacks;
-    
+
+    /**
+     * @var \app\Base\controls\GridControl\GridControl
+     */
     protected $object;
-    
+
+    /**
+     * @var \Ublaboo\DataGrid\DataGrid
+     */
     protected $grid;
-    
+
+    /**
+     * @var \app\Base\controls\GridControl\configurators\GridConfig
+     */
     protected $configurator;
-    
+
+    /**
+     * @var array
+     */
     protected $multiactionRegistry=[];
-    
-    public function __construct($object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)
+
+    /**
+     * @param GridControl $object
+     * @param DataGrid $grid
+     * @param GridConfig $configurator
+     * @param ArrayHash $callbacks
+     * @return void
+     */
+    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)
     {
         $this->object = $object;
         $this->grid = $grid;
@@ -32,15 +57,23 @@ class ActionsBuilder implements IAdditionalGridBuilder
         $this->callbacks = $callbacks;
         return;
     }
-    
+
+    /**
+     * @return void
+     */
     public function build()
     {
         $this->addActions($this->grid);
         $this->addMultiActions($this->grid);
         return;
     }
-    
-    public function addActions(DataGrid $grid)
+
+    /**
+     * add actions
+     * @param DataGrid $grid
+     * @return void
+     */
+    protected function addActions(DataGrid $grid)
     {
         $actions = $this->configurator->getAction(true);
         foreach ($actions as $config) {
@@ -52,7 +85,14 @@ class ActionsBuilder implements IAdditionalGridBuilder
         }
         return;
     }
-    
+
+    /**
+     * add one action
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return Action
+     * @throws GridBuilderException
+     */
     protected function addAction(DataGrid $grid, ArrayHash $config)
     {
         $t = $this;
@@ -88,8 +128,13 @@ class ActionsBuilder implements IAdditionalGridBuilder
         
         return $action;
     }
-    
-    protected function setupAction($action, ArrayHash $config)
+
+    /**
+     * setup action
+     * @param Action $action
+     * @param ArrayHash $config
+     */
+    protected function setupAction(Action $action, ArrayHash $config)
     {
         $t = $this;
         if ($this->checkCallback(GridBuilder::ACTION_ICON_CALLBACK, $config->name)) {
@@ -130,7 +175,13 @@ class ActionsBuilder implements IAdditionalGridBuilder
         }
         !isset($config->confirm) ?: $action->setConfirm($config->confirm, isset($config->confirmCol) ? $config->confirmCol : null);
     }
-    
+
+    /**
+     * setup allow callback
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @param type $multiaction
+     */
     protected function setupAllowCallback(DataGrid $grid, ArrayHash $config, $multiaction=null)
     {
         $t = $this;
@@ -148,7 +199,12 @@ class ActionsBuilder implements IAdditionalGridBuilder
             }
         }
     }
-    
+
+    /**
+     * add multiactions
+     * @param DataGrid $grid
+     * @return void
+     */
     protected function addMultiActions(DataGrid $grid)
     {
         $actions = $this->configurator->getMultiAction(true);
@@ -160,7 +216,13 @@ class ActionsBuilder implements IAdditionalGridBuilder
         }
         return;
     }
-    
+
+    /**
+     * add one multiaction
+     * @param DataGrid $grid
+     * @param ArrayHash $config
+     * @return MultiAction
+     */
     protected function addMultiAction(DataGrid $grid, ArrayHash $config)
     {
         $multiaction = $grid->addMultiAction(
@@ -170,7 +232,14 @@ class ActionsBuilder implements IAdditionalGridBuilder
         $this->setupMultiAction($grid, $multiaction, $config);
         return $multiaction;
     }
-    
+
+    /**
+     * setup multiaction
+     * @param DataGrid $grid
+     * @param MultiAction $multiaction
+     * @param ArrayHash $config
+     * @return void
+     */
     protected function setupMultiAction(DataGrid $grid, MultiAction $multiaction, ArrayHash $config)
     {
         !isset($config->icon) ?: $multiaction->setIcon($config->icon);
@@ -184,8 +253,15 @@ class ActionsBuilder implements IAdditionalGridBuilder
                 $this->setupAllowCallback($grid, $configItem, $config->name);
             }
         }
+        return;
     }
-    
+
+    /**
+     * setup multiaction items
+     * @param MultiAction $multiaction
+     * @param ArrayHash $config
+     * @return void
+     */
     protected function setupMultiActionItems(MultiAction $multiaction, ArrayHash $config)
     {
         $multiaction->addAction(
