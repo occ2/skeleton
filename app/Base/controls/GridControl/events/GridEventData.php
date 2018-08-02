@@ -1,10 +1,10 @@
 <?php
 namespace app\Base\controls\GridControl\events;
 
+use app\Base\controls\GridControl\DataGrid;
 use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
 use Nette\Forms\Container as Form;
 use Nette\Application\UI\Control;
-use Ublaboo\DataGrid\DataGrid;
 
 /**
  * grid event container
@@ -21,17 +21,17 @@ class GridEventData extends BaseEvent
     public $event;
     
     /**
-     * @var \Ublaboo\DataGrid\DataGrid
+     * @var DataGrid
      */
     public $datagrid;
 
     /**
-     * @var \Nette\Forms\Container
+     * @var Form
      */
     public $form;
 
     /**
-     * @var \Nette\Application\UI\Control
+     * @var Control
      */
     public $control;
 
