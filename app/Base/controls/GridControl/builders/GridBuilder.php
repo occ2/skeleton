@@ -1,17 +1,23 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\builders;
 
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\traits\TCallbacks;
+use app\Base\controls\GridControl\builders\IGridBuilder;
+use app\Base\controls\GridControl\builders\ColumnBuilder;
+use app\Base\controls\GridControl\GridControl;
+use app\Base\controls\GridControl\configurators\GridConfig;
+use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use Nette\Utils\ArrayHash;
 use Nette\Localization\ITranslator;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
+use Ublaboo\DataGrid\DataGrid;
 
 /**
  * GridBuilder
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class GridBuilder implements IGridBuilder
 {
@@ -70,14 +76,17 @@ class GridBuilder implements IGridBuilder
         "range"=>"addFilterRange",
         "daterange"=>"addFilterDateRange"
     ];
-    
+
+    /**
+     * @var array
+     */
     protected $additionalBuilder=[
-        "action"=>"\occ2\GridControl\ActionsBuilder",
-        "itemDetail"=>"\occ2\GridControl\ItemDetailBuilder",
-        "toolbarButton"=>"\occ2\GridControl\ToolbarButtonsBuilder",
-        "groupAction"=>"\occ2\GridControl\GroupActionsBuilder",
-        "export"=>"\occ2\GridControl\ExportBuilder",
-        "inlineActions"=>"\occ2\GridControl\InlineActionsBuilder"
+        "action"=>"\app\Base\controls\GridControl\builders\ActionsBuilder",
+        "itemDetail"=>"\app\Base\controls\GridControl\builders\ItemDetailBuilder",
+        "toolbarButton"=>"\app\Base\controls\GridControl\builders\ToolbarButtonsBuilder",
+        "groupAction"=>"\app\Base\controls\GridControl\builders\GroupActionsBuilder",
+        "export"=>"\app\Base\controls\GridControl\builders\ExportBuilder",
+        "inlineActions"=>"\app\Base\controls\GridControl\builders\InlineActionsBuilder"
     ];
     
     /**
@@ -106,8 +115,8 @@ class GridBuilder implements IGridBuilder
     protected $configurator;
     
     /**
-     *
-     * @param \occ2\GridControl\GridControl $object
+     * set object of control
+     * @param GridControl $object
      * @return $this
      */
     public function setObject(GridControl $object)
@@ -287,7 +296,12 @@ class GridBuilder implements IGridBuilder
         
         return;
     }
-    
+
+    /**
+     * setup grid callbacks
+     * @param DataGrid $grid
+     * @return void
+     */
     protected function setupGridCallbacks(DataGrid $grid)
     {
         $t = $this;
