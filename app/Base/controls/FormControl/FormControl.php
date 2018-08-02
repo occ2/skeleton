@@ -159,6 +159,7 @@ abstract class FormControl extends Control
     public $_override;
 
     /**
+     * error, validate, submit, success
      * @var array
      */
     public $_symfonyEvents=[];
