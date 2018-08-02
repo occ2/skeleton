@@ -19,7 +19,7 @@ use Nette\Utils\ArrayHash;
  * GroupActionsBuilder
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class GroupActionsBuilder implements IAdditionalGridBuilder
 {
