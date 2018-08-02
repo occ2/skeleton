@@ -1,29 +1,55 @@
 <?php
-namespace occ2\GridControl;
+namespace app\Base\controls\GridControl\builders;
 
+use app\Base\controls\GridControl\traits\TCallbacks;
+use app\Base\controls\GridControl\builders\IAdditionalGridBuilder;
+use app\Base\controls\GridControl\GridControl;
+use app\Base\controls\GridControl\configurators\GridColumnsConfig;
+use app\Base\controls\GridControl\exceptions\GridBuilderException;
+use app\Base\controls\GridControl\builders\GridBuilder;
 use Ublaboo\DataGrid\Column\Column;
 use Ublaboo\DataGrid\Filter\Filter;
 use Ublaboo\DataGrid\Filter\FilterRange;
 use Ublaboo\DataGrid\Filter\IFilterDate;
 use Ublaboo\DataGrid\Filter\FilterSelect;
+use Ublaboo\DataGrid\Filter\FilterText;
+use Ublaboo\DataGrid\Filter\FilterMultiSelect;
+use Ublaboo\DataGrid\Filter\FilterDate;
+use Ublaboo\DataGrid\Filter\FilterDateRange;
 use Nette\Utils\ArrayHash;
 
 /**
- * FilteBuilder
+ * FilterBuilder
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
-class FilterBuilder
+class FilterBuilder implements IAdditionalGridBuilder
 {
     use TCallbacks;
-    
+
+    /**
+     * @var Column
+     */
     protected $column;
-    
+
+    /**
+     * @var GridColumnsConfig
+     */
     protected $config;
-    
+
+    /**
+     * @var GridControl
+     */
     protected $object;
-    
+
+    /**
+     * @param GridControl $object
+     * @param Column $column
+     * @param GridColumnsConfig $config
+     * @param array $callbacks
+     * @return void
+     */
     public function __construct(GridControl $object, Column $column, GridColumnsConfig $config, $callbacks)
     {
         $this->object = $object;
@@ -32,12 +58,23 @@ class FilterBuilder
         $this->callbacks = $callbacks;
         return;
     }
-    
+
+    /**
+     * build filters
+     * @return void
+     */
     public function build()
     {
         return $this->addFilters($this->column, $this->config);
     }
-    
+
+    /**
+     * add filters
+     * @param Column $column
+     * @param GridColumnsConfig $config
+     * @return void
+     * @throws GridBuilderException
+     */
     protected function addFilters(Column $column, GridColumnsConfig $config)
     {
         if ($config->filter!=null && isset($config->filter["type"])) {
@@ -49,7 +86,14 @@ class FilterBuilder
         }
         return;
     }
-    
+
+    /**
+     * setup filter
+     * @param Filter $filter
+     * @param ArrayHash $config
+     * @param string $name
+     * @return Filter
+     */
     protected function setupFilter(Filter $filter, ArrayHash $config, string $name)
     {
         $t = $this;
@@ -67,14 +111,28 @@ class FilterBuilder
         }
         return $filter;
     }
-    
+
+    /**
+     * setup filter select
+     * @param FilterSelect $filter
+     * @param ArrayHash $config
+     * @param string $name
+     * @return FilterSelect
+     */
     protected function setupFilterSelect(FilterSelect $filter, ArrayHash $config, string $name)
     {
         !isset($config->prompt) ?: $filter->setPrompt($config->prompt);
         !isset($config->translateOptions) ?: $filter->setTranslateOptions($config->translateOptions);
         return $filter;
     }
-    
+
+    /**
+     * setup filter date and daterange
+     * @param IFilterDate $filter
+     * @param ArrayHash $config
+     * @param string $name
+     * @return IFilterDate
+     */
     protected function setupFilterDate(IFilterDate $filter, ArrayHash $config, string $name)
     {
         $php = !isset($config->phpFormat) ? $this->object->_defaultDatetimeFormat["php"] : $config->phpFormat;
@@ -83,14 +141,28 @@ class FilterBuilder
         !isset($config->size) ? $filter->addAttribute("size", 8) : $filter->addAttribute("size", $config->size);
         return $filter;
     }
-    
+
+    /**
+     * setup filter range
+     * @param FilterRange $filter
+     * @param ArrayHash $config
+     * @param string $name
+     * @return FilterRange
+     */
     protected function setupFilterRange(FilterRange $filter, ArrayHash $config, string $name)
     {
         !isset($config->placeholders) ? : $filter->setPlaceholder(explode(",", $config->placeholders));
         return $filter;
     }
-    
-    protected function addFilterText(Column $column, ArrayHash $config, string $name)
+
+    /**
+     * add text filter
+     * @param Column $column
+     * @param ArrayHash $config
+     * @param string $name
+     * @return FilterText
+     */
+    protected function addFilterText(Column $column, ArrayHash $config, string $name): FilterText
     {
         $columns = isset($config->columns) ? explode(",", $config->columns): null;
         $filter = $column->setFilterText($columns);
@@ -101,8 +173,15 @@ class FilterBuilder
         !isset($config->size) ? $filter->addAttribute("size", 16) : $filter->addAttribute("size", $config->size);
         return $filter;
     }
-    
-    protected function addFilterSelect(Column $column, ArrayHash $config, string $name)
+
+    /**
+     * add select filter
+     * @param Column $column
+     * @param ArrayHash $config
+     * @param string $name
+     * @return FilterSelect
+     */
+    protected function addFilterSelect(Column $column, ArrayHash $config, string $name): FilterSelect
     {
         $col = isset($config->column) ? $config->column : null;
         $options = $this->invokeCallback(GridBuilder::LOAD_OPTIONS_CALLBACK, $name, $this->object);
@@ -112,8 +191,15 @@ class FilterBuilder
         $this->setupFilterSelect($filter, $config, $name);
         return $filter;
     }
-    
-    protected function addFilterMultiSelect(Column $column, ArrayHash $config, string $name)
+
+    /**
+     * add multiselect filter
+     * @param Column $column
+     * @param ArrayHash $config
+     * @param string $name
+     * @return FilterMultiSelect
+     */
+    protected function addFilterMultiSelect(Column $column, ArrayHash $config, string $name): FilterMultiSelect
     {
         $col = isset($config->column) ? $config->column : null;
         $options = $this->invokeCallback(GridBuilder::LOAD_OPTIONS_CALLBACK, $name);
@@ -123,8 +209,15 @@ class FilterBuilder
         $this->setupFilterSelect($filter, $config, $name);
         return $filter;
     }
-    
-    protected function addFilterDate(Column $column, ArrayHash $config, string $name)
+
+    /**
+     * add date filter
+     * @param Column $column
+     * @param ArrayHash $config
+     * @param string $name
+     * @return FilterDate
+     */
+    protected function addFilterDate(Column $column, ArrayHash $config, string $name): FilterDate
     {
         $col = isset($config->column) ? $config->column : null;
         $filter = $column->setFilterDate($col);
@@ -133,8 +226,15 @@ class FilterBuilder
         $this->setupFilterDate($filter, $config, $name);
         return $filter;
     }
-    
-    protected function addFilterRange(Column $column, ArrayHash $config, string $name)
+
+    /**
+     * add range filter
+     * @param Column $column
+     * @param ArrayHash $config
+     * @param string $name
+     * @return FilterRange
+     */
+    protected function addFilterRange(Column $column, ArrayHash $config, string $name): FilterRange
     {
         $col = isset($config->column) ? $config->column : null;
         $filter = $column->setFilterRange(
@@ -147,8 +247,15 @@ class FilterBuilder
         !isset($config->size) ? $filter->addAttribute("size", 6) : $filter->addAttribute("size", $config->size);
         return $filter;
     }
-    
-    protected function addFilterDateRange(Column $column, ArrayHash $config, string $name)
+
+    /**
+     * add daterange filter
+     * @param Column $column
+     * @param ArrayHash $config
+     * @param string $name
+     * @return FilterDateRange
+     */
+    protected function addFilterDateRange(Column $column, ArrayHash $config, string $name): FilterDateRange
     {
         $col = isset($config->column) ? $config->column : null;
         $filter = $column->setFilterDateRange(
