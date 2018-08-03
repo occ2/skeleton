@@ -19,5 +19,5 @@ interface IEventDataFactory
      * @param string $event
      * @return BaseEvent
      */
-    public function create(Form $form, Control $control, $event=null): BaseEvent;
+    public function create(Form $form, Control $control, $event=null);
 }

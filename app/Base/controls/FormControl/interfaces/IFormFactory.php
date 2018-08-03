@@ -14,10 +14,10 @@ interface IFormFactory
     /**
      * @return Form
      */
-    public function create() : Form;
+    public function create();
 
     /**
      * @return ITranslator
      */
-    public function getTranslator() : ITranslator;
+    public function getTranslator();
 }
