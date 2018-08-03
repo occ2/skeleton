@@ -6,6 +6,8 @@ use app\Base\controls\Control\Control;
 use app\Base\controls\FormControl\configurators\FormConfig;
 use app\Base\controls\FormControl\builders\IFormBuilder;
 use app\Base\controls\FormControl\builders\FormBuilder;
+use app\Base\controls\FormControl\interfaces\IEventDataFactory;
+use app\Base\controls\FormControl\factories\FormEventDataFactory;
 use Contributte\EventDispatcher\EventDispatcher;
 use AlesWita\FormRenderer\Factory;
 use Nette\Localization\ITranslator;
@@ -36,11 +38,6 @@ abstract class FormControl extends Control
      * @var string
      */
     public static $_iconPrefix="fas fa-";
-
-    /**
-     * @var string
-     */
-    public static $_symfonyEventClass='\app\Base\controls\FormControl\events\FormEventData';
 
     /**
      * @var bool
@@ -165,6 +162,11 @@ abstract class FormControl extends Control
     public $_symfonyEvents=[];
 
     /**
+     * @var IEventDataFactory
+     */
+    public $_eventDataFactory;
+
+    /**
      * @var null | array
      */
     public $onError;
@@ -192,12 +194,13 @@ abstract class FormControl extends Control
      * @param ITranslator $translator
      * @return void
      */
-    public function __construct(Factory $formFactory, EventDispatcher $eventDispatcher, ITranslator $translator = null)
+    public function __construct(Factory $formFactory, EventDispatcher $eventDispatcher, ITranslator $translator = null,$formEventDataFactoryClass=FormEventDataFactory::class)
     {
         parent::__construct($eventDispatcher, $translator);
         $this->_formFactory = $formFactory;
         $this->_configurator = new FormConfig(static::class, $this);
         $this->_links = $this->_configurator->getLinks(true);
+        $this->_eventDataFactory = new $formEventDataFactoryClass;
         return;
     }
 
@@ -405,28 +408,31 @@ abstract class FormControl extends Control
     {
         if (!empty($this->_symfonyEvents)) {
             $t = $this;
-            $e = self::$_symfonyEventClass;
             if(array_key_exists("error", $this->_symfonyEvents)){
-                $form->onError[] = function (NForm $form) use ($t,$e) {
-                    return $t->on($t->_symfonyEvents["error"], new $e($form,$t,$t->_symfonyEvents["error"]));
+                $form->onError[] = function (NForm $form) use ($t) {
+                    $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["error"]);
+                    return $t->on($t->_symfonyEvents["error"], $data);
                 };
             }
 
             if(array_key_exists("validate", $this->_symfonyEvents)){
-                $form->onValidate[] = function (NForm $form) use ($t,$e) {
-                    return $t->on($t->_symfonyEvents["validate"], new $e($form,$t,$t->_symfonyEvents["validate"]));
+                $form->onValidate[] = function (NForm $form) use ($t) {
+                    $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["validate"]);
+                    return $t->on($t->_symfonyEvents["validate"], $data);
                 };
             }
 
             if(array_key_exists("submit", $this->_symfonyEvents)){
-                $form->onSubmit[] = function (NForm $form) use ($t,$e) {
-                    return $t->on($t->_symfonyEvents["submit"], new $e($form,$t,$t->_symfonyEvents["submit"]));
+                $form->onSubmit[] = function (NForm $form) use ($t) {
+                    $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["submit"]);
+                    return $t->on($t->_symfonyEvents["submit"], $data);
                 };                
             }
 
             if(array_key_exists("success", $this->_symfonyEvents)){
-                $form->onSuccess[] = function (NForm $form) use ($t,$e) {
-                    return $t->on($t->_symfonyEvents["success"], new $e($form,$t,$t->_symfonyEvents["success"]));
+                $form->onSuccess[] = function (NForm $form) use ($t) {
+                    $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["success"]);
+                    return $t->on($t->_symfonyEvents["success"], $data);
                 };
             }
         }
@@ -435,8 +441,8 @@ abstract class FormControl extends Control
 
     /**
      * overwrite by final classes
-     * @param \Nette\Application\UI\Form $form
-     * @return \Nette\Application\UI\Form
+     * @param NForm $form
+     * @return NForm
      */
     public function setupForm(NForm $form):NForm
     {

@@ -1,7 +1,7 @@
 <?php
 namespace app\Base\controls\FormControl\events;
 
-use Contributte\EventDispatcher\Events\AbstractEvent as Event;
+use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
 use Nette\Forms\Container as Form;
 use Nette\Application\UI\Control;
 
@@ -11,7 +11,7 @@ use Nette\Application\UI\Control;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.0.0
  */
-class FormEventData extends Event
+class FormEventData extends BaseEvent
 {
 
     /**
