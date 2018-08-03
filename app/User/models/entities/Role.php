@@ -1,17 +1,17 @@
 <?php
-namespace occ2\inventar\User\models\entities;
+namespace app\User\models\entities;
 
+use app\Base\traits\TEntityBridge;
+use app\User\models\exceptions\ValidationException;
 use Doctrine\ORM\Mapping as ORM;
 use Nettrine\ORM\Entity\Attributes\Id;
 use Contributte\Utils\Validators;
-use occ2\inventar\User\models\exceptions\ValidationException;
-use occ2\model\TEntityBridge;
 
 /**
  * Role
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  * @ORM\Entity
  * @ORM\Table (name="`UsersRoles`")
  */

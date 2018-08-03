@@ -1,16 +1,16 @@
 <?php
-namespace occ2\inventar\User\models\entities;
+namespace app\User\models\entities;
 
+use app\Base\traits\TEntityBridge;
 use Doctrine\ORM\Mapping as ORM;
 use Nettrine\ORM\Entity\Attributes\Id;
-use occ2\model\TEntityBridge;
 use Nette\Utils\DateTime;
 
 /**
  * History
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  * @ORM\Entity
  * @ORM\Table (
  *  name="`UsersHistory`",

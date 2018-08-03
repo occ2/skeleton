@@ -1,19 +1,19 @@
 <?php
-namespace occ2\inventar\User\models\entities;
+namespace app\User\models\entities;
 
+use app\Base\traits\TEntityBridge;
+use app\User\models\exceptions\ValidationException;
 use Doctrine\ORM\Mapping as ORM;
 use Nettrine\ORM\Entity\Attributes\Id;
-use Nette\Security\Passwords;
 use Contributte\Utils\Validators;
+use Nette\Security\Passwords;
 use Nette\Utils\DateTime;
-use occ2\inventar\User\models\exceptions\ValidationException;
-use occ2\model\TEntityBridge;
 
 /**
  * User
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  * @ORM\Entity
  * @ORM\Table (
  *      name="`Users`",
@@ -34,7 +34,7 @@ class User
     private $roles;
 
     /**
-     * @ORM\OneToMany(targetEntity="Config", mappedBy="user",cascade={"all"})
+     * @ORM\OneToMany(targetEntity="Settings", mappedBy="user",cascade={"all"})
      */
     private $settings;
 

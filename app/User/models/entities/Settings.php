@@ -1,24 +1,24 @@
 <?php
-namespace occ2\inventar\User\models\entities;
+namespace app\User\models\entities;
 
+use app\Base\traits\TEntityBridge;
 use Doctrine\ORM\Mapping as ORM;
 use Nettrine\ORM\Entity\Attributes\Id;
-use occ2\model\TEntityBridge;
 
 /**
  * Config
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  * @ORM\Entity
  * @ORM\Table (
- *  name="`UsersConfigs`",
+ *  name="`UsersSettings`",
  *  indexes={
  *         @ORM\Index(name="key_idx", columns={"key"})
  *          }
  *  )
  */
-class Config
+class Settings
 {
     use TEntityBridge;
     use Id;
