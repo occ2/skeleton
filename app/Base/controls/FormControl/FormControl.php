@@ -11,8 +11,6 @@ use app\Base\controls\FormControl\factories\FormEventDataFactory;
 use Contributte\EventDispatcher\EventDispatcher;
 use AlesWita\FormRenderer\Factory;
 use Nette\Localization\ITranslator;
-use Nette\Reflection\ClassType;
-use Nette\Utils\Strings;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Application\UI\Form as NForm;
 use Nette\Application\BadRequestException;
@@ -29,6 +27,7 @@ use Nette\Application\BadRequestException;
  *
  * @author Milan Onderka
  * @version 1.1.0
+ * @TODO annotation event support
  */
 abstract class FormControl extends Control
 {
