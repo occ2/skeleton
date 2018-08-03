@@ -10,6 +10,7 @@ use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Toolbar\ToolbarButton;
 use Nette\Utils\ArrayHash;
+use Nette\Utils\Strings;
 
 /**
  * ToolbarButtonsBuilder
@@ -109,7 +110,14 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
                 $config->name,
                 $this->object->_toolbarHandler,
                 isset($config->text) ? $this->object->text($config->text) : "",
-                ["name"=>$config->name,"params"=> serialize($params)]
+                ["name"=>$config->name,"event"=>false,"params"=> serialize($params)]
+            );
+        } elseif (array_key_exists("toolbarButton" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+            $button = $grid->addToolbarButtonForBuilder(
+                $config->name,
+                $this->object->_toolbarHandler,
+                isset($config->text) ? $this->object->text($config->text) : "",
+                ["name"=>$config->name,"event"=>$this->object->_symfonyEvents["toolbarButton" . Strings::firstUpper($config->name)],"params"=> serialize($params)]
             );
         } else {
             $button = $grid->addToolbarButtonForBuilder(
