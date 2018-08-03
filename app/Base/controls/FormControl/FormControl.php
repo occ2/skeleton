@@ -8,8 +8,8 @@ use app\Base\controls\FormControl\builders\IFormBuilder;
 use app\Base\controls\FormControl\builders\FormBuilder;
 use app\Base\controls\FormControl\interfaces\IEventDataFactory;
 use app\Base\controls\FormControl\factories\FormEventDataFactory;
+use app\Base\controls\FormControl\interfaces\IFormFactory;
 use Contributte\EventDispatcher\EventDispatcher;
-use AlesWita\FormRenderer\Factory;
 use Nette\Localization\ITranslator;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Application\UI\Form as NForm;
@@ -110,7 +110,7 @@ abstract class FormControl extends Control
     public $_templatePath=__DIR__ . "/form.latte";
 
     /**
-     * @var \AlesWita\FormRenderer\Factory
+     * @var IFormFactory
      */
     public $_formFactory;
 
@@ -186,13 +186,13 @@ abstract class FormControl extends Control
     public $onValidate;
 
     /**
-     * @param Factory $formFactory
+     * @param IFormFactory $formFactory
      * @param EventDispatcher $eventDispatcher
      * @param ITranslator $translator
      * @param string $formEventDataFactoryClass
      * @return void
      */
-    public function __construct(Factory $formFactory, EventDispatcher $eventDispatcher, ITranslator $translator = null,$formEventDataFactoryClass=FormEventDataFactory::class)
+    public function __construct(IFormFactory $formFactory, EventDispatcher $eventDispatcher, ITranslator $translator = null,$formEventDataFactoryClass=FormEventDataFactory::class)
     {
         parent::__construct($eventDispatcher, $translator);
         $this->_formFactory = $formFactory;
