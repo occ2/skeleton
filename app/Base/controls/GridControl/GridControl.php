@@ -30,6 +30,8 @@ use Nette\Utils\Callback;
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
+ * @TODO add event data factory support
+ * @TODO add symfony event annotations
  */
 abstract class GridControl extends Control
 {

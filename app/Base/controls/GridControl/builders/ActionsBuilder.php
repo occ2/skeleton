@@ -123,7 +123,7 @@ class ActionsBuilder implements IAdditionalGridBuilder
                     !isset($config->label) ? "" : $config->label
             );
             $action->onClick[] = function ($id) use ($t,$grid,$eventName,$class) {
-                return $t->object->on($eventName, new $class($id,null,$grid,$t,$eventName));
+                return $t->object->on($eventName, new $class($id,null,$grid,$t->object,$eventName));
             };
         } else {
             $action = $grid->addAction(
