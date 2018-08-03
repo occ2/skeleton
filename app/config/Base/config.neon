@@ -72,9 +72,9 @@ logging:
 
 services:
     # factories
-    datetime:    Contributte\Utils\DatetimeFactory
-    router: app\Base\factories\RouterFactory::createRouter(%languages%,%module%)
-    mailer: app\Base\factories\MailFactory(@Nette\Localization\ITranslator,%mailer%)
+    datetime:    \Contributte\Utils\DatetimeFactory
+    router: \app\Base\factories\RouterFactory::createRouter(%languages%,%module%)
+    mailer: \app\Base\factories\MailFactory(@Nette\Localization\ITranslator,%mailer%)
 
     
     # navbar
