@@ -27,7 +27,6 @@ use Nette\Application\BadRequestException;
  *
  * @author Milan Onderka
  * @version 1.1.0
- * @TODO annotation event support
  */
 abstract class FormControl extends Control
 {
@@ -394,48 +393,120 @@ abstract class FormControl extends Control
             $form->getElementPrototype()->class('ajax');
         }
         $this->setupForm($form);
-        $form->onError = $this->onError;
-        $form->onValidate = $this->onValidate;
-        $form->onSubmit = $this->onSubmit;
-        $form->onSuccess = $this->onSuccess;
-        $this->setupSymfony($form);
+        $this->setupEvents($form);
         return $form;
     }
 
-    protected function setupSymfony(NForm $form)
+    /**
+     * setup form events
+     * @param NForm $form
+     * @return void
+     */
+    protected function setupEvents(NForm $form)
     {
-        if (!empty($this->_symfonyEvents)) {
-            $t = $this;
-            if(array_key_exists("error", $this->_symfonyEvents)){
-                $form->onError[] = function (NForm $form) use ($t) {
-                    $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["error"]);
-                    return $t->on($t->_symfonyEvents["error"], $data);
-                };
-            }
+        $this->setupOnError($form);
+        $this->setupOnValidate($form);
+        $this->setupOnSubmit($form);
+        $this->setupOnSuccess($form);
+        return;
+    }
 
-            if(array_key_exists("validate", $this->_symfonyEvents)){
-                $form->onValidate[] = function (NForm $form) use ($t) {
-                    $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["validate"]);
-                    return $t->on($t->_symfonyEvents["validate"], $data);
-                };
-            }
-
-            if(array_key_exists("submit", $this->_symfonyEvents)){
-                $form->onSubmit[] = function (NForm $form) use ($t) {
-                    $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["submit"]);
-                    return $t->on($t->_symfonyEvents["submit"], $data);
-                };                
-            }
-
-            if(array_key_exists("success", $this->_symfonyEvents)){
-                $form->onSuccess[] = function (NForm $form) use ($t) {
-                    $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["success"]);
-                    return $t->on($t->_symfonyEvents["success"], $data);
-                };
-            }
+    /**
+     * setup form error events
+     * @param NForm $form
+     * @return return;
+     */
+    protected function setupOnError(NForm $form)
+    {
+        $t = $this;
+        if(array_key_exists("error", $this->_symfonyEvents)){
+            $form->onError[] = function (NForm $form) use ($t) {
+                $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["error"]);
+                return $t->on($t->_symfonyEvents["error"], $data);
+            };
+        } elseif ($this->_configurator->getOnError()!=null) {
+            $event = $this->_configurator->getOnError();
+            $form->onError[] = function (NForm $form) use ($t,$event) {
+                $data = $this->_eventDataFactory->create($form,$t,$event);
+                return $t->on($event, $data);
+            };
+        } else {
+            $form->onError = $this->onError;
         }
         return;
     }
+
+    /**
+     * setup form on validate events
+     * @param NForm $form
+     * @return return;
+     */
+    protected function setupOnValidate(NForm $form)
+    {
+        $t = $this;
+        if(array_key_exists("validate", $this->_symfonyEvents)){
+            $form->onValidate[] = function (NForm $form) use ($t) {
+                $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["validate"]);
+                return $t->on($t->_symfonyEvents["validate"], $data);
+            };
+        } elseif ($this->_configurator->getOnValidate()!=null) {
+            $event = $this->_configurator->getOnValidate();
+            $form->onError[] = function (NForm $form) use ($t,$event) {
+                $data = $this->_eventDataFactory->create($form,$t,$event);
+                return $t->on($event, $data);
+            };
+        } else {
+            $form->onValidate = $this->onValidate;
+        }
+        return;
+    }
+
+    /**
+     * setup form on submit events
+     * @param NForm $form
+     * @return void
+     */
+    protected function setupOnSubmit(NForm $form)
+    {
+        $t = $this;
+        if(array_key_exists("submit", $this->_symfonyEvents)){
+            $form->onSubmit[] = function (NForm $form) use ($t) {
+                $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["submit"]);
+                return $t->on($t->_symfonyEvents["submit"], $data);
+            };
+        } elseif ($this->_configurator->getOnSubmit()!=null) {
+            $event = $this->_configurator->getOnSubmit();
+            $form->onError[] = function (NForm $form) use ($t,$event) {
+                $data = $this->_eventDataFactory->create($form,$t,$event);
+                return $t->on($event, $data);
+            };
+        } else {
+            $form->onSubmit = $this->onSubmit;
+        }
+        return;
+    }
+
+    protected function setupOnSuccess(NForm $form)
+    {
+        $t = $this;
+        if(array_key_exists("success", $this->_symfonyEvents)){
+            $form->onSuccess[] = function (NForm $form) use ($t) {
+                $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["success"]);
+                return $t->on($t->_symfonyEvents["success"], $data);
+            };
+        } elseif ($this->_configurator->getOnSuccess()!=null) {
+            $event = $this->_configurator->getOnSuccess();
+            $form->onError[] = function (NForm $form) use ($t,$event) {
+                $data = $this->_eventDataFactory->create($form,$t,$event);
+                return $t->on($event, $data);
+            };
+        } else {
+            $form->onSuccess = $this->onSuccess;
+        }
+        return;
+    }
+
+
 
     /**
      * overwrite by final classes
