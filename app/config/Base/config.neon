@@ -86,4 +86,5 @@ services:
             -   setData(%navbar%)
 
     # forms
-    - \AlesWita\FormRenderer\Factory(@Nette\Localization\ITranslator)
+    formFactory: \app\Base\controls\FormControl\factories\FormFactory(@Nette\Localization\ITranslator)
+    gridFactory: \app\Base\controls\GridControl\factories\GridFactory
