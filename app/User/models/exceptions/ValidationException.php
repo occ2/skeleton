@@ -1,7 +1,7 @@
 <?php
-namespace occ2\inventar\User\models\exceptions;
+namespace app\User\models\exceptions;
 
-use occ2\model\ValidationException as BaseException;
+use app\Base\exceptions\ValidationException as BaseException;
 
 /**
  * ValidationException
@@ -9,7 +9,7 @@ use occ2\model\ValidationException as BaseException;
  * error code interval 2001-2099
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 final class ValidationException extends BaseException
 {

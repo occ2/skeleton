@@ -1,16 +1,16 @@
 <?php
-namespace occ2\inventar\User\models\exceptions;
+namespace app\User\models\exceptions;
 
-use occ2\model\EntityException as BaseException;
+use app\Base\exceptions\EntityException as BaseException;
 
 /**
- * UsersException
+ * ProfileException
  * code interval 2200-2299
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
-final class ProfilesException extends BaseException
+final class ProfileException extends BaseException
 {
     const PASSWORDS_NOT_SAME=2200, // exception when passwords on change passwords form not same
           USERNAME_NOT_UNIQUE=2201, // exception if usernane is not unique

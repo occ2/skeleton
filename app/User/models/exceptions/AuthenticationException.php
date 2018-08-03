@@ -1,5 +1,5 @@
 <?php
-namespace occ2\inventar\User\models\exceptions;
+namespace app\User\models\exceptions;
 
 use Nette\Security\AuthenticationException as NAException;
 
@@ -8,7 +8,7 @@ use Nette\Security\AuthenticationException as NAException;
  * code interval 2100-2199
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
 class AuthenticationException extends NAException
 {
