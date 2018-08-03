@@ -1,14 +1,15 @@
 <?php
-namespace occ2\inventar\User\presenters;
+namespace app\User\presenters;
 
-use occ2\inventar\presenters\AbstractPresenter as Presenter;
+use app\Base\presenters\BasePresenter as AbstractPresenter;
 
 /**
  * BasePresenter
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  */
-abstract class BasePresenter extends Presenter
+abstract class BasePresenter extends AbstractPresenter
 {
+    
 }

@@ -1,9 +1,10 @@
 navbar:
     user:   "Uživatel"
     profile:    "Moje údaje"
-    config: "Osobní nastavení"
+    settings: "Osobní nastavení"
+    history:    "Záznamy aktivity"
     password:   "Změna hesla"
-    management: "Správa uživatelů"
+    administration: "Správa uživatelů"
     signOut:    "Odhlásit"
         
 signInForm:

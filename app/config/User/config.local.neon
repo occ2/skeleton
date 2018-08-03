@@ -48,7 +48,7 @@ parameters:
 
     acl:
         roles:
-            user.roles.manager:
+            users.administrator:
         resources:
             users:
         allow:
@@ -56,9 +56,8 @@ parameters:
                 resource:
                     -   users
                 role:
-                    -   user.roles.manager
+                    -   users.administrator
                 privilege:
-                    -   add
                     -   read
                     -   write
                     -   delete
@@ -72,19 +71,23 @@ parameters:
                     name:   "user.navbar.profile"
                     href:   ":User:Profile:default"
                     resource:   profile
-                config:
-                    name:   "user.navbar.config"
-                    href:   ":User:Profile:config"
+                settings:
+                    name:   "user.navbar.settings"
+                    href:   ":User:Profile:settings"
+                    resource:   profile
+                history:
+                    name:   "user.navbar.history"
+                    href:   ":User:Profile:history"
                     resource:   profile
                 password:
                     name:   "user.navbar.password"
                     href:   ":User:Profile:password"
                     resource:   profile
                 users:
-                    name:   "user.navbar.management"
-                    href:   ":User:Manager:default" 
+                    name:   "user.navbar.administration"
+                    href:   ":User:Admin:default" 
                     resource:   users
                 signout:   
                     name:   "user.navbar.signOut"
-                    href:   ":User:Main:signOut"
+                    href:   ":User:Sign:out"
                     resource:   profile

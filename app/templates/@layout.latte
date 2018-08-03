@@ -111,36 +111,6 @@
                 {/snippet}
                 </div>
             </div>                
-        </div>
-                
-    {snippet modal}
-        {if $presenter->isAjax()}
-            {ifset #modal}
-                <div class="modal fade modal-ajax">
-                    <div class="modal-dialog{ifset $modalSize} modal-{$modalSize}{/ifset}">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button class="close" data-dismiss="modal">&times;</button>
-                                
-                                {ifset #modalHeader}{block modalHeader}
-                                    {ifset #title}<h3 class="modal-title">
-                                        {block|striptags}{include #title}{/block}
-                                    </h3>{/ifset}
-                                {/block}{/ifset}
-                            </div>
-                            <div class="modal-body">
-                                {include #modal}
-                            </div>
-                            {ifset #modalFooter}
-                                <div class="modal-footer">
-                                    {include #modalFooter}
-                                </div>
-                            {/ifset}
-                        </div>
-                    </div>
-                </div>
-            {/ifset}
-        {/if}
-    {/snippet}                
+        </div>               
     </body>
 </html>
