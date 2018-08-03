@@ -77,7 +77,7 @@ All text that are used are untranslated anchors. If you dont want to use transla
 	}
 #### c. Register factory of Form and Renderer in your config.neon
 	services:
-		-	\AlesWita\FormRenderer\Factory(@Nette\Localization\ITranslator)
+		formFactory:	\app\Base\controls\FormControl\factories\FormFactory(@Nette\Localization\ITranslator)
 		-	\MyApp\Controls\IMyForm
 
 #### d. Now you can use factory in your presenter -  for example in UserPresenter.php
@@ -132,7 +132,11 @@ These are set by annotation of form class. Here is list of them..
 	_@rPair - array of pair renderer wrappers_  
 	_@rLabel - array of label renderer wrappers_  
 	_@rHidden - array of hidden renderer wrappers_  
-	_@links_- add link to footer (array contains link, class and text)  
+	_@links- add link to footer (array contains link, class and text)_  
+	_@onSubmit - Symfony event fired while click on submit button_  
+	_@onError - Symfony event fired while error add_  
+  _@onValidate - Symfony event fired while validation needed_  
+	_@onSuccess - Symfony event fired while valid form send_
 
 #### b. CONTROLs settings and layout
 These are set by annotations of form properties. Property name is set as control name. Here is list of annotation settings.   
@@ -227,9 +231,7 @@ Example 2 - using method:
 	...'
 
 #### b. Use Symfony Events
-If you want to use Symfonx events to processing form you must add @events annotation to Form class specification. Don't use onSubmit[] or onSuccess[] events. submit, validation and error fires Symfony event that can be catched by your custom subscriber where event name is _form.myForm.submit (success,error etc..)_ Data from Form are encapsulated into object of FormEvent class with $presenter, $form and $event properties. Advantage is decomposition processing of form from form, removing form processing from presenter and, reusability.
-Example:
-in presenter..
+If you want to use Symfony events on Form you have two options how to do it. First one is siplier by adding @onSuccess (onError, onSubmit, onValidate) annotation on Form class where value is event name registered in subscriber and data container is instance of FormEventData class.
 
 	...
 	public function createComponentMyForm(){
@@ -237,6 +239,16 @@ in presenter..
 		$f = $this->myFormFactory->create();
 		... // dont use onSuccess, onSubmit etc.
 		return $f;
+	}
+
+form specification
+	<?php
+	namespace app\Controls\MyControl;
+
+	@onSubmit MyForm.submit
+	@onError MyForm.error
+	final class MyForm extends FormControl{
+
 	}
 
 and subscriber (for example MyFormSubscriber.php))..
@@ -251,13 +263,13 @@ and subscriber (for example MyFormSubscriber.php))..
 
 		public static function getSubscribedEvents(){
 			return [
-				"form.MyForm.submit"=>"submit"
-				"form.MyForm.error"=>"error"
+				"MyForm.submit"=>"onSubmit"
+				"MyForm.error"=>"onError"
 				...
 			];
 		}
 
-		public function submit(FormEvent $event){
+		public function onSubmit(FormEventData $event){
 			$values = $event->form->getValues();
 			// do something with data
 			$this->model->save($values);
@@ -270,10 +282,24 @@ and subscriber (for example MyFormSubscriber.php))..
 			}
 		}
 
-		public function error(FormEvent $event){
+		public function onError(FormEventData $event){
 			.... // do something else
 		}
 	}
+
+Second way is use setEvent(array $events)
+method, where _$event_ sis array of events
+...
+public function createComponentMyForm(){
+	$t = $this;
+	$f = $this->myFormFactory->create();
+	$f->setEvents([
+		"success"=>"MyForm.success"
+		]);
+	... // dont use onSuccess, onSubmit etc.
+	return $f;
+}
+
 
 ## 6. Set form values
 There are two ways to fill form controls with values. First one by _setDefaults_ method, second one by predefined callback
