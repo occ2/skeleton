@@ -186,11 +186,10 @@ abstract class FormControl extends Control
     public $onValidate;
 
     /**
-     * constructor
      * @param Factory $formFactory
      * @param EventDispatcher $eventDispatcher
-     * @param User $user
      * @param ITranslator $translator
+     * @param string $formEventDataFactoryClass
      * @return void
      */
     public function __construct(Factory $formFactory, EventDispatcher $eventDispatcher, ITranslator $translator = null,$formEventDataFactoryClass=FormEventDataFactory::class)
