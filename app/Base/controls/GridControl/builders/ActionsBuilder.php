@@ -117,13 +117,19 @@ class ActionsBuilder implements IAdditionalGridBuilder
             };
         } elseif(array_key_exists("action" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
             $eventName = $this->object->_symfonyEvents["action" . Strings::firstUpper($config->name)];
-            $class = GridControl::$_symfonyRowEventClass;
             $action = $grid->addActionCallback(
                     $config->name,
                     !isset($config->label) ? "" : $config->label
             );
-            $action->onClick[] = function ($id) use ($t,$grid,$eventName,$class) {
-                return $t->object->on($eventName, new $class($id,null,$grid,$t->object,$eventName));
+            $action->onClick[] = function ($id) use ($t,$grid,$eventName) {
+                $data = $t->object->_gridRowEventFactory->create(
+                   $id,
+                   null,
+                   $grid,
+                   $t->object,
+                   $eventName
+                );
+                return $t->object->on($eventName, $data);
             };
         } else {
             $action = $grid->addAction(

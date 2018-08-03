@@ -111,8 +111,14 @@ class ExportBuilder implements IAdditionalGridBuilder
             isset($config->label) ? $this->object->text($config->label) : "",
             function ($data_source, $grid) use ($t,$config) {
                 $eventName = $t->object->_symfonyEvents["export" . Strings::firstUpper($config->name)];
-                $class = GridControl::$_symfonyEventClass;
-                return $t->object->on($eventName, new $class($grid,$t->object,null,$data_source,$eventName));
+                $data = $t->object->_gridEventFactory->create(
+                    $grid,
+                    $t->object,
+                    null,
+                    $data_source,
+                    $eventName
+                );
+                return $t->object->on($eventName, $data);
             },
             $filtered
         );

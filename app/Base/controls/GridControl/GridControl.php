@@ -9,6 +9,11 @@ use app\Base\controls\GridControl\DataGrid;
 use app\Base\controls\GridControl\exceptions\GridCallbackException;
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use app\Base\controls\GridControl\builders\GridBuilder;
+use app\Base\controls\GridControl\interfaces\IGridFactory;
+use app\Base\controls\GridControl\interfaces\IGridEventFactory;
+use app\Base\controls\GridControl\factories\GridEventFactory;
+use app\Base\controls\GridControl\interfaces\IGridRowEventFactory;
+use app\Base\controls\GridControl\factories\GridRowEventFactory;
 use Ublaboo\DataGrid\Column\Column;
 use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Filter\Filter;
@@ -30,7 +35,6 @@ use Nette\Utils\Callback;
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
- * @TODO add event data factory support
  * @TODO add symfony event annotations
  */
 abstract class GridControl extends Control
@@ -81,16 +85,6 @@ abstract class GridControl extends Control
      * @var string
      */
     public $_iconPrefix="fas fa-";
-
-    /**
-     * @var string
-     */
-    public static $_symfonyEventClass='\app\Base\controls\GridControl\events\GridEventData';
-
-    /**
-     * @var string
-     */
-    public static $_symfonyRowEventClass='\app\Base\controls\GridControl\events\GridRowEventData';
 
     /**
      * @var string
@@ -212,16 +206,46 @@ abstract class GridControl extends Control
     public $_callbacks;
 
     /**
+     * @var IGridFactory
+     */
+    public $_gridFactory;
+
+    /**
+     * @var string
+     */
+    public $_gridClass;
+
+    /**
+     * @var IGridEventFactory
+     */
+    public $_gridEventFactory;
+
+    /**
+     * @var IGridRowEventFactory
+     */
+    public $_gridRowEventFactory;
+
+    /**
      * @param EventDispatcher $eventDispatcher
      * @param ITranslator $translator
      * @return void
      */
-    public function __construct(EventDispatcher $eventDispatcher, ITranslator $translator = null)
+    public function __construct(
+        IGridFactory $gridFactory,
+        EventDispatcher $eventDispatcher,
+        ITranslator $translator = null,
+        string $gridEventFactoryClass=GridEventFactory::class,
+        string $gridRowEventFactoryClass=GridRowEventFactory::class
+    )
     {
         $this->_configurator = new GridConfig(static::class, $this);
         $this->_links = $this->_configurator->getLinks(true);
         $this->_symfonyEvents = $this->_configurator->getEvents();
         $this->_callbacks = new ArrayHash;
+        $this->_gridFactory = $gridFactory;
+        $this->_gridClass = $gridFactory->getClass();
+        $this->_gridEventFactory = new $gridEventFactoryClass;
+        $this->_gridRowEventFactory = new $gridRowEventFactoryClass;
         return parent::__construct($eventDispatcher, $translator);
     }
 
@@ -536,9 +560,10 @@ abstract class GridControl extends Control
         if ($this->_datasource==null) {
             throw new GridBuilderException("ERROR: Dataset is null !!", GridBuilderException::INVALID_DATASET);
         }
-        $grid = new DataGrid();
+        $grid = $this->_gridFactory->create();
+        $class = $this->_gridFactory->getClass();
         $grid->setDataSource($this->_datasource);
-        DataGrid::$icon_prefix =  $this->_iconPrefix;
+        $this->_gridClass::$icon_prefix =  $this->_iconPrefix;
         $this->addComponent($grid, $name);
         $this->beforeBuild($grid);
         $this->configGrid($grid);
@@ -655,8 +680,8 @@ abstract class GridControl extends Control
         if($event==false){
             return $this->invokeCallback(GridBuilder::TOOLBAR_BUTTON_CALLBACK, $name, $this, unserialize($params));
         } else {
-            $class = self::$_symfonyEventClass;
-            $this->on($this->_symfonyEvents[$event], new $class($this[self::GRID_CONTROL],$this,null,$params,$event));
+            $data = $this->_gridEventFactory->create($this[self::GRID_CONTROL],$this,null,$params,$event);
+            $this->on($this->_symfonyEvents[$event], $data);
         }
     }
 

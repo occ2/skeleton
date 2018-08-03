@@ -115,8 +115,8 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             } elseif (array_key_exists("inlineAddSubmit",$this->object->_symfonyEvents)) {
                 $inline->onSubmit[] = function(ArrayHash $values) use ($t,$grid) {
                     $eventName = $t->object->_symfonyEvents["inlineAddSubmit"];
-                    $class = GridControl::$_symfonyRowEventClass;
-                    return $t->object->on($eventName, new $class(null,$values,$grid,$t->object,$eventName));
+                    $data = $t->object->_gridRowEventFactory->create(null,$values,$grid,$t->object,$eventName);
+                    return $t->object->on($eventName, $data);
                 };
             } else {
                 throw new GridBuilderException("ERROR: Invalid or undefined inline add submit callback or event",GridBuilderException::INVALID_INLINE_ADD_SUBMIT_CALLBACK);
@@ -175,8 +175,8 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             } elseif (array_key_exists("inlineEditSubmit",$this->object->_symfonyEvents)) {
                 $inline->onSubmit[] = function($id, ArrayHash $values) use ($t,$grid) {
                     $eventName = $t->object->_symfonyEvents["inlineEditSubmit"];
-                    $class = GridControl::$_symfonyRowEventClass;
-                    return $t->object->on($eventName, new $class($id,$values,$grid,$t->object,$eventName));
+                    $data = $t->object->_gridRowEventFactory->create($id,$values,$grid,$t->object,$eventName);
+                    return $t->object->on($eventName, $data);
                 };
             } else {
                 throw new GridBuilderException("ERROR: Invalid or undefined inline edit submit callback",GridBuilderException::INVALID_INLINE_EDIT_SUBMIT_CALLBACK);

@@ -81,12 +81,12 @@ class GridBuilder implements IGridBuilder
      * @var array
      */
     protected $additionalBuilder=[
-        "action"=>"\app\Base\controls\GridControl\builders\ActionsBuilder",
-        "itemDetail"=>"\app\Base\controls\GridControl\builders\ItemDetailBuilder",
-        "toolbarButton"=>"\app\Base\controls\GridControl\builders\ToolbarButtonsBuilder",
-        "groupAction"=>"\app\Base\controls\GridControl\builders\GroupActionsBuilder",
-        "export"=>"\app\Base\controls\GridControl\builders\ExportBuilder",
-        "inlineActions"=>"\app\Base\controls\GridControl\builders\InlineActionsBuilder"
+        "action"=>ActionsBuilder::class,
+        "itemDetail"=>ItemDetailBuilder::class,
+        "toolbarButton"=>ToolbarButtonsBuilder::class,
+        "groupAction"=>GroupActionsBuilder::class,
+        "export"=>ExportBuilder::class,
+        "inlineActions"=>InlineActionsBuilder::class
     ];
     
     /**

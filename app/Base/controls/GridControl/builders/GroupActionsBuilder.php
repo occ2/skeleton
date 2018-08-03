@@ -127,8 +127,14 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
             $action->onSelect[] = function($ids) use ($t,$grid) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $class = GridControl::$_symfonyEventClass;
-                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids],$eventName));
+                $data = $t->object->_gridEventFactory->create(
+                    $grid,
+                    $t->object,
+                    null,
+                    ["ids"=>$ids],
+                    $eventName    
+                );
+                return $t->object->on($eventName, $data);
             };
         }
         return $action;
@@ -159,8 +165,14 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
             $action->onSelect[] = function($ids,$option) use ($t,$grid) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $class = GridControl::$_symfonyEventClass;
-                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids,"option"=>$option],$eventName));
+                $data = $t->object->_gridEventFactory->create(
+                    $grid,
+                    $t->object,
+                    null,
+                    ["ids"=>$ids,"option"=>$option],
+                    $eventName
+                );
+                return $t->object->on($eventName, $data);
             };
         }
         return $action;
@@ -191,8 +203,14 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
             $action->onSelect[] = function($ids,$options) use ($t,$grid) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $class = GridControl::$_symfonyEventClass;
-                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids,"options"=>$options],$eventName));
+                $data = $t->object->_gridEventFactory->create(
+                    $grid,
+                    $t->object,
+                    null,
+                    ["ids"=>$ids,"options"=>$options],
+                    $eventName
+                );
+                return $t->object->on($eventName, $data);
             };
         }
         return $action;
@@ -217,8 +235,14 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
             $action->onSelect[] = function($ids,$value) use ($t,$grid) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $class = GridControl::$_symfonyEventClass;
-                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids,"value"=>$value],$eventName));
+                $data = $t->object->_gridEventFactory->create(
+                    $grid,
+                    $t->object,
+                    null,
+                    ["ids"=>$ids,"value"=>$value],
+                    $eventName
+                );
+                return $t->object->on($eventName, $data);
             };
         }
         return $action;
@@ -243,8 +267,14 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
             $action->onSelect[] = function($ids,$value) use ($t,$grid) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $class = GridControl::$_symfonyEventClass;
-                return $t->object->on($eventName, new $class($grid,$t->object,null,["ids"=>$ids,"value"=>$value],$eventName));
+                $data = $t->object->_gridEventFactory->create(
+                    $grid,
+                    $t->object,
+                    null,
+                    ["ids"=>$ids,"value"=>$value],
+                    $eventName
+                );
+                return $t->object->on($eventName, $data);
             };
         }
         return $action;
