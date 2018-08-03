@@ -14,7 +14,7 @@ interface IGridFactory
      * create datagrid object
      * @return DataGrid
      */
-    public function create() : DataGrid;
+    public function create();
 
     /**
      * get datagrid pobject class name

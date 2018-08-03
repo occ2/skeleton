@@ -27,5 +27,5 @@ interface IGridRowEventFactory
         DataGrid $datagrid,
         Control $control,
         string $event=null
-    ) : GridRowEventData;
+    );
 }

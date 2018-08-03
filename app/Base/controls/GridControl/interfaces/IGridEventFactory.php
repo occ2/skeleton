@@ -4,6 +4,7 @@ namespace app\Base\controls\GridControl\interfaces;
 use Ublaboo\DataGrid\DataGrid;
 use Nette\Application\UI\Control;
 use Nette\Forms\Container as Form;
+use app\Base\controls\GridControl\events\GridEventData;
 
 /**
  * IGridEventFactory inteface
@@ -19,6 +20,7 @@ interface IGridEventFactory
      * @param Form $form
      * @param mixed $data
      * @param string $event
+     * @return GridEventData
      */
     public function create(
         DataGrid $datagrid,
