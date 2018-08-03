@@ -194,7 +194,8 @@ abstract class GridControl extends Control
     public $_disableBuilder=false;
 
     /**
-     * @var bool
+     * action*, export*, groupAction*, toolbarButton* inlineAddSubmit, inlineEditSubmit
+     * @var array
      */
     public $_symfonyEvents;
     
@@ -647,9 +648,14 @@ abstract class GridControl extends Control
      * @param mixed $params
      * @return mixed
      */
-    public function handleToolbar(string $name, $params)
+    public function handleToolbar(string $name, $event,$params)
     {
-        return $this->invokeCallback(GridBuilder::TOOLBAR_BUTTON_CALLBACK, $name, $this, unserialize($params));
+        if($event==false){
+            return $this->invokeCallback(GridBuilder::TOOLBAR_BUTTON_CALLBACK, $name, $this, unserialize($params));
+        } else {
+            $class = self::$_symfonyEventClass;
+            $this->on($this->_symfonyEvents[$event], new $class($this[self::GRID_CONTROL],$this,null,$params,$event));
+        }
     }
 
     /**
