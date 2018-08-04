@@ -1,10 +1,12 @@
 <?php
 namespace app\Base\controls\FormControl\configurators;
 
+use app\Base\controls\FormControl\FormControl;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
 use Nette\Utils\ArrayHash;
 use Nette\DI\Config\Helpers;
+use Nette\Caching\Cache;
 
 /**
  * FormConfig
@@ -14,6 +16,8 @@ use Nette\DI\Config\Helpers;
  */
 class FormConfig
 {
+    const CACHE_PREFIX="forms";
+
     const TEXTS=[
         "title","comment","footer"
     ];
@@ -49,13 +53,26 @@ class FormConfig
     protected $parent;
 
     /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
      * @param string $class
      * @param object $parent
      * @return void
      */
-    public function __construct(string $class, $parent)
+    public function __construct(string $class, FormControl $parent)
     {
-        $this->annotations = ClassType::from($class)->getAnnotations();
+        $classType = ClassType::from($class);
+        $this->cache = new Cache($parent->_cacheStorage,static::CACHE_PREFIX);
+        $this->annotations = $this->cache->load($classType->getShortName());
+        if($this->annotations===null){
+            $this->annotations = $classType->getAnnotations();
+            $this->cache->save($classType->getShortName(), $this->annotations,[
+                Cache::FILES => $classType->getFileName()
+            ]);
+        }
         $this->parent = $parent;
         $this->renderer();
         return;

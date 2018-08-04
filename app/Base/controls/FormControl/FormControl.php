@@ -197,7 +197,6 @@ abstract class FormControl extends Control
     public function __construct(IFormFactory $formFactory, EventDispatcher $eventDispatcher, ITranslator $translator = null,IStorage $cachingStorage=null,$formEventDataFactoryClass=FormEventDataFactory::class)
     {
         parent::__construct($eventDispatcher, $translator, $cachingStorage);
-        AnnotationsParser::setCacheStorage($cachingStorage);
         $this->_formFactory = $formFactory;
         $this->_configurator = new FormConfig(static::class, $this);
         $this->_links = $this->_configurator->getLinks(true);

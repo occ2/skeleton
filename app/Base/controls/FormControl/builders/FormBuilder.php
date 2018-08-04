@@ -178,7 +178,7 @@ class FormBuilder implements IFormBuilder
            $property->getName()!="template" &&
            !Strings::startsWith($property->getName(), "_") &&
            !Strings::startsWith($property->getName(), "on")) {
-            $config = new FormItemConfig($property);
+            $config = new FormItemConfig($property,$this->object);
             $this->object->{$config->name} = $this->{self::COLUMN_TYPES[$config->type]}(
                     $form,
                     $config

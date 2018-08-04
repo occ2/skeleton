@@ -2,6 +2,9 @@
 namespace app\Base\controls\FormControl\configurators;
 
 use app\Base\controls\FormControl\exceptions\FormBuilderException;
+use app\Base\controls\FormControl\FormControl;
+use Nette\Caching\Cache;
+use Nette\Reflection\ClassType;
 use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 
@@ -32,6 +35,8 @@ class FormItemConfig
         "leftIcon",
         "rightIcon"
     ];
+
+    const CACHE_PREFIX="forms";
 
     /**
      * @var array
@@ -72,14 +77,30 @@ class FormItemConfig
     public $name;
 
     /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
      * @param Property $property
+     * @param FormControl $parent
      * @return void
      */
-    public function __construct(Property $property)
+    public function __construct(Property $property, FormControl $parent)
     {
         $this->property = $property;
-        $this->annotations = $property->getAnnotations();
         $this->name = $property->getName();
+        $this->cache = new Cache($parent->_cacheStorage,static::CACHE_PREFIX);
+
+        $classType = ClassType::from($parent);
+        
+        $this->annotations = $this->cache->load($classType->getShortName() . "." . $this->name);
+        if($this->annotations===null){
+            $this->annotations = $property->getAnnotations();
+            $this->cache->save($classType->getShortName() . "." . $this->name, $this->annotations,[
+                Cache::FILES => $classType->getFileName()
+            ]);
+        }
         return;
     }
 
