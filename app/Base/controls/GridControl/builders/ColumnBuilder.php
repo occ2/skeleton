@@ -91,7 +91,7 @@ class ColumnBuilder implements IAdditionalGridBuilder
            $property->getName()!="template" &&
            !Strings::startsWith($property->getName(), "_") &&
            !Strings::startsWith($property->getName(), "on")) {
-            $config = new GridColumnsConfig($property);
+            $config = new GridColumnsConfig($property,$this->object);
             $this->object->{$config->name} = $this->{GridBuilder::COLUMN_TYPES[$config->type]}(
                     $grid,
                     $config

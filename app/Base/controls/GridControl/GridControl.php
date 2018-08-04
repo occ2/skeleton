@@ -244,7 +244,7 @@ abstract class GridControl extends Control
         string $gridRowEventFactoryClass=GridRowEventFactory::class
     )
     {
-        $this->_configurator = new GridConfig(static::class, $this);
+        $this->_configurator = new GridConfig($this);
         $this->_links = $this->_configurator->getLinks(true);
         $this->_symfonyEvents = $this->_configurator->getEvents();
         $this->_callbacks = new ArrayHash;
@@ -252,7 +252,6 @@ abstract class GridControl extends Control
         $this->_gridClass = $gridFactory->getClass();
         $this->_gridEventFactory = new $gridEventFactoryClass;
         $this->_gridRowEventFactory = new $gridRowEventFactoryClass;
-        AnnotationsParser::setCacheStorage($cachingStorage);
         return parent::__construct($eventDispatcher, $translator, $cachingStorage);
     }
 

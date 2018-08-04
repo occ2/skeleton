@@ -2,8 +2,11 @@
 namespace app\Base\controls\GridControl\configurators;
 
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
+use app\Base\controls\GridControl\GridControl;
 use Nette\Reflection\Property;
 use Nette\Utils\Strings;
+use Nette\Caching\Cache;
+use Nette\Reflection\ClassType;
 
 /**
  * FormItemConfig
@@ -13,6 +16,8 @@ use Nette\Utils\Strings;
  */
 class GridColumnsConfig
 {
+    const CACHE_PREFIX="grid";
+
     const CONFIG_ITEMS=[
         "type",
         "name",
@@ -101,14 +106,29 @@ class GridColumnsConfig
     public $name;
 
     /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
      * @param Property $property
+     * @param GridControl $parent
      * @return void
      */
-    public function __construct(Property $property)
+    public function __construct(Property $property, GridControl $parent)
     {
         $this->property = $property;
-        $this->annotations = $property->getAnnotations();
         $this->name = $property->getName();
+        $classType = ClassType::from($parent);
+        $this->cache = new Cache($parent->_cacheStorage, self::CACHE_PREFIX);
+        $this->annotations = $this->cache->load($classType->getShortName() . "." . $this->name);
+        if($this->annotations===null){
+            $this->annotations = $property->getAnnotations();
+            $this->cache->save($classType->getShortName() . "." . $this->name, $this->annotations,[
+                Cache::FILES => $classType->getFileName()
+            ]);
+        }
+        
         return;
     }
 

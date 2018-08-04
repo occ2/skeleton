@@ -1,9 +1,11 @@
 <?php
 namespace app\Base\controls\GridControl\configurators;
 
+use app\Base\controls\GridControl\GridControl;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
 use Nette\Utils\ArrayHash;
+use Nette\Caching\Cache;
 
 /**
  * GridConfig
@@ -21,6 +23,8 @@ class GridConfig
         "events"=>"setEvents"
     ];
 
+    const CACHE_PREFIX="grid";
+
     /**
      * @var array
      */
@@ -32,14 +36,27 @@ class GridConfig
     protected $parent;
 
     /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
      * @param string $class
-     * @param object $parent
+     * @param GridControl $parent
      * @return void
      */
-    public function __construct(string $class, $parent)
+    public function __construct(GridControl $parent)
     {
-        $this->annotations = ClassType::from($class)->getAnnotations();
         $this->parent = $parent;
+        $classType = ClassType::from($parent);
+        $this->cache = new Cache($parent->_cacheStorage, self::CACHE_PREFIX);
+        $this->annotations = $this->cache->load($classType->getShortName());
+        if($this->annotations===null){
+            $this->annotations = $classType->getAnnotations();
+            $this->cache->save($classType->getShortName(), $this->annotations,[
+                Cache::FILES => $classType->getFileName()
+            ]);
+        }
         return;
     }
 
