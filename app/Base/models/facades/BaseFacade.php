@@ -78,6 +78,7 @@ abstract class BaseFacade extends AbstractFacade
             return call_user_func_array([$this,$method],$arguments);
         }
     }
+    
     /**
      * run acl test
      * @param string $method
