@@ -255,7 +255,9 @@ abstract class FormControl extends Control
     protected function config()
     {
         $this->_ajax = $this->_configurator->getAjax();
-        $this->_symfonyEvents = $this->_configurator->getEvents();
+        if(!empty($this->_configurator->getEvents())){
+            $this->_symfonyEvents = $this->_configurator->getEvents();
+        }
         return;
     }
 

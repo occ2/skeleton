@@ -2,6 +2,8 @@
 namespace app\Base\controls\FormControl\builders;
 
 use app\Base\controls\FormControl\exceptions\FormBuilderException;
+use app\Base\controls\FormControl\configurators\FormItemConfig;
+use app\Base\controls\FormControl\FormControl;
 use Nette\Application\UI\Form;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Property;
@@ -187,7 +189,7 @@ class FormBuilder implements IFormBuilder
 
     /**
      * @param TextBase $element
-     * @param \app\Base\controls\FormControl\builders\FormItemConfig $config
+     * @param FormItemConfig $config
      * @return TextBase
      */
     protected function setupText(TextBase $element, FormItemConfig $config):TextBase
