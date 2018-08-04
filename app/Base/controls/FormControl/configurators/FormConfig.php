@@ -62,9 +62,9 @@ class FormConfig
      * @param object $parent
      * @return void
      */
-    public function __construct(string $class, FormControl $parent)
+    public function __construct(FormControl $parent)
     {
-        $classType = ClassType::from($class);
+        $classType = ClassType::from($parent);
         $this->cache = new Cache($parent->_cacheStorage,static::CACHE_PREFIX);
         $this->annotations = $this->cache->load($classType->getShortName());
         if($this->annotations===null){

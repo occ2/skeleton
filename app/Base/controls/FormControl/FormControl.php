@@ -14,7 +14,6 @@ use Nette\Localization\ITranslator;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Application\UI\Form as NForm;
 use Nette\Application\BadRequestException;
-use Nette\Reflection\AnnotationsParser;
 use Nette\Caching\IStorage;
 
 /**
@@ -198,7 +197,7 @@ abstract class FormControl extends Control
     {
         parent::__construct($eventDispatcher, $translator, $cachingStorage);
         $this->_formFactory = $formFactory;
-        $this->_configurator = new FormConfig(static::class, $this);
+        $this->_configurator = new FormConfig($this);
         $this->_links = $this->_configurator->getLinks(true);
         $this->_eventDataFactory = new $formEventDataFactoryClass;
         return;
