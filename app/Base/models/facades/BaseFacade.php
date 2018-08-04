@@ -8,7 +8,7 @@ use Nette\Utils\Strings;
 use Nette\Reflection\ClassType;
 
 /**
- * Model parent of all facades
+ * Model parent for facades with permissions
  * facade over a repository
  * depends on
  * contributte/event-dispatcher
