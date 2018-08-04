@@ -1,55 +1,20 @@
-Nette Web Project
-=================
+ACL testing on model facades and presenters
+notice:
+be careful that all methods that can be tested automatically MUST NOT be public (must be private or protected).
+If you need use public method you must run $this->acl(__FUNCTION__,$data) on begin of method
+example:
+@ACL (resource=AclResource, privilege=read)
 
-This is a simple, skeleton application using the [Nette](https://nette.org). This is meant to
-be used as a starting point for your new projects.
+available @ACL variables
+loggedIn - user must be logged in
+resource - \Nette\Security\Permission resource
+privilege - \Nette\Security\Permission privilege (default read)
+exception - exception class (default PermissionException) (use in facades)
+redirect - redirect path (use in presenters)
+message - exception or flash error message
+code - exception error code
+eventClass - failure event class
+event - failure event anchor
 
-[Nette](https://nette.org) is a popular tool for PHP web development.
-It is designed to be the most usable and friendliest as possible. It focuses
-on security and performance and is definitely one of the safest PHP frameworks.
-
-
-Requirements
-------------
-
-PHP 5.6 or higher.
-
-
-Installation
-------------
-
-The best way to install Web Project is using Composer. If you don't have Composer yet,
-download it following [the instructions](https://doc.nette.org/composer). Then use command:
-
-	composer create-project nette/web-project path/to/install
-	cd path/to/install
-
-
-Make directories `temp/` and `log/` writable.
-
-
-Web Server Setup
-----------------
-
-The simplest way to get started is to start the built-in PHP server in the root directory of your project:
-
-	php -S localhost:8000 -t www
-
-Then visit `http://localhost:8000` in your browser to see the welcome page.
-
-For Apache or Nginx, setup a virtual host to point to the `www/` directory of the project and you
-should be ready to go.
-
-**It is CRITICAL that whole `app/`, `log/` and `temp/` directories are not accessible directly
-via a web browser. See [security warning](https://nette.org/security-warning).**
-
-Notice: Composer PHP version
-----------------------------
-This project forces `PHP 5.6` as your PHP version for Composer packages. If you have newer version on production you should change it in `composer.json`.
-```json
-"config": {
-	"platform": {
-		"php": "7.0"
-	}
-}
-```
+presenters
+@title title of action
