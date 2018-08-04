@@ -1,6 +1,8 @@
 <?php
 namespace app\Base\models\facades;
 
+use app\User\models\exceptions\PermissionException;
+use app\User\events\PermissionEvent;
 use app\Base\events\Event;
 use Nette\Utils\Strings;
 use Nette\Reflection\ClassType;
@@ -10,9 +12,8 @@ use Nette\Reflection\ClassType;
  * facade over a repository
  * depends on
  * contributte/event-dispatcher
- * contributte/utils
+ * nette/utils
  * nette/security
- * nette/database
  * nette/reflection
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
@@ -21,117 +22,32 @@ use Nette\Reflection\ClassType;
 abstract class BaseFacade extends AbstractFacade
 {
     const DEFAULT_PRIVILEGE="read";
-    const DEFAULT_ACL_ERROR_MESSAGE="ERROR: Operation not permitted";
-    const DEFAULT_ACL_ERROR_CODE=403;
+    const DEFAULT_ACL_MESSAGE="base.error.403";
 
     /**
      * @var array
      */
     protected $annotationConfig;
 
-
     /**
-     * fire event
-     * @param string $anchor
-     * @param Event $event
-     * @return mixed
-     * @deprecated since version 1.1
+     * @var string
      */
-    public function fireEvent(string $anchor, Event $event=null)
-    {
-        return $this->ed->dispatch($anchor, $event);
-    }
+    public $aclExceptionClass=PermissionException::class;
+
+    /**
+     * @var string
+     */
+    public $aclEventClass=PermissionEvent::class;
 
     /**
      * fire event
      * @param string $anchor
      * @param Event $event
      * @return mixed
-     * @deprecated since version 1.1
      */
     public function on(string $anchor, Event $event=null)
     {
         return $this->ed->dispatch($anchor, $event);
-    }
-
-    /**
-     * test permission allowed
-     * @param string $resource
-     * @param string $privilege
-     * @param string $exceptionClass
-     * @param string $message
-     * @param int $code
-     * @param string $eventAnchor
-     * @param string $eventClass
-     * @param array $data
-     * @return bool
-     */
-    public function isAllowed(string $resource,string $privilege=self::DEFAULT_PRIVILEGE,string $exceptionClass=null,string $message=self::DEFAULT_ACL_ERROR_MESSAGE,int $code=self::DEFAULT_ACL_ERROR_CODE,string $eventAnchor=null,string $eventClass=null,array $data=[])
-    {
-        if(!$this->user->isAllowed($resource, $privilege)){
-            $this->aclError($exceptionClass,$message,$code,$eventAnchor,$eventClass,$data);
-        }
-        return true;
-    }
-
-    /**
-     * test user logged in
-     * @param string $exceptionClass
-     * @param string $message
-     * @param int $code
-     * @param string $eventAnchor
-     * @param string $eventClass
-     * @param array $data
-     * @return boolean
-     */
-    public function isLoggedIn(string $exceptionClass=null,string $message=self::DEFAULT_ACL_ERROR_MESSAGE,int $code=self::DEFAULT_ACL_ERROR_CODE,string $eventAnchor=null,string $eventClass=null,array $data=[])
-    {
-        if(!$this->user->isLoggedIn()){
-            $this->aclError($exceptionClass,$message,$code,$eventAnchor,$eventClass,$data);
-        }
-        return true;
-    }
-
-    /**
-     * test userId is id of current user
-     * @param int $userId
-     * @param string $exceptionClass
-     * @param string $message
-     * @param int $code
-     * @param string $eventAnchor
-     * @param string $eventClass
-     * @param array $data
-     * @return boolean
-     */
-    public function isCurrentUser(int $userId,string $exceptionClass=null,string $message=self::DEFAULT_ACL_ERROR_MESSAGE,int $code=self::DEFAULT_ACL_ERROR_CODE,string $eventAnchor=null,string $eventClass=null,array $data=[])
-    {
-        if(!$this->user->isLoggedIn() || $this->user->getId() != $userId){
-            $this->aclError($exceptionClass,$message,$code,$eventAnchor,$eventClass,$data);
-        }
-        return true;
-    }
-
-    /**
-     * throw acl error
-     * @param string $exceptionClass
-     * @param string $message
-     * @param int $code
-     * @param string $eventAnchor
-     * @param string $eventClass
-     * @param type $data
-     * @return boolean
-     * @throws \Exception
-     */
-    protected function aclError(string $exceptionClass,string $message,int $code,string $eventAnchor,string $eventClass,$data)
-    {
-        if($eventAnchor!=null && $eventClass!=null){
-            $this->on($eventAnchor, new $eventClass($data));
-        }
-        if($exceptionClass!=null){
-            throw new $exceptionClass($message,$code);
-        } else {
-            return false;
-        }
     }
 
     /**
@@ -148,63 +64,89 @@ abstract class BaseFacade extends AbstractFacade
     }
 
     /**
+     * call private method as public, but with acl test
      * @param string $method
-     * @param array $data
-     * @param int $id
-     * @return boolean
+     * @param array $arguments
+     * @return mixed
      */
-    protected function _acl($method,$data=[],$id=null)
+    public function __call(string $method,array $arguments)
     {
-        if(isset($this->annotationConfig[$method])){
-            $config = $this->annotationConfig[$method];
-
-            if(isset($config["currentUser"]) && isset($config["aclResource"])){
-                if($id!=null){
-                    if(
-                        !$this->isCurrentUser($id) &&
-                        !$this->isAllowed(
-                            $config["aclResource"][0],
-                            isset($config["aclPrivilege"]) ? $config["aclPrivilege"][0] : static::DEFAULT_PRIVILEGE
-                        )
-                    ){
-                        $this->aclError(
-                            isset($config["aclExceptionClass"]) ? $config["aclExceptionClass"][0] : '\Exception',
-                            isset($config["aclExceptionMessage"]) ? $config["aclExceptionMessage"][0] : static::DEFAULT_ACL_ERROR_MESSAGE,
-                            isset($config["aclExceptionCode"]) ? $config["aclExceptionCode"][0] : static::DEFAULT_ACL_ERROR_CODE,
-                            isset($config["aclEventAnchor"]) ? $config["aclEventAnchor"][0] : null,
-                            isset($config["aclEventClass"]) ? $config["aclEventClass"][0] : null,
-                            $data
-                        );
-                    } else {
-                        return true;
-                    }
-                }
-            } elseif(!isset($config["currentUser"]) && isset($config["aclResource"])){
-                return $this->isAllowed(
-                    $config["aclResource"][0],
-                    isset($config["aclPrivilege"]) ? $config["aclPrivilege"][0] : static::DEFAULT_PRIVILEGE,
-                    isset($config["aclExceptionClass"]) ? $config["aclExceptionClass"][0] : '\Exception',
-                    isset($config["aclExceptionMessage"]) ? $config["aclExceptionMessage"][0] : static::DEFAULT_ACL_ERROR_MESSAGE,
-                    isset($config["aclExceptionCode"]) ? $config["aclExceptionCode"][0] : static::DEFAULT_ACL_ERROR_CODE,
-                    isset($config["aclEventAnchor"]) ? $config["aclEventAnchor"][0] : null,
-                    isset($config["aclEventClass"]) ? $config["aclEventClass"][0] : null,
-                    $data
-                );                
-            } elseif(isset($config["currentUser"]) && !isset($config["aclResource"])){
-                if($id!=null){
-                    return $this->isCurrentUser(
-                        $id,
-                        isset($config["aclExceptionClass"]) ? $config["aclExceptionClass"][0] : '\Exception',
-                        isset($config["aclExceptionMessage"]) ? $config["aclExceptionMessage"][0] : static::DEFAULT_ACL_ERROR_MESSAGE,
-                        isset($config["aclExceptionCode"]) ? $config["aclExceptionCode"][0] : static::DEFAULT_ACL_ERROR_CODE,
-                        isset($config["aclEventAnchor"]) ? $config["aclEventAnchor"][0] : null,
-                        isset($config["aclEventClass"]) ? $config["aclEventClass"][0] : null,
-                        $data
-                    );
-                }
-            } else{
-                return null;
+        if(method_exists($this, $method)) {
+            if($this->user instanceof \Nette\Security\User){
+                $this->acl($method, $arguments);
             }
+            return call_user_func_array([$this,$method],$arguments);
+        }
+    }
+    /**
+     * run acl test
+     * @param string $method
+     * @param mixed $data
+     * @return void
+     */
+    protected function acl($method,$data)
+    {
+        if(isset($this->annotationConfig[$method]["ACL"]) && !empty($this->annotationConfig[$method]["ACL"])){
+            $config = $this->annotationConfig[$method]["ACL"][0];
+            if(isset($config["loggedIn"])){
+                $this->loggedIn($config);
+                return;
+            } elseif(isset($config["resource"])){
+                $this->loggedIn($config);
+                $this->isAllowed($config,$data);
+                return;
+            } else {
+                return;
+            }
+        }
+    }
+
+    /**
+     * test if logged in
+     * @param array $config
+     * @return void
+     */
+    protected function loggedIn(array $config){
+        if(!$this->user->isLoggedIn()){
+            $this->aclError($config, PermissionException::NOT_LOGGED_IN);
+        }
+        return;
+    }
+
+    /**
+     * test if allowed
+     * @param array $config
+     * @param mixed $data
+     * @return void
+     */
+    protected function isAllowed(array $config,$data){
+        if(!$this->user->isAllowed(
+            $config["resource"],
+            isset($config["resource"]) ? $config["resource"] : self::DEFAULT_PRIVILEGE
+        )){
+            $this->aclError($config, PermissionException::OPERATION_NOT_PERMITTED, $data);
+        }
+        return;
+    }
+
+    /**
+     * throw acl error
+     * @param array $config
+     * @param int $defaultCode
+     * @param mixed $data
+     * @return mixed
+     * @throws mixed
+     */
+    protected function aclError(array $config,int $defaultCode,$data=null)
+    {
+        if(isset($config["event"])){
+            $eventClass = isset($config["eventClass"]) ? $config["eventClass"] : $this->aclEventClass;
+            return $this->on($config["event"], new $eventClass($data,$config["event"]));
+        } else {
+            $exceptionClass = isset($config["exception"]) ? $config["exception"] : $this->aclExceptionClass;
+            $message = isset($config["message"]) ? $config["message"] : self::DEFAULT_ACL_MESSAGE;
+            $code = isset($config["code"]) ? $config["code"] : $defaultCode;
+            throw new $exceptionClass($message,$code);
         }
     }
 }
