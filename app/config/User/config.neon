@@ -7,7 +7,8 @@ parameters:
         user:   User
 services:    
     # ORM facades
-    authenticator:   occ2\inventar\User\models\facades\User
+    authenticator:   app\User\models\facades\AuthenticatorFacade(@Contributte\Utils\DatetimeFactory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,@Nette\Caching\IStorage,%users%)
+    authorizator:   app\User\models\facades\AuthorizationFacade(%acl%)
 
     # forms
 
