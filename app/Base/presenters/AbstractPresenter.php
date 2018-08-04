@@ -2,13 +2,12 @@
 namespace app\Base\presenters;
 
 use app\Base\events\Event as BaseEvent;
+use app\User\events\PermissionEvent;
 use app\Base\traits\TFlashMessage;
 use Nette\Application\UI\Presenter as NPresenter;
 use Nette\Localization\ITranslator;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
-use Nette\Http\IResponse;
-use Nette\Utils\ArrayHash;
 use Nette\Reflection\AnnotationsParser;
 
 /**
@@ -35,8 +34,11 @@ abstract class AbstractPresenter extends NPresenter
           ACTION_DEFAULT="default",
           BREADCRUMBS="breadcrumbs",
           NAVBAR="navbar",
-          SIGN_IN_LINK=":User:Main:signIn",
-          HOMEPAGE_LINK=":User:Main:default";
+          SIGN_IN_LINK=":User:Sign:in",
+          HOMEPAGE_LINK=":User:Main:default",
+          ACL_ERROR_LINK=":User:Main:default",
+          DEFAULT_ACL_MESSAGE="base.error.403",
+          DEFAULT_PRIVILEGE="read";
         
     /** @persistent */
     public $backlink = '';
@@ -54,7 +56,7 @@ abstract class AbstractPresenter extends NPresenter
     /**
      * @inject @var \Contributte\EventDispatcher\EventDispatcher
      */
-    public $eventDispather;
+    public $ed;
     
     /**
      * @inject @var \Nette\Localization\ITranslator
@@ -90,16 +92,6 @@ abstract class AbstractPresenter extends NPresenter
     public static $iconPrefix="fas fa-";
 
     /**
-     * @var bool
-     */
-    public static $allowAnnotationTitles=true;
-
-    /**
-     * @var bool
-     */
-    public static $allowAnnotationAcl=true;
-
-    /**
      * @var array
      */
     public static $snippetList=[
@@ -111,26 +103,24 @@ abstract class AbstractPresenter extends NPresenter
         'content'
     ];
 
+        /**
+     * @var string
+     */
+    public $aclEventClass=PermissionEvent::class;
+
     /**
      * startup processes
      * @return void
      */
     public function startup()
     {
-         if($this->context->getService("cache.storage") instanceof IStorage){
+        if($this->context->getService("cache.storage") instanceof IStorage){
             AnnotationsParser::setCacheStorage($this->getPresenter()->context->getService("cache.storage"));
         }
-
-        if(static::$allowAnnotationAcl || static::$allowAnnotationTitles){
-            $this->getAnnotationsConfig();
-        }
-        if(static::$allowAnnotationAcl){
-            $this->annotationsAcl();
-        }
-
+        $this->getAnnotationsConfig();
         $this->user->setAuthenticator($this->context->getService(static::AUTHENTICATOR));
         $this->user->setAuthorizator($this->context->getService(static::AUTHORIZATOR));
-        $this->payload->isModal = false;
+        $this->annotationsAcl();
         return parent::startup();
     }
     
@@ -151,28 +141,16 @@ abstract class AbstractPresenter extends NPresenter
         $breadcrumbs->addItem("home","base.breadcrumbs.home", $this->link(static::HOMEPAGE_LINK),false);
         return $breadcrumbs;
     }
-    
-    /**
-     * fire event
-     * @param string $anchor
-     * @param \occ2\inventar\events\BaseEvent $event
-     * @return void
-     * @deprecated since version 1.1.0
-     */
-    public function fireEvent(string $anchor, BaseEvent $event=null)
-    {
-        return $this->eventDispather->dispatch($anchor, $event);
-    }
 
     /**
      * fire event
      * @param string $anchor
-     * @param \occ2\inventar\events\BaseEvent $event
+     * @param BaseEvent $event
      * @return mixed
      */
     public function on(string $anchor, BaseEvent $event=null)
     {
-        return $this->eventDispather->dispatch($anchor, $event);
+        return $this->ed->dispatch($anchor, $event);
     }
     
     /**
@@ -182,31 +160,13 @@ abstract class AbstractPresenter extends NPresenter
     public function beforeRender()
     {
         parent::beforeRender();
-        if(static::$allowAnnotationTitles){
-            $this->annotationsTitle();
-        }
-        
+        $this->annotationsTitle();
         $this->template->title = static::$titlePrefix . $this->translator->translate($this->title);
         $this->template->locale = $this->locale;
         if ($this->isAjax()) {
             $this->reload();
         }
         return;
-    }
-
-    /**
-     * translation simplifier
-     * @param string $text
-     * @return string
-     * @deprecated since version 1.1.0
-     */
-    public function text(string $text) : string
-    {
-        if($this->translator instanceof ITranslator){
-            return $this->translator->translate($text);
-        } else {
-            return $text;
-        }
     }
 
     /**
@@ -291,6 +251,8 @@ abstract class AbstractPresenter extends NPresenter
         if(array_key_exists($this->getAction(),$this->actionsConfig)){
             if(isset($this->actionsConfig[$this->getAction()]["title"])){
                 $this->title = $this->actionsConfig[$this->getAction()]["title"][0];
+            } else {
+                $this->title = "";
             }
         }
         return;
@@ -301,59 +263,79 @@ abstract class AbstractPresenter extends NPresenter
      */
     protected function annotationsAcl()
     {
-        if(isset($this->actionsConfig[$this->getAction()]["acl"])){
-            $this->testAcl($this->actionsConfig[$this->getAction()]["acl"][0]);
+        if(isset($this->actionsConfig[$this->getAction()]["ACL"])){
+            $this->acl($this->actionsConfig[$this->getAction()]["ACL"][0]);
         }
-        if(count($this->getSignal())>1 && isset($this->handlersConfig[$this->getSignal()[1]]["acl"])){
-            $this->testAcl($this->handlersConfig[$this->getSignal()[1]]["acl"][0]);
-        }
-        return void;
-    }
-
-    /**
-     * @param ArrayHash $config
-     * @return void
-     */
-    protected function testAcl(ArrayHash $config)
-    {
-        if(isset($config->resource)){
-            $this->testLoggedIn(true, $config);
-            $this->testPrivilege($config->resource, $config);
-        } elseif(isset($config->loggedIn)){
-            $this->testLoggedIn($config->loggedIn, $config);
+        if(count($this->getSignal())>1 && isset($this->handlersConfig[$this->getSignal()[1]]["ACL"])){
+            $this->acl($this->handlersConfig[$this->getSignal()[1]]["ACL"][0]);
         }
         return;
     }
 
     /**
-     * @param bool $loggedIn
-     * @param ArrayHash $config
+     * run acl test
+     * @param string $method
+     * @param mixed $data
      * @return void
      */
-    protected function testLoggedIn(bool $loggedIn,ArrayHash $config)
+    protected function acl(array $config)
     {
-        if($loggedIn==true){
-            if(!$this->user->isLoggedIn()){
-                (!isset($config->errorMsg) || !isset($config->errorRedirect)) ? : $this->flashMessage($this->_($config->errorMsg), static::STATUS_DANGER);
-                isset($config->errorRedirect) ? $this->redirect($config->errorRedirect,['backlink' => $this->storeRequest()]) : $this->redirect(static::SIGN_IN_LINK,['backlink' => $this->storeRequest()]);
-            }
+        if(isset($config["loggedIn"])){
+            $this->loggedIn($config);
+            return;
+        } elseif(isset($config["resource"])){
+            $this->loggedIn($config);
+            $this->isAllowed($config);
+            return;
+        } else {
+           return;
+        }
+    }
+
+    /**
+     * test if logged in
+     * @param array $config
+     * @return void
+     */
+    protected function loggedIn(array $config){
+        if(!$this->user->isLoggedIn()){
+            $this->aclError($config);
         }
         return;
     }
 
     /**
-     * @param string $resource
-     * @param ArrayHash $config
+     * test if allowed
+     * @param array $config
+     * @param mixed $data
      * @return void
      */
-    protected function testPrivilege(string $resource,ArrayHash $config)
-    {
-        if(isset($config->privilege)){
-            if(!$this->user->isAllowed($resource, $config->privilege)){
-                (!isset($config->errorMsg) || !isset($config->errorRedirect)) ? : $this->flashMessage($this->_($config->errorMsg), static::STATUS_DANGER);
-                isset($config->errorRedirect) ? $this->redirect($config->errorRedirect) : $this->error(NULL, IResponse::S403_FORBIDDEN);
-            }
+    protected function isAllowed(array $config){
+        if(!$this->user->isAllowed(
+            $config["resource"],
+            isset($config["resource"]) ? $config["resource"] : self::DEFAULT_PRIVILEGE
+        )){
+            $this->aclError($config);
         }
         return;
+    }
+
+    /**
+     * throw acl error
+     * @param array $config
+     * @return void
+     */
+    protected function aclError(array $config)
+    {
+        if(isset($config["event"])){
+            $eventClass = isset($config["eventClass"]) ? $config["eventClass"] : $this->aclEventClass;
+            return $this->on($config["event"], new $eventClass($this,$config["event"]));
+        } else {
+            $redirect = isset($config["redirect"]) ? $config["redirect"] : self::ACL_ERROR_LINK;
+            $message = isset($config["message"]) ? $config["message"] : self::DEFAULT_ACL_MESSAGE;
+            $this->flashMessage($message, self::STATUS_DANGER);
+            $this->redirect($redirect);
+            return;
+        }
     }
 }
