@@ -6,6 +6,8 @@ use Contributte\EventDispatcher\EventDispatcher;
 use Contributte\Utils\DatetimeFactory;
 use Nette\DI\Config\Helpers;
 use Nette\Security\User;
+use Nette\Caching\IStorage;
+use Nette\Reflection\AnnotationsParser;
 
 /**
  * AbstractFacade
@@ -31,6 +33,11 @@ abstract class AbstractFacade
     protected $user;
 
     /**
+     * @var IStorage
+     */
+    protected $cachingStorage;
+
+    /**
      * @var DatetimeFactory
      */
     protected $datetimeFactory;
@@ -52,14 +59,17 @@ abstract class AbstractFacade
         DatetimeFactory $datetimeFactory,
         EntityManager $em,
         EventDispatcher $ed,
-        User $user,
+        User $user=null,
+        IStorage $cachingStorage=null,
         array $config=[])
     {
         $this->em = $em;
         $this->ed = $ed;
         $this->user = $user;
         $this->datetimeFactory = $datetimeFactory;
+        $this->cachingStorage = $cachingStorage;
         $this->config = Helpers::merge($config, $this->config);
+        AnnotationsParser::setCacheStorage($cachingStorage);
         return;
     }
 }
