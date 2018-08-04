@@ -31,7 +31,7 @@ abstract class Control extends NControl
     /**
      * @var IStorage
      */
-    protected $_cacheStorage;
+    public $_cacheStorage;
 
     /**
      * @var mixed
