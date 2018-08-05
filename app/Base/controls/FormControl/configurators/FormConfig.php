@@ -114,4 +114,19 @@ class FormConfig
             return null;
         }
     }
+
+    /**
+     * annotation getter
+     * @param string $name
+     * @return array
+     */
+    public function __get($name)
+    {
+        $anchor = Strings::firstLower($name);
+        if(array_key_exists($anchor, $this->annotations)){
+            return $this->annotations[$anchor];
+        } else {
+            return null;
+        }
+    }
 }
