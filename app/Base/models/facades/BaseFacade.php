@@ -4,8 +4,14 @@ namespace app\Base\models\facades;
 use app\User\models\exceptions\PermissionException;
 use app\User\events\PermissionEvent;
 use app\Base\events\Event;
+use Contributte\Utils\DatetimeFactory;
+use Doctrine\ORM\EntityManager;
+use Contributte\EventDispatcher\EventDispatcher;
+use Nette\Security\User;
+use Nette\Caching\IStorage;
 use Nette\Utils\Strings;
 use Nette\Reflection\ClassType;
+use Nette\Caching\Cache;
 
 /**
  * Model parent for facades with permissions
@@ -23,6 +29,7 @@ abstract class BaseFacade extends AbstractFacade
 {
     const DEFAULT_PRIVILEGE="read";
     const DEFAULT_ACL_MESSAGE="base.error.403";
+    const CACHE_PREFIX="facade";
 
     /**
      * @var array
@@ -38,6 +45,31 @@ abstract class BaseFacade extends AbstractFacade
      * @var string
      */
     public $aclEventClass=PermissionEvent::class;
+
+    /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
+     * @param DatetimeFactory $datetimeFactory
+     * @param EntityManager $em
+     * @param EventDispatcher $ed
+     * @param User $user
+     * @param IStorage $cachingStorage
+     * @param array $config
+     * @return void
+     */
+    public function __construct(DatetimeFactory $datetimeFactory,
+                                EntityManager $em,
+                                EventDispatcher $ed,
+                                User $user = null,
+                                IStorage $cachingStorage = null,
+                                array $config = array())
+    {
+        parent::__construct($datetimeFactory, $em, $ed, $user, $cachingStorage, $config);
+        $this->cache = new Cache($this->cachingStorage, static::CACHE_PREFIX);
+    }
 
     /**
      * fire event
@@ -58,7 +90,15 @@ abstract class BaseFacade extends AbstractFacade
         $classType = ClassType::from(static::class);
         foreach($classType->getMethods() as $method){
             $name = Strings::firstLower($method->getName());
-            $this->annotationConfig[$name] = $method->getAnnotations();
+            $this->annotationConfig[$name] = $this->cache->load($classType->getName() . "." . $name);
+            if($this->annotationConfig[$name]===null){
+                $this->annotationConfig[$name] = $method->getAnnotations();
+                $this->cache->save($classType->getName() . "." . $name,
+                                   $this->annotationConfig[$name],
+                                   [
+                                       Cache::FILES => $classType->getFileName()
+                                   ]);
+            }
         }
         return;
     }

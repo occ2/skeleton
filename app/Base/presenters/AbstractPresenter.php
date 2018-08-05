@@ -4,11 +4,11 @@ namespace app\Base\presenters;
 use app\Base\events\Event as BaseEvent;
 use app\User\events\PermissionEvent;
 use app\Base\traits\TFlashMessage;
+use Nette\Caching\Cache;
+use Nette\Reflection\ClassType;
 use Nette\Application\UI\Presenter as NPresenter;
 use Nette\Localization\ITranslator;
-use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
-use Nette\Reflection\AnnotationsParser;
 
 /**
  * parent of all presenters
@@ -19,7 +19,9 @@ use Nette\Reflection\AnnotationsParser;
 abstract class AbstractPresenter extends NPresenter
 {
     use TFlashMessage;
-    
+
+    const CACHE_PREFIX="presenter";
+
     const AUTHENTICATOR="authenticator",
           AUTHORIZATOR="authorizator",
           ICON_SUCCESS="check-circle",
@@ -103,10 +105,25 @@ abstract class AbstractPresenter extends NPresenter
         'content'
     ];
 
-        /**
+    /**
      * @var string
      */
     public $aclEventClass=PermissionEvent::class;
+
+    /**
+     * @inject @var \Nette\Caching\IStorage
+     */
+    public $storage;
+
+    /**
+     * @var Cache
+     */
+    protected $cache;
+
+    /**
+     * @var ClassType
+     */
+    protected $classType;
 
     /**
      * startup processes
@@ -114,9 +131,8 @@ abstract class AbstractPresenter extends NPresenter
      */
     public function startup()
     {
-        if($this->context->getService("cache.storage") instanceof IStorage){
-            AnnotationsParser::setCacheStorage($this->getPresenter()->context->getService("cache.storage"));
-        }
+        $this->cache = new Cache($this->storage, static::CACHE_PREFIX);
+        $this->classType = ClassType::from($this);
         $this->getAnnotationsConfig();
         $this->user->setAuthenticator($this->context->getService(static::AUTHENTICATOR));
         $this->user->setAuthorizator($this->context->getService(static::AUTHORIZATOR));
@@ -215,14 +231,26 @@ abstract class AbstractPresenter extends NPresenter
 
     /**
      * @return void
+     * TODO udělat kešování anotací
      */
     protected function getActionsConfig()
     {
-        $classType = ClassType::from(static::class);
-        foreach($classType->getMethods() as $method){
+        foreach($this->classType->getMethods() as $method){
             if(Strings::startsWith($method->getName(), "action")){
                 $name = Strings::firstLower(str_replace("action", "", $method->getName()));
-                $this->actionsConfig[$name] = $method->getAnnotations();
+                $this->actionsConfig[$name] = $this->cache->load(
+                    $this->classType->getName() . ".action." . $name
+                );
+                if($this->actionsConfig[$name]===null){
+                    $this->actionsConfig[$name] = $method->getAnnotations();
+                    $this->cache->save(
+                        $this->classType->getName() . ".action." . $name,
+                        $this->actionsConfig[$name],
+                        [
+                            Cache::FILES => $this->classType->getFileName()
+                        ]
+                    );
+                }
             }
         }
         return;
@@ -233,11 +261,21 @@ abstract class AbstractPresenter extends NPresenter
      */
     protected function getHandlersConfig()
     {
-        $classType = ClassType::from(static::class);
-        foreach($classType->getMethods() as $method){
+        foreach($this->classType->getMethods() as $method){
             if(Strings::startsWith($method->getName(), "handle")){
                 $name = Strings::firstLower(str_replace("handle", "", $method->getName()));
-                $this->handlersConfig[$name] = $method->getAnnotations();
+                $this->handlersConfig[$name] = $this->cache->load(
+                    $this->classType->getName() . ".handle." . $name
+                );
+                if($this->handlersConfig[$name]===null){
+                    $this->handlersConfig[$name] = $method->getAnnotations();
+                    $this->cache->save(
+                        $this->classType->getName() . ".handle." . $name,
+                        $this->handlersConfig[$name],
+                        [
+                            Cache::FILES => $this->classType->getFileName()
+                        ]);
+                }
             }
         }
         return;

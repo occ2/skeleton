@@ -94,10 +94,10 @@ class FormItemConfig
 
         $classType = ClassType::from($parent);
         
-        $this->annotations = $this->cache->load($classType->getShortName() . "." . $this->name);
+        $this->annotations = $this->cache->load($classType->getName() . "." . $this->name);
         if($this->annotations===null){
             $this->annotations = $property->getAnnotations();
-            $this->cache->save($classType->getShortName() . "." . $this->name, $this->annotations,[
+            $this->cache->save($classType->getName() . "." . $this->name, $this->annotations,[
                 Cache::FILES => $classType->getFileName()
             ]);
         }

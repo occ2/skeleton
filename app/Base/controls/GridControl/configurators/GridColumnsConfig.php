@@ -121,10 +121,10 @@ class GridColumnsConfig
         $this->name = $property->getName();
         $classType = ClassType::from($parent);
         $this->cache = new Cache($parent->_cacheStorage, self::CACHE_PREFIX);
-        $this->annotations = $this->cache->load($classType->getShortName() . "." . $this->name);
+        $this->annotations = $this->cache->load($classType->getName() . "." . $this->name);
         if($this->annotations===null){
             $this->annotations = $property->getAnnotations();
-            $this->cache->save($classType->getShortName() . "." . $this->name, $this->annotations,[
+            $this->cache->save($classType->getName() . "." . $this->name, $this->annotations,[
                 Cache::FILES => $classType->getFileName()
             ]);
         }

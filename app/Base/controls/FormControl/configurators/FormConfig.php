@@ -66,10 +66,10 @@ class FormConfig
     {
         $classType = ClassType::from($parent);
         $this->cache = new Cache($parent->_cacheStorage,static::CACHE_PREFIX);
-        $this->annotations = $this->cache->load($classType->getShortName());
+        $this->annotations = $this->cache->load($classType->getName());
         if($this->annotations===null){
             $this->annotations = $classType->getAnnotations();
-            $this->cache->save($classType->getShortName(), $this->annotations,[
+            $this->cache->save($classType->getName(), $this->annotations,[
                 Cache::FILES => $classType->getFileName()
             ]);
         }

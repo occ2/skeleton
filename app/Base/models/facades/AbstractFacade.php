@@ -69,7 +69,6 @@ abstract class AbstractFacade
         $this->datetimeFactory = $datetimeFactory;
         $this->cachingStorage = $cachingStorage;
         $this->config = Helpers::merge($config, $this->config);
-        AnnotationsParser::setCacheStorage($cachingStorage);
         return;
     }
 }
