@@ -1,6 +1,7 @@
 <?php
 namespace app\Base\models\facades;
 
+use app\Base\events\Event;
 use Doctrine\ORM\EntityManager;
 use Contributte\EventDispatcher\EventDispatcher;
 use Contributte\Utils\DatetimeFactory;
@@ -70,5 +71,16 @@ abstract class AbstractFacade
         $this->cachingFactory = $cacheFactory;
         $this->config = Helpers::merge($config, $this->config);
         return;
+    }
+
+    /**
+     * fire event
+     * @param string $anchor
+     * @param Event $event
+     * @return mixed
+     */
+    public function on(string $anchor, Event $event=null)
+    {
+        return $this->ed->dispatch($anchor, $event);
     }
 }

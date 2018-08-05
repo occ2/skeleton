@@ -3,7 +3,6 @@ namespace app\Base\models\facades;
 
 use app\User\models\exceptions\PermissionException;
 use app\User\events\data\PermissionEvent;
-use app\Base\events\Event;
 use Contributte\Utils\DatetimeFactory;
 use Doctrine\ORM\EntityManager;
 use Contributte\EventDispatcher\EventDispatcher;
@@ -69,17 +68,6 @@ abstract class BaseFacade extends AbstractFacade
     {
         parent::__construct($datetimeFactory, $em, $ed, $user, $cachingStorage, $config);
         $this->cache = $this->cachingFactory->create(static::CACHE_PREFIX);
-    }
-
-    /**
-     * fire event
-     * @param string $anchor
-     * @param Event $event
-     * @return mixed
-     */
-    public function on(string $anchor, Event $event=null)
-    {
-        return $this->ed->dispatch($anchor, $event);
     }
 
     /**
