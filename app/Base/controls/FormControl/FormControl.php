@@ -423,13 +423,14 @@ abstract class FormControl extends Control
     protected function setupOnError(NForm $form)
     {
         $t = $this;
+        $event = $this->_configurator->onError[0];
+        
         if(array_key_exists("error", $this->_symfonyEvents)){
             $form->onError[] = function (NForm $form) use ($t) {
                 $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["error"]);
                 return $t->on($t->_symfonyEvents["error"], $data);
             };
-        } elseif ($this->_configurator->getOnError()!=null) {
-            $event = $this->_configurator->getOnError();
+        } elseif ($event!==null) {
             $form->onError[] = function (NForm $form) use ($t,$event) {
                 $data = $this->_eventDataFactory->create($form,$t,$event);
                 return $t->on($event, $data);
@@ -448,13 +449,13 @@ abstract class FormControl extends Control
     protected function setupOnValidate(NForm $form)
     {
         $t = $this;
+        $event = $this->_configurator->onValidate[0];
         if(array_key_exists("validate", $this->_symfonyEvents)){
             $form->onValidate[] = function (NForm $form) use ($t) {
                 $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["validate"]);
                 return $t->on($t->_symfonyEvents["validate"], $data);
             };
-        } elseif ($this->_configurator->getOnValidate()!=null) {
-            $event = $this->_configurator->getOnValidate();
+        } elseif ($event!==null) {
             $form->onError[] = function (NForm $form) use ($t,$event) {
                 $data = $this->_eventDataFactory->create($form,$t,$event);
                 return $t->on($event, $data);
@@ -473,13 +474,13 @@ abstract class FormControl extends Control
     protected function setupOnSubmit(NForm $form)
     {
         $t = $this;
+        $event = $this->_configurator->onSubmit[0];
         if(array_key_exists("submit", $this->_symfonyEvents)){
             $form->onSubmit[] = function (NForm $form) use ($t) {
                 $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["submit"]);
                 return $t->on($t->_symfonyEvents["submit"], $data);
             };
-        } elseif ($this->_configurator->getOnSubmit()!=null) {
-            $event = $this->_configurator->getOnSubmit();
+        } elseif ($event!==null) {
             $form->onError[] = function (NForm $form) use ($t,$event) {
                 $data = $this->_eventDataFactory->create($form,$t,$event);
                 return $t->on($event, $data);
@@ -493,13 +494,13 @@ abstract class FormControl extends Control
     protected function setupOnSuccess(NForm $form)
     {
         $t = $this;
+        $event = $this->_configurator->onSuccess[0];
         if(array_key_exists("success", $this->_symfonyEvents)){
             $form->onSuccess[] = function (NForm $form) use ($t) {
                 $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["success"]);
                 return $t->on($t->_symfonyEvents["success"], $data);
             };
-        } elseif ($this->_configurator->getOnSuccess()!=null) {
-            $event = $this->_configurator->getOnSuccess();
+        } elseif ($event!==null) {
             $form->onError[] = function (NForm $form) use ($t,$event) {
                 $data = $this->_eventDataFactory->create($form,$t,$event);
                 return $t->on($event, $data);
