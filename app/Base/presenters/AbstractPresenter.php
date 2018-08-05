@@ -64,6 +64,11 @@ abstract class AbstractPresenter extends NPresenter
      * @inject @var \Nette\Localization\ITranslator
      */
     public $translator;
+
+    /**
+     * @inject @var \Contributte\Cache\ICacheFactory
+     */
+    public $cacheFactory;
     
     /** @persistent */
     public $locale;
@@ -131,7 +136,7 @@ abstract class AbstractPresenter extends NPresenter
      */
     public function startup()
     {
-        $this->cache = new Cache($this->storage, static::CACHE_PREFIX);
+        $this->cache = $this->cacheFactory->create(static::CACHE_PREFIX);
         $this->classType = ClassType::from($this);
         $this->getAnnotationsConfig();
         $this->user->setAuthenticator($this->context->getService(static::AUTHENTICATOR));

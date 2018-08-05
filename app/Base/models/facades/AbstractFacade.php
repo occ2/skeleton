@@ -6,8 +6,7 @@ use Contributte\EventDispatcher\EventDispatcher;
 use Contributte\Utils\DatetimeFactory;
 use Nette\DI\Config\Helpers;
 use Nette\Security\User;
-use Nette\Caching\IStorage;
-use Nette\Reflection\AnnotationsParser;
+use Contributte\Cache\ICacheFactory;
 
 /**
  * AbstractFacade
@@ -33,14 +32,14 @@ abstract class AbstractFacade
     protected $user;
 
     /**
-     * @var IStorage
-     */
-    protected $cachingStorage;
-
-    /**
      * @var DatetimeFactory
      */
     protected $datetimeFactory;
+
+    /**
+     * @var ICacheFactory
+     */
+    protected $cachingFactory;
     
     /**
      * @var array
@@ -49,6 +48,7 @@ abstract class AbstractFacade
 
     /**
      * @param DatetimeFactory $datetimeFactory
+     * @param ICacheFactory $cacheFactory
      * @param EntityManager $em
      * @param EventDispatcher $ed
      * @param User $user
@@ -57,17 +57,17 @@ abstract class AbstractFacade
      */
     public function __construct(
         DatetimeFactory $datetimeFactory,
+        ICacheFactory $cacheFactory,
         EntityManager $em,
         EventDispatcher $ed,
         User $user=null,
-        IStorage $cachingStorage=null,
         array $config=[])
     {
         $this->em = $em;
         $this->ed = $ed;
         $this->user = $user;
         $this->datetimeFactory = $datetimeFactory;
-        $this->cachingStorage = $cachingStorage;
+        $this->cachingFactory = $cacheFactory;
         $this->config = Helpers::merge($config, $this->config);
         return;
     }

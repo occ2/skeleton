@@ -68,7 +68,7 @@ abstract class BaseFacade extends AbstractFacade
                                 array $config = array())
     {
         parent::__construct($datetimeFactory, $em, $ed, $user, $cachingStorage, $config);
-        $this->cache = new Cache($this->cachingStorage, static::CACHE_PREFIX);
+        $this->cache = $this->cachingFactory->create(static::CACHE_PREFIX);
     }
 
     /**

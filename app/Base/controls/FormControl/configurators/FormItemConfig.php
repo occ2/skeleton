@@ -90,7 +90,7 @@ class FormItemConfig
     {
         $this->property = $property;
         $this->name = $property->getName();
-        $this->cache = new Cache($parent->_cacheStorage,static::CACHE_PREFIX);
+        $this->cache = $parent->_cacheFactory->create(static::CACHE_PREFIX);
 
         $classType = ClassType::from($parent);
         

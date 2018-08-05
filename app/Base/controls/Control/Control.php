@@ -4,9 +4,9 @@ namespace app\Base\controls\Control;
 use app\Base\traits\TFlashMessage;
 use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
 use Contributte\EventDispatcher\EventDispatcher;
+use Contributte\Cache\ICacheFactory;
 use Nette\Application\UI\Control as NControl;
 use Nette\Localization\ITranslator;
-use Nette\Caching\IStorage;
 
 /**
  * parent of all controls
@@ -29,9 +29,9 @@ abstract class Control extends NControl
     protected $_eventDispatcher;
 
     /**
-     * @var IStorage
+     * @var ICacheFactory
      */
-    public $_cacheStorage;
+    public $_cacheFactory;
 
     /**
      * @var mixed
@@ -44,11 +44,11 @@ abstract class Control extends NControl
      * @param IStorage $cachingStorage
      * @return void
      */
-    public function __construct(EventDispatcher $eventDispatcher, ITranslator $translator=null,IStorage $cachingStorage=null)
+    public function __construct(EventDispatcher $eventDispatcher, ICacheFactory $cacheFactory, ITranslator $translator=null)
     {
         $this->_eventDispatcher = $eventDispatcher;
         $this->_translator = $translator;
-        $this->_cacheStorage = $cachingStorage;
+        $this->_cacheFactory = $cacheFactory;
         parent::__construct();
         $this->startup();
         return;

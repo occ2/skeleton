@@ -65,7 +65,7 @@ class FormConfig
     public function __construct(FormControl $parent)
     {
         $classType = ClassType::from($parent);
-        $this->cache = new Cache($parent->_cacheStorage,static::CACHE_PREFIX);
+        $this->cache = $parent->_cacheFactory->create(static::CACHE_PREFIX);
         $this->annotations = $this->cache->load($classType->getName());
         if($this->annotations===null){
             $this->annotations = $classType->getAnnotations();
