@@ -2,7 +2,7 @@
 namespace app\Base\models\facades;
 
 use app\User\models\exceptions\PermissionException;
-use app\User\events\PermissionEvent;
+use app\User\events\data\PermissionEvent;
 use app\Base\events\Event;
 use Contributte\Utils\DatetimeFactory;
 use Doctrine\ORM\EntityManager;

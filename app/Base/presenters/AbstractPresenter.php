@@ -2,7 +2,7 @@
 namespace app\Base\presenters;
 
 use app\Base\events\Event as BaseEvent;
-use app\User\events\PermissionEvent;
+use app\User\events\data\PermissionEvent;
 use app\Base\traits\TFlashMessage;
 use Nette\Caching\Cache;
 use Nette\Reflection\ClassType;
