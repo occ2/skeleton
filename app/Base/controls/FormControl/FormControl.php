@@ -456,7 +456,7 @@ abstract class FormControl extends Control
                 return $t->on($t->_symfonyEvents["validate"], $data);
             };
         } elseif ($event!==null) {
-            $form->onError[] = function (NForm $form) use ($t,$event) {
+            $form->onValidate[] = function (NForm $form) use ($t,$event) {
                 $data = $this->_eventDataFactory->create($form,$t,$event);
                 return $t->on($event, $data);
             };
@@ -481,7 +481,7 @@ abstract class FormControl extends Control
                 return $t->on($t->_symfonyEvents["submit"], $data);
             };
         } elseif ($event!==null) {
-            $form->onError[] = function (NForm $form) use ($t,$event) {
+            $form->onSubmit[] = function (NForm $form) use ($t,$event) {
                 $data = $this->_eventDataFactory->create($form,$t,$event);
                 return $t->on($event, $data);
             };
@@ -495,14 +495,16 @@ abstract class FormControl extends Control
     {
         $t = $this;
         $event = $this->_configurator->onSuccess[0];
+        
         if(array_key_exists("success", $this->_symfonyEvents)){
             $form->onSuccess[] = function (NForm $form) use ($t) {
                 $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["success"]);
                 return $t->on($t->_symfonyEvents["success"], $data);
             };
-        } elseif ($event!==null) {
-            $form->onError[] = function (NForm $form) use ($t,$event) {
+        } elseif ($event!=null) {
+            $form->onSuccess[] = function (NForm $form) use ($t,$event) {
                 $data = $this->_eventDataFactory->create($form,$t,$event);
+                bdump($event);
                 return $t->on($event, $data);
             };
         } else {
