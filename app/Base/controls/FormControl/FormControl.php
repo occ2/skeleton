@@ -503,7 +503,7 @@ abstract class FormControl extends Control
             };
         } elseif ($event!=null) {
             $form->onSuccess[] = function (NForm $form) use ($t,$event) {
-                $data = $this->_eventDataFactory->create($form,$t,$event);0
+                $data = $this->_eventDataFactory->create($form,$t,$event);
                 return $t->on($event, $data);
             };
         } else {
