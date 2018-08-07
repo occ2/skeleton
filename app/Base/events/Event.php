@@ -32,4 +32,14 @@ abstract class Event extends AbstractEvent
         $this->event = $event;
         return;
     }
+
+    /**
+     * data getter
+     * @param string $name
+     * @return mixed
+     */
+    public function __get($name)
+    {
+        return isset($this->data[$name]) ? $this->data[$name] : null;
+    }
 }
