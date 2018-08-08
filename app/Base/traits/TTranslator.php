@@ -30,9 +30,10 @@ trait TTranslator
     /**
      * translatoe text
      * @param string $text
+     * @param mixed $count
      * @return string
      */
-    public function _(string $text,$count) : string
+    public function _(string $text,$count=null) : string
     {
         if($this->translator instanceof ITranslator){
             return $this->translator->transate($text);
