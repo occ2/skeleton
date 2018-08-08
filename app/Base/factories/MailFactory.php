@@ -80,13 +80,31 @@ class MailFactory
     }
     
     /**
-     * translate toxt for mail
+     * translate text for mail
      * @param string $message
      * @param int $count
      * @param array $parameters
      * @return string
+     * @deprecated
      */
     public function text(string $message, $count=null, $parameters=[])
+    {
+        if ($this->translator instanceof ITranslator) {
+            return $this->translator->translate($message, $count, $parameters);
+        } else {
+            return $message;
+        }
+    }
+
+    /**
+     * translate text for mail
+     * @param string $message
+     * @param int $count
+     * @param array $parameters
+     * @return string
+     * @deprecated
+     */
+    public function _(string $message, $count=null, $parameters=[])
     {
         if ($this->translator instanceof ITranslator) {
             return $this->translator->translate($message, $count, $parameters);
