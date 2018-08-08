@@ -32,7 +32,7 @@ trait TTranslator
      * @param string $text
      * @return string
      */
-    public function _(string $text) : string
+    public function _(string $text,$count) : string
     {
         if($this->translator instanceof ITranslator){
             return $this->translator->transate($text);
