@@ -36,7 +36,7 @@ trait TTranslator
     public function _(string $text,$count=null) : string
     {
         if($this->translator instanceof ITranslator){
-            return $this->translator->transate($text);
+            return $this->translator->translate($text);
         } else {
             return $text;
         }
