@@ -188,9 +188,9 @@ abstract class FormControl extends Control
     /**
      * @param IFormFactory $formFactory
      * @param EventDispatcher $eventDispatcher
+     * @param ICacheFactory $cacheFactory
      * @param ITranslator $translator
-     * @param IStorage $cachingStorage
-     * @param type $formEventDataFactoryClass
+     * @param string $formEventDataFactoryClass
      * @return void
      */
     public function __construct(IFormFactory $formFactory, EventDispatcher $eventDispatcher, ICacheFactory $cacheFactory,ITranslator $translator = null,$formEventDataFactoryClass=FormEventDataFactory::class)
