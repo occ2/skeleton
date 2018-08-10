@@ -109,6 +109,15 @@ abstract class Control extends NControl
     }
 
     /**
+     * configurator getter
+     * @return mixed
+     */
+    public function getConfigurator()
+    {
+        return $this->_configurator;
+    }
+
+    /**
      * fire event
      * @param string $eventName
      * @param \app\Base\controls\Control\ControlEventData $data
