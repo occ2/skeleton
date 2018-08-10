@@ -11,7 +11,7 @@ use Nette\Utils\Callback;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
 use Nette\Forms\Controls\TextBase;
-use \Nette\Application\UI\Control;
+use Nette\Application\UI\Control;;
 
 /**
  * EntityFormBuilder
@@ -45,7 +45,7 @@ class FormBuilder implements IFormBuilder
     protected $classType;
 
     /**
-     * @var \Nette\Application\UI\Control
+     * @var Control
      */
     public $object;
 
@@ -158,7 +158,7 @@ class FormBuilder implements IFormBuilder
         foreach ($this->classType->getProperties() as $property) {
             $this->add($form, $property);
         }
-
+        
         return $form;
     }
 
