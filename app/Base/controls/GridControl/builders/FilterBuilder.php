@@ -2,7 +2,7 @@
 namespace app\Base\controls\GridControl\builders;
 
 use app\Base\controls\GridControl\traits\TCallbacks;
-use app\Base\controls\GridControl\builders\IAdditionalGridBuilder;
+use app\Base\controls\GridControl\builders\IFilterGridBuilder;
 use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridColumnsConfig;
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
@@ -24,7 +24,7 @@ use Nette\Utils\ArrayHash;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-class FilterBuilder implements IAdditionalGridBuilder
+class FilterBuilder implements IFilterGridBuilder
 {
     use TCallbacks;
 
@@ -50,7 +50,7 @@ class FilterBuilder implements IAdditionalGridBuilder
      * @param array $callbacks
      * @return void
      */
-    public function __construct(GridControl $object, Column $column, GridColumnsConfig $config, $callbacks)
+    public function __construct(GridControl $object, Column $column, GridColumnsConfig $config, array $callbacks)
     {
         $this->object = $object;
         $this->column = $column;

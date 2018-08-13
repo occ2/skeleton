@@ -50,7 +50,7 @@ class ActionsBuilder implements IAdditionalGridBuilder
      * @param array $callbacks
      * @return void
      */
-    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)
+    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, array $callbacks)
     {
         $this->object = $object;
         $this->grid = $grid;

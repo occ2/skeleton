@@ -81,17 +81,17 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
      * add toolbar button
      * @param DataGrid $grid
      * @param ArrayHash $config
-     * @return ToolbarButton
+     * @return ToolbarButton | null
      * @throws GridBuilderException
      */
-    protected function addButton(DataGrid $grid, ArrayHash $config): ToolbarButton
+    protected function addButton(DataGrid $grid, ArrayHash $config)
     {
         if (!isset($config->name)) {
             throw new GridBuilderException("ERROR: Toolbar button name must be set", GridBuilderException::UNDEFINED_BUTTON_NAME);
         }
         if($this->checkCallback(GridBuilder::ALLOW_TOOLBAR_BUTTON_CALLBACK, $config->name)){
             if(!$this->invokeCallback(GridBuilder::ALLOW_TOOLBAR_BUTTON_CALLBACK, $config->name, $this->object)){
-                return;
+                return null;
             }
         }
         if (isset($config->params)) {

@@ -2,7 +2,7 @@
 namespace app\Base\controls\GridControl\builders;
 
 use app\Base\controls\GridControl\traits\TCallbacks;
-use app\Base\controls\GridControl\builders\IAdditionalGridBuilder;
+use app\Base\controls\GridControl\builders\IColumnGridBuilder;
 use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridColumnsConfig;
 use app\Base\controls\GridControl\builders\GridBuilder;
@@ -14,7 +14,6 @@ use Ublaboo\DataGrid\Column\ColumnDateTime;
 use Ublaboo\DataGrid\Column\ColumnText;
 use Ublaboo\DataGrid\Column\ColumnNumber;
 use Ublaboo\DataGrid\Column\ColumnLink;
-use Ublaboo\DataGrid\Column\ColumnStatus;
 use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 use Nette\Utils\ArrayHash;
@@ -26,7 +25,7 @@ use Nette\Localization\ITranslator;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-class ColumnBuilder implements IAdditionalGridBuilder
+class ColumnBuilder implements IColumnGridBuilder
 {
     use TCallbacks;
 
@@ -57,7 +56,7 @@ class ColumnBuilder implements IAdditionalGridBuilder
      * @param array $callbacks
      * @return void
      */
-    public function __construct(GridControl $object, DataGrid $grid, Property $property, $callbacks)
+    public function __construct(GridControl $object, DataGrid $grid, Property $property,array  $callbacks)
     {
         $this->object = $object;
         $this->grid = $grid;

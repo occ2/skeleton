@@ -2,23 +2,23 @@
 namespace app\Base\controls\GridControl\builders;
 
 use app\Base\controls\GridControl\GridControl;
-use app\Base\controls\GridControl\configurators\GridConfig;
 use app\Base\controls\GridControl\DataGrid;
+use Nette\Reflection\Property;
 
 /**
- * IAdditionalGridBuilder inteface
+ * IColumnGridBuilder inteface
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.1.0
+ * @version 1.0.0
  */
-interface IAdditionalGridBuilder
+interface IColumnGridBuilder
 {
     /**
      * @param GridControl $object
      * @param DataGrid $grid
-     * @param GridConfig $configurator
+     * @param Property $property
      * @param array $callbacks
      */
-    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, array $callbacks);
+    public function __construct(GridControl $object, DataGrid $grid, Property $property,array  $callbacks);
 
     /**
      * build

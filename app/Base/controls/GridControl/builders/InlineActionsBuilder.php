@@ -13,7 +13,6 @@ use Nette\Utils\ArrayHash;
 use Nette\Forms\Container;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Application\UI\Form;
-use Nette\Utils\Strings;
 
 /**
  * InlineActionsBuilder
@@ -59,11 +58,11 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
      *
      * @param type $object
      * @param DataGrid $grid
-     * @param \occ2\GridControl\GridConfig $configurator
-     * @param ArrayHash $callbacks
+     * @param GridConfig $configurator
+     * @param array $callbacks
      * @return void
      */
-    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, ArrayHash $callbacks)
+    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, array $callbacks)
     {
         $this->object = $object;
         $this->grid = $grid;

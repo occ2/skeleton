@@ -39,10 +39,10 @@ class ItemDetailBuilder implements IAdditionalGridBuilder
      * @param GridControl $object
      * @param DataGrid $grid
      * @param GridConfig $configurator
-     * @param type $callbacks
+     * @param array $callbacks
      * @return void
      */
-    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, $callbacks)
+    public function __construct(GridControl $object, DataGrid $grid, GridConfig $configurator, array $callbacks)
     {
         $this->grid = $grid;
         $this->object = $object;
