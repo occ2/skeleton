@@ -9,6 +9,7 @@ use Nette\Reflection\ClassType;
 use Nette\Application\UI\Presenter as NPresenter;
 use Nette\Localization\ITranslator;
 use Nette\Utils\Strings;
+use Nette\Utils\ArrayHash;
 
 /**
  * parent of all presenters
@@ -40,7 +41,8 @@ abstract class AbstractPresenter extends NPresenter
           HOMEPAGE_LINK=":User:Main:default",
           ACL_ERROR_LINK=":User:Main:default",
           DEFAULT_ACL_MESSAGE="base.error.403",
-          DEFAULT_PRIVILEGE="read";
+          DEFAULT_PRIVILEGE="read",
+          DEFAULT_LANG="cz";
         
     /** @persistent */
     public $backlink = '';
@@ -321,7 +323,7 @@ abstract class AbstractPresenter extends NPresenter
      * @param mixed $data
      * @return void
      */
-    protected function acl(array $config)
+    protected function acl(ArrayHash $config)
     {
         if(isset($config["loggedIn"])){
             $this->loggedIn($config);
@@ -340,7 +342,7 @@ abstract class AbstractPresenter extends NPresenter
      * @param array $config
      * @return void
      */
-    protected function loggedIn(array $config){
+    protected function loggedIn(ArrayHash $config){
         if(!$this->user->isLoggedIn()){
             $this->aclError($config);
         }
@@ -353,7 +355,7 @@ abstract class AbstractPresenter extends NPresenter
      * @param mixed $data
      * @return void
      */
-    protected function isAllowed(array $config){
+    protected function isAllowed(ArrayHash $config){
         if(!$this->user->isAllowed(
             $config["resource"],
             isset($config["resource"]) ? $config["resource"] : self::DEFAULT_PRIVILEGE
@@ -368,7 +370,7 @@ abstract class AbstractPresenter extends NPresenter
      * @param array $config
      * @return void
      */
-    protected function aclError(array $config)
+    protected function aclError(ArrayHash $config)
     {
         if(isset($config["event"])){
             $eventClass = isset($config["eventClass"]) ? $config["eventClass"] : $this->aclEventClass;
