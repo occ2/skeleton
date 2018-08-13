@@ -1,16 +1,17 @@
 <?php
 namespace app\User\models\exceptions;
 
-use Exception;
+use app\User\models\exceptions\AbstractException as Exception;
 
 /**
  * RolesException
+ * code interval 2500-2599
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-class RolesException extends Exception
+final class RolesException extends Exception
 {
-    const ROLE_IS_IN_USE=1,
-          INVALID_ROLE=2;
+    const ROLE_IS_IN_USE=2501,
+          INVALID_ROLE=2502;
     }

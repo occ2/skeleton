@@ -12,7 +12,8 @@ use app\Base\exceptions\EntityException as BaseException;
  */
 final class ProfileException extends BaseException
 {
-    const PASSWORDS_NOT_SAME=2200, // exception when passwords on change passwords form not same
+    const NOT_FOUND=2216,
+          PASSWORDS_NOT_SAME=2200, // exception when passwords on change passwords form not same
           USERNAME_NOT_UNIQUE=2201, // exception if usernane is not unique
           NON_ACCESSABLE_USER=2202, // exception when user's id not be equal with logged user id
           UNAUTHORIZED_USERS_LISTING=2203, // exception when user try to show users list and not have permissions
@@ -27,6 +28,9 @@ final class ProfileException extends BaseException
           UNAUTHORIZED_CONFIG_RESET=2212,
           UNAUTHORIZED_CONFIG_UPDATE=2213,
           UNAUTHORIZED_CONFIG_RELOAD=2214,
-          UNAUTHORIZED_USER_DELETE=2215
+          UNAUTHORIZED_USER_DELETE=2215,
+
+          MESSAGE_NOT_FOUND="user.error.user.notFound",
+          MESSAGE_NOT_UNIQUE="user.error.username.unique"
     ;
 }

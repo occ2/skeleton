@@ -22,5 +22,7 @@ final class ValidationException extends BaseException
           NOT_ANSWER=2007,
           NOT_SECRET=2008,
           NOT_LANG=2009,
-          NOT_ROLE=2010;
-};
+          NOT_ROLE=2010,
+
+          MESSAGE_NOT_EQUAL="user.error.password.equal";
+}

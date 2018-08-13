@@ -10,13 +10,21 @@ use Nette\Security\AuthenticationException as NAException;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-class AuthenticationException extends NAException
+final class AuthenticationException extends NAException
 {
-    const IDENTITY_NOT_FOUND=2000,
-          INVALID_CREDENTIAL=2001,
-          MAX_ATTEMPTS_REACHED=2002,
-          NOT_APPROVED=2003,
-          PASSWORD_EXPIRED=2004,
-          INVALID_EMAIL=2005,
-          INVALID_CONTROL_ANSWER=2006;
+    const IDENTITY_NOT_FOUND=2100,
+          INVALID_CREDENTIAL=2101,
+          MAX_ATTEMPTS_REACHED=2102,
+          NOT_APPROVED=2103,
+          PASSWORD_EXPIRED=2104,
+          INVALID_EMAIL=2105,
+          INVALID_CONTROL_ANSWER=2106,
+
+          MESSAGE_NOT_APPROVED="user.error.authentication.status",
+          MESSAGE_MAX_ATTEMPTS_REACHED="user.error.authentication.attempts",
+          MESSAGE_PASSWORD_EXPIRED="user.error.authentication.expired",
+          MESSAGE_INVALID_EMAIL="user.error.email.invalid",
+          MESSAGE_INVALID_CONTROL_ANSWER="user.error.answer.invalid",
+          MESSAGE_IDENTITY_NOT_FOUND="user.error.authentication.identity",
+          MESSAGE_INVALID_CREDENTIAL="user.error.authentication.password";
 }
