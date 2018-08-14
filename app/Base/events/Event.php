@@ -11,6 +11,8 @@ use Contributte\EventDispatcher\Events\AbstractEvent;
  */
 abstract class Event extends AbstractEvent
 {
+    const ENTITY="entity",
+          REPOSITORY="repository";
     /**
      * @var array
      */
@@ -22,11 +24,11 @@ abstract class Event extends AbstractEvent
     private $event;
 
     /**
-     * @param mixed $data
+     * @param array $data
      * @param string $event
      * @return type
      */
-    public function __construct($data, $event=null)
+    public function __construct(array $data, $event=null)
     {
         $this->data = $data;
         $this->event = $event;
