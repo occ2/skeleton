@@ -14,12 +14,12 @@ abstract class Event extends AbstractEvent
     /**
      * @var array
      */
-    public $data;
+    private $data;
 
     /**
      * @var string
      */
-    public $event;
+    private $event;
 
     /**
      * @param mixed $data
@@ -41,5 +41,14 @@ abstract class Event extends AbstractEvent
     public function __get($name)
     {
         return isset($this->data[$name]) ? $this->data[$name] : null;
+    }
+
+    /**
+     * get event name
+     * @return string
+     */
+    public function getEvent()
+    {
+        return $this->event;
     }
 }
