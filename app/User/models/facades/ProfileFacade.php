@@ -65,8 +65,7 @@ final class ProfileFacade extends BaseFacade
     {
         $user = $this->get($data[UserEntity::ID], ProfileException::class);
         $this->modify($user, $data, $exclude);
-        $this->em->persist($user);
-        $this->em->flush($user);
+        $this->em->flush();
         $this->on(
             self::EVENT_SAVE,
             new ProfileEvent(
