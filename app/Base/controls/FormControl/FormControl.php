@@ -6,8 +6,8 @@ use app\Base\controls\Control\Control;
 use app\Base\controls\FormControl\configurators\FormConfig;
 use app\Base\controls\FormControl\builders\IFormBuilder;
 use app\Base\controls\FormControl\builders\FormBuilder;
-use app\Base\controls\FormControl\interfaces\IEventDataFactory;
-use app\Base\controls\FormControl\factories\FormEventDataFactory;
+use app\Base\controls\FormControl\interfaces\IEventFactory;
+use app\Base\controls\FormControl\factories\FormEventFactory;
 use app\Base\controls\FormControl\interfaces\IFormFactory;
 use Contributte\EventDispatcher\EventDispatcher;
 use Contributte\Cache\ICacheFactory;
@@ -161,7 +161,7 @@ abstract class FormControl extends Control
     public $_symfonyEvents=[];
 
     /**
-     * @var IEventDataFactory
+     * @var IEventFactory
      */
     public $_eventDataFactory;
 
@@ -193,7 +193,7 @@ abstract class FormControl extends Control
      * @param string $formEventDataFactoryClass
      * @return void
      */
-    public function __construct(IFormFactory $formFactory, EventDispatcher $eventDispatcher, ICacheFactory $cacheFactory,ITranslator $translator = null,$formEventDataFactoryClass=FormEventDataFactory::class)
+    public function __construct(IFormFactory $formFactory, EventDispatcher $eventDispatcher, ICacheFactory $cacheFactory,ITranslator $translator = null,$formEventDataFactoryClass=FormEventFactory::class)
     {
         parent::__construct($eventDispatcher, $cacheFactory, $translator);
         $this->_formFactory = $formFactory;

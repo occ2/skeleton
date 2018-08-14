@@ -10,7 +10,7 @@ use Nette\Application\UI\Control;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-interface IEventDataFactory
+interface IEventFactory
 {
     /**
      * create event data container
