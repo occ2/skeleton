@@ -3,6 +3,7 @@ namespace app\User\models\facades;
 
 use app\Base\models\entities\IEntity;
 use app\User\models\facades\BaseFacade;
+use app\User\models\facades\TUserDefaults;
 use app\User\events\data\ProfileEvent;
 use app\User\models\entities\User as UserEntity;
 use app\User\models\exceptions\ProfileException;
@@ -17,6 +18,8 @@ use Nette\Utils\Random;
  */
 final class ProfileFacade extends BaseFacade
 {
+    use TUserDefaults;
+
     const ENTITY_CLASS=UserEntity::class,
           EVENT_FIND="User.ProfileFacade.onFind",
           EVENT_REGISTER="User.ProfileFacade.onRegister",
@@ -136,22 +139,5 @@ final class ProfileFacade extends BaseFacade
                 self::EVENT_REGISTER)
             );
         return;
-    }
-
-    /**
-     * set defaults
-     * @param UserEntity $user
-     * @return string
-     */
-    private function setDefaults(UserEntity $user)
-    {
-        $secret = Random::generate($this->config["randomSecretLength"]);
-        $datetime = $this->datetimeFactory->create();
-        $user->setStatus($this->config["defaultStatus"])
-             ->setAttempts(0)
-             ->setSecret($secret)
-             ->setLang($this->config["defaultLang"])
-             ->setPasswordExpiration($datetime->modify($this->config["passwordExpiration"]));
-        return $secret;
     }
 }
