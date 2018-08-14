@@ -18,6 +18,7 @@ use Nette\Utils\Random;
 final class ProfileFacade extends BaseFacade
 {
     const ENTITY_CLASS=UserEntity::class,
+          EVENT_FIND="User.ProfileFacade.onFind",
           EVENT_REGISTER="User.ProfileFacade.onRegister",
           EVENT_SAVE="User.ProfileFacade.onSave",
           EVENT_ADD="User.ProfileFacade.onAdd";
@@ -41,8 +42,9 @@ final class ProfileFacade extends BaseFacade
     public function find(int $id,bool $throwException=true)
     {
         $exceptionClass = $throwException==true ? ProfileException::class : null;
-        $entity = parent::get($id, $exceptionClass);
-        return $entity;
+        $user = parent::get($id, $exceptionClass);
+        $this->on(self::EVENT_FIND, new ProfileEvent(["entity"=>$user], self::EVENT_FIND));
+        return $user;
     }
 
     /**
