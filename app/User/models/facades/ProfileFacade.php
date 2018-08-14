@@ -43,7 +43,15 @@ final class ProfileFacade extends BaseFacade
     {
         $exceptionClass = $throwException==true ? ProfileException::class : null;
         $user = parent::get($id, $exceptionClass);
-        $this->on(self::EVENT_FIND, new ProfileEvent(["entity"=>$user], self::EVENT_FIND));
+        $this->on(
+            self::EVENT_FIND,
+            new ProfileEvent(
+                [
+                    ProfileEvent::ENTITY=>$user
+                ],
+                self::EVENT_FIND
+            )
+        );
         return $user;
     }
 
@@ -59,7 +67,15 @@ final class ProfileFacade extends BaseFacade
         $this->modify($user, $data, $exclude);
         $this->em->persist($user);
         $this->em->flush($user);
-        $this->on(self::EVENT_SAVE, new ProfileEvent(["entity"=>$user], self::EVENT_SAVE));
+        $this->on(
+            self::EVENT_SAVE,
+            new ProfileEvent(
+                [
+                    ProfileEvent::ENTITY=>$user
+                ],
+                self::EVENT_SAVE
+            )
+        );
         return;
     }
 
@@ -81,7 +97,17 @@ final class ProfileFacade extends BaseFacade
         $user->setPassword($password);
         $this->em->persist($user);
         $this->em->flush($user);
-        $this->on(self::EVENT_ADD, new ProfileEvent(["entity"=>$user,"password"=>$password,"secret"=>$secret], self::EVENT_ADD));
+        $this->on(
+            self::EVENT_ADD,
+            new ProfileEvent(
+                [
+                    ProfileEvent::ENTITY=>$user,
+                    ProfileEvent::PASSWORD=>$password,
+                    ProfileEvent::SECRET=>$secret
+                ],
+                self::EVENT_ADD
+            )
+        );
         return;
     }
 
@@ -101,7 +127,15 @@ final class ProfileFacade extends BaseFacade
         $secret = $this->setDefaults($user);
         $this->em->persist($user);
         $this->em->flush($user);
-        $this->on(self::EVENT_REGISTER, new ProfileEvent(["entity"=>$user,"secret"=>$secret], self::EVENT_REGISTER));
+        $this->on(
+            self::EVENT_REGISTER,
+            new ProfileEvent(
+                [
+                    ProfileEvent::ENTITY=>$user,
+                    ProfileEvent::SECRET=>$secret
+                ],
+                self::EVENT_REGISTER)
+            );
         return;
     }
 
