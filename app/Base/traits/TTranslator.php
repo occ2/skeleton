@@ -19,26 +19,27 @@ trait TTranslator
     /**
      * translator setter
      * @param ITranslator $translator
-     * @return void
+     * @return $this
      */
     public function setTranslator(ITranslator $translator)
     {
         $this->translator = $translator;
-        return;
+        return $this;
     }
 
     /**
-     * translatoe text
-     * @param string $text
-     * @param mixed $count
+     * translate text
+     * @param string $message
+     * @param int $count
+     * @param array $parameters
      * @return string
      */
-    public function _(string $text,$count=null) : string
+    public function _(string $message, $count=null, $parameters=[]) : string
     {
         if($this->translator instanceof ITranslator){
-            return $this->translator->translate($text);
+            return $this->translator->translate($message, $count, $parameters);
         } else {
-            return $text;
+            return $message;
         }
     }
 }
