@@ -125,12 +125,12 @@ abstract class AbstractFacade
 
     /**
      * test if entity found
-     * @param IEntity $entity
+     * @param IEntity | null $entity
      * @param string $exceptionClass
      * @return IEntity
      * @throws AbstractException
      */
-    protected function testFound($entity,string $exceptionClass=null){
+    protected function testFound(?IEntity $entity,string $exceptionClass=null){
         if($entity==null && $exceptionClass!=null){
             $classType = ClassType::from($exceptionClass);
             $code = $classType->getConstant("NOT_FOUND")==false ? 404 : $classType->getConstant("NOT_FOUND");
