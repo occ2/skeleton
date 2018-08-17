@@ -144,7 +144,8 @@ abstract class AbstractPresenter extends NPresenter
         $this->user->setAuthenticator($this->context->getService(static::AUTHENTICATOR));
         $this->user->setAuthorizator($this->context->getService(static::AUTHORIZATOR));
         $this->annotationsAcl();
-        return parent::startup();
+        parent::startup();
+        return;
     }
     
     /**
@@ -221,7 +222,7 @@ abstract class AbstractPresenter extends NPresenter
                 $this->redrawControl($snippet);
             }
         } else {
-            $this->redrawControl($snippet);
+            $this->redrawControl($snippets);
         }
         return;
     }
@@ -311,16 +312,16 @@ abstract class AbstractPresenter extends NPresenter
         if(isset($this->actionsConfig[$this->getAction()]["ACL"])){
             $this->acl($this->actionsConfig[$this->getAction()]["ACL"][0]);
         }
-        if(count($this->getSignal())>1 && isset($this->handlersConfig[$this->getSignal()[1]]["ACL"])){
-            $this->acl($this->handlersConfig[$this->getSignal()[1]]["ACL"][0]);
+        $signals = $this->getSignal();
+        if($signals!=null && count($signals)>1 && isset($this->handlersConfig[$signals[1]]["ACL"])){
+            $this->acl($this->handlersConfig[$signals[1]]["ACL"][0]);
         }
         return;
     }
 
     /**
      * run acl test
-     * @param string $method
-     * @param mixed $data
+     * @param ArrayHash $config
      * @return void
      */
     protected function acl(ArrayHash $config)
@@ -339,7 +340,7 @@ abstract class AbstractPresenter extends NPresenter
 
     /**
      * test if logged in
-     * @param array $config
+     * @param ArrayHash $config
      * @return void
      */
     protected function loggedIn(ArrayHash $config){
@@ -351,8 +352,7 @@ abstract class AbstractPresenter extends NPresenter
 
     /**
      * test if allowed
-     * @param array $config
-     * @param mixed $data
+     * @param ArrayHash $config
      * @return void
      */
     protected function isAllowed(ArrayHash $config){
@@ -367,20 +367,20 @@ abstract class AbstractPresenter extends NPresenter
 
     /**
      * throw acl error
-     * @param array $config
+     * @param ArrayHash $config
      * @return void
      */
     protected function aclError(ArrayHash $config)
     {
         if(isset($config["event"])){
             $eventClass = isset($config["eventClass"]) ? $config["eventClass"] : $this->aclEventClass;
-            return $this->on($config["event"], new $eventClass($this,$config["event"]));
+            $this->on($config["event"], new $eventClass($this,$config["event"]));
         } else {
             $redirect = isset($config["redirect"]) ? $config["redirect"] : self::ACL_ERROR_LINK;
             $message = isset($config["message"]) ? $config["message"] : self::DEFAULT_ACL_MESSAGE;
             $this->flashMessage($message, self::STATUS_DANGER);
-            $this->redirect($redirect);
-            return;
+            $this->redirect($redirect);            
         }
+        return;
     }
 }
