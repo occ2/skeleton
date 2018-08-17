@@ -26,14 +26,14 @@
 namespace app\User\controls\factories;
 
 /**
- * IControlQuestionForm factory interface
+ * IResetPassForm factory inteface
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-interface IControlQuestionForm
+interface IResetPasswordForm
 {
     /**
-     * @return \app\User\controls\forms\ControlQuestionForm
+     * @return \app\User\controls\forms\ResetPasswordForm
      */
     public function create();
 }
