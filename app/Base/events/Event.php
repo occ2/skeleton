@@ -12,23 +12,26 @@ use Contributte\EventDispatcher\Events\AbstractEvent;
 abstract class Event extends AbstractEvent
 {
     const ENTITY="entity",
-          REPOSITORY="repository";
+          REPOSITORY="repository",
+          COLLECTION="collection",
+          QUERY_BUILDER="queryBuilder";
+    
     /**
      * @var array
      */
     private $data;
 
     /**
-     * @var string
+     * @var string | null
      */
     private $event;
 
     /**
      * @param array $data
-     * @param string $event
-     * @return type
+     * @param string | null $event
+     * @return void
      */
-    public function __construct(array $data, $event=null)
+    public function __construct(array $data, string $event=null)
     {
         $this->data = $data;
         $this->event = $event;
@@ -47,7 +50,7 @@ abstract class Event extends AbstractEvent
 
     /**
      * get event name
-     * @return string
+     * @return string | null
      */
     public function getEvent()
     {
