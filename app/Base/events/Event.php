@@ -2,6 +2,7 @@
 namespace app\Base\events;
 
 use Contributte\EventDispatcher\Events\AbstractEvent;
+use Nette\Utils\ArrayHash;
 
 /**
  * event container for all events
@@ -17,7 +18,7 @@ abstract class Event extends AbstractEvent
           QUERY_BUILDER="queryBuilder";
     
     /**
-     * @var array
+     * @var array | ArrayHash
      */
     private $data;
 
@@ -27,11 +28,11 @@ abstract class Event extends AbstractEvent
     private $event;
 
     /**
-     * @param array $data
+     * @param array | ArrayHash $data
      * @param string | null $event
      * @return void
      */
-    public function __construct(array $data, string $event=null)
+    public function __construct($data, string $event=null)
     {
         $this->data = $data;
         $this->event = $event;
