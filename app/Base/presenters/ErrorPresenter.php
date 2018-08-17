@@ -38,23 +38,21 @@ final class ErrorPresenter extends Presenter
      * @param \Exception $exception
      * @return void
      */
-    public function renderDefault(\Exception $exception)
+    public function renderDefault($exception)
     {
         $code = in_array($exception->getCode(), array(403, 404, 405, 410, 500)) ? $exception->getCode() : 'other';
         $this->template->code = $code;
         $this->template->message = $this->translator->translate($exception->getMessage());
         if($exception instanceof BadRequestException){
-            
-            $this->setView($code);
+            //$this->setView($code);
             Debugger::log("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}", 'access');
-        } else {
+            Debugger::fireLog("HTTP code $code: {$exception->getMessage()} in {$exception->getFile()}:{$exception->getLine()}");
+            bdump($exception);
+        }else {
             $this->setView('500'); // load template 500.latte
             Debugger::log($exception, Debugger::ERROR); // and log exception
-
-        }
-
-        if ($this->isAjax()) { // AJAX request? Note this error in bar dumped
-            bdump($exception);          
+            Debugger::fireLog(dump($exception));
+            bdump($exception);
         }
         return;
     }
