@@ -28,69 +28,75 @@ namespace app\User\controls\forms;
 use app\Base\controls\FormControl\FormControl;
 
 /**
- * ChangePassForm
+ * ExpiredPasswordForm
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  *
- * @title user.changePassForm.title
- * @comment user.changePassForm.comment
+ * @title user.expiredPasswordForm.title
+ * @comment user.expiredPasswordForm.comment
  * @styles (headerBackground="light",headerText="dark",size="w-100")
  * @rError (container='div class="row"')
  * @rControl (container='div class="col-lg-12 col-md-12 col-sm-12"')
  * @rLabel (requiredsuffix="",container='div class="col-lg-0 col-md-0 col-sm-0"')
  * @ajax
- * @onSuccess User.PasswordEvents.onSuccess
+ * @onSuccess User.PasswordEvents.onExpiredFormSuccess
  */
-final class ChangePassForm extends FormControl
+final class ExpiredPasswordForm extends FormControl
 {
-    const ID="id",
+    const USERNAME="username",
           OLD_PASSWORD="oldPassword",
           NEW_PASSWORD="newPassword",
-          REPEATED_PASSWORD="repeatedPassword";
+          REPEATED_PASSWORD="repeatedPassword",
+          EVENT_SUCCESS="User.PasswordEvents.onExpiredFormSuccess";
 
     /**
-     * @type hidden
+     * @leftAddon user.expiredPasswordForm.username.label
+     * @rightIcon user
+     * @type text
+     * @cols 20
+     * @validator (type=':filled',message='user.error.username.required')
+     * @validator (type=':minLength',message='user.error.username.minLength',value=4)
      */
-    public $id;
+    public $username;
     
     /**
-     * @leftAddon user.changePassForm.oldPassword
+     * @leftAddon user.expiredPasswordForm.oldPassword.label
      * @rightIcon unlock-alt
      * @type password
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredPassword')
-     * @validator (type=':minLength',message='user.error.minLengthPassword',value=8)
-     * @description user.changePassForm.oldPasswordDescription
+     * @validator (type=':filled',message='user.error.password.required')
+     * @validator (type=':minLength',message='user.error.password.minLength',value=8)
+     * @description user.expiredPasswordForm.oldPassword.description
      */
     public $oldPassword;
     
     /**
-     * @leftAddon user.changePassForm.newPassword
+     * @leftAddon user.expiredPasswordForm.newPassword.label
      * @rightIcon key
      * @type password
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredPassword')
-     * @validator (type=':minLength',message='user.error.minLengthPassword',value=8)
-     * @validator (type=':pattern',message='user.error.patternPassword',value='.*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*')
-     * @description user.changePassForm.newPasswordDescription
+     * @validator (type=':filled',message='user.error.password.required')
+     * @validator (type=':minLength',message='user.error.password.minLength',value=8)
+     * @validator (type=':pattern',message='user.error.password.pattern',value='.*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*')
+     * @description user.expiredPasswordForm.newPassword.description
      */
     public $newPassword;
     
     /**
-     * @leftAddon user.changePassForm.repeatedPassword
+     * @leftAddon user.expiredPasswordForm.repeatedPassword.label
      * @rightIcon redo
      * @type password
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredPassword')
-     * @validator (type=':minLength',message='user.error.minLengthPassword',value=8)
-     * @validator (type=':equal',message='user.error.equalPassword',value='newPassword')
-     * @description user.changePassForm.repeatedPasswordDescription
+     * @validator (type=':filled',message='user.error.password.required')
+     * @validator (type=':minLength',message='user.error.password.minLength',value=8)
+     * @validator (type=':equal',message='user.error.password.equal',value='newPassword')
+     * @description user.expiredPasswordForm.repeatedPassword.description
      */
     public $repeatedPassword;
     
     /**
-     * @label user.changePassForm.submit
+     * @label user.expiredPasswordForm.submit.label
      * @type submit
      */
     public $submit;

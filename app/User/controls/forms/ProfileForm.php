@@ -1,13 +1,37 @@
 <?php
-namespace occ2\inventar\User\controls\forms;
+/*
+ * The MIT License
+ *
+ * Copyright 2018 Milan Onderka <milan_onderka@occ2.cz>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
-use occ2\FormControl\FormControl;
+namespace app\User\controls\forms;
+
+use app\Base\controls\FormControl\FormControl;
 
 /**
- * SettingsForm
+ * ProfileForm
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  *
  * @title user.settingsForm.title
  * @styles (headerBackground="light",headerText="dark",size="w-100")
@@ -15,8 +39,9 @@ use occ2\FormControl\FormControl;
  * @rControl (container='div class="col-lg-12 col-md-12 col-sm-12"')
  * @rLabel (requiredsuffix="",container='div class="col-lg-0 col-md-0 col-sm-0"')
  * @ajax
+ * @onSuccess User.ProfileEvents.onSuccess
  */
-final class SettingsForm extends FormControl
+final class ProfileForm extends FormControl
 {
     const ID="id",
           REALNAME="realname",
@@ -28,7 +53,6 @@ final class SettingsForm extends FormControl
     
     /**
      * @type hidden
-     * @var HiddenField
      */
     public $id;
     
@@ -39,7 +63,6 @@ final class SettingsForm extends FormControl
      * @cols 20
      * @validator (type=':filled',message='user.error.requiredName')
      * @description user.settingsForm.nameDescription
-     * @var TextInput
      */
     public $realname;
     
@@ -51,7 +74,6 @@ final class SettingsForm extends FormControl
      * @validator (type=':filled',message='user.error.requiredUsername')
      * @validator (type=':minLength',message='user.error.minLengthUsername',value=4)
      * @description user.settingsForm.usernameDescription
-     * @var TextInput
      */
     public $username;
     
@@ -63,7 +85,6 @@ final class SettingsForm extends FormControl
      * @validator (type=':filled',message='user.error.requiredEmail')
      * @validator (type=':email',message='user.error.invalidEmail')
      * @description user.settingsForm.emailDescription
-     * @var TextInput
      */
     public $email;
     
@@ -75,7 +96,6 @@ final class SettingsForm extends FormControl
      * @validator (type=':filled',message='user.error.requiredPhone')
      * @validator (type=':pattern',message='user.error.invalidPhone',value='\+(?:[0-9]?){6,14}[0-9]')
      * @description user.settingsForm.phoneDescription
-     * @var TextInput
      */
     public $phone;
     
@@ -86,7 +106,6 @@ final class SettingsForm extends FormControl
      * @cols 20
      * @validator (type=':filled',message='user.error.requiredQuestion')
      * @description user.settingsForm.questionDescription
-     * @var TextInput
      */
     public $cQuestion;
     
@@ -97,14 +116,12 @@ final class SettingsForm extends FormControl
      * @cols 20
      * @description user.settingsForm.answerDescription
      * @placeholder user.settingsForm.hidden
-     * @var TextInput
      */
     public $cAnswer;
     
     /**
      * @label user.settingsForm.submit
      * @type submit
-     * @var SubmitButton
      */
     public $submit;
 }

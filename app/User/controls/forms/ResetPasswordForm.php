@@ -28,36 +28,48 @@ namespace app\User\controls\forms;
 use app\Base\controls\FormControl\FormControl;
 
 /**
- * ControlQuestionForm
+ * ResetPasswordForm
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  *
- * @title user.controlQuestionForm.title
+ * @title user.resetPasswordForm.title
+ * @comment user.resetPasswordForm.comment
  * @styles (headerBackground="light",headerText="dark",size="w-100")
  * @rError (container='div class="row"')
  * @rControl (container='div class="col-lg-12 col-md-12 col-sm-12"')
  * @rLabel (requiredsuffix="",container='div class="col-lg-0 col-md-0 col-sm-0"')
  * @ajax
- * @links (link="clearReset!",text="user.controlQuestionForm.link.reset",class="btn btn-outline-primary")
- * @onSuccess User.PasswordEvents.onControlQuestionFormSuccess
+ * @onSuccess User.PasswordEvents.onResetFormSuccess
  */
-final class ControlQuestionForm extends FormControl
+final class ResetPasswordForm extends FormControl
 {
-    const ANSWER="cAnswer",
-          EVENT_SUCCESS="User.PasswordEvents.onControlQuestionFormSuccess";
-    
-    /**
-     * @leftAddon user.controlQuestionForm.answer.label
-     * @rightIcon user-secret
-     * @type text
-     * @cols 20
-     * @validator (type=':filled',message='user.error.answer.required')
-     */
-    public $cAnswer;
+    const USERNAME="username",
+          EMAIL="email",
+          EVENT_SUCCESS="User.PasswordEvents.onResetFormSuccess";
 
     /**
-     * @label user.controlQuestionForm.submit.label
+     * @leftAddon user.resetPasswordForm.username.label
+     * @rightIcon user
+     * @type text
+     * @cols 20
+     * @validator (type=':filled',message='user.error.username.required')
+     */
+    public $username;
+    
+    /**
+     * @leftAddon user.resetPasswordForm.email.label
+     * @rightIcon at
+     * @type text
+     * @cols 20
+     * @validator (type=':filled',message='user.error.email.required')
+     * @validator (type=':email',message='user.error.email.invalid')
+     */
+    public $email;
+
+    /**
+     * @label user.resetPasswordForm.submit.label
+     * @type submit
      */
     public $submit;
 }
