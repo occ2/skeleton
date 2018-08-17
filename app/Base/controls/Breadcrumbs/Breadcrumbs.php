@@ -1,8 +1,9 @@
 <?php
 namespace app\Base\controls\Breadcrumbs;
 
-use Nette\Application\UI\Control,
-    Nette\Utils\ArrayHash;
+use Nette\Application\UI\Control;
+use Nette\Utils\ArrayHash;
+use Nette\Application\UI\ITemplate;
 
 /**
  * Breadcrumbs
@@ -26,7 +27,11 @@ class Breadcrumbs extends Control
     public function render()
     {
         $this->template->data = $this->data;
-        return $this->template->render(self::TEMPLATE);
+        if($this->template instanceof ITemplate){
+            $this->template->setFile(self::TEMPLATE);
+            $this->template->render();
+        }
+        return;
     }
 
     /**
