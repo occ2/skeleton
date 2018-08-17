@@ -1,4 +1,28 @@
 <?php
+/*
+ * The MIT License
+ *
+ * Copyright 2018 Milan Onderka <milan_onderka@occ2.cz>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace app\Base\models\facades;
 
 use app\User\models\exceptions\PermissionException;
@@ -6,8 +30,8 @@ use app\User\events\data\PermissionEvent;
 use Contributte\Utils\DatetimeFactory;
 use Doctrine\ORM\EntityManager;
 use Contributte\EventDispatcher\EventDispatcher;
+use Contributte\Cache\ICacheFactory;
 use Nette\Security\User;
-use Nette\Caching\IStorage;
 use Nette\Utils\Strings;
 use Nette\Reflection\ClassType;
 use Nette\Caching\Cache;
@@ -52,22 +76,23 @@ abstract class BaseFacade extends AbstractFacade
 
     /**
      * @param DatetimeFactory $datetimeFactory
+     * @param ICacheFactory $cacheFactory
      * @param EntityManager $em
      * @param EventDispatcher $ed
      * @param User $user
-     * @param IStorage $cachingStorage
      * @param array $config
      * @return void
      */
     public function __construct(DatetimeFactory $datetimeFactory,
+                                ICacheFactory $cacheFactory,
                                 EntityManager $em,
                                 EventDispatcher $ed,
                                 User $user = null,
-                                IStorage $cachingStorage = null,
                                 array $config = array())
     {
-        parent::__construct($datetimeFactory, $em, $ed, $user, $cachingStorage, $config);
-        $this->cache = $this->cachingFactory->create(static::CACHE_PREFIX);
+        parent::__construct($datetimeFactory, $cacheFactory, $em, $ed, $user, $config);
+        $this->cache = $cacheFactory->create(static::CACHE_PREFIX);
+        return;
     }
 
     /**
@@ -103,7 +128,10 @@ abstract class BaseFacade extends AbstractFacade
             if($this->user instanceof \Nette\Security\User){
                 $this->acl($method, $arguments);
             }
-            return call_user_func_array([$this,$method],$arguments);
+            $callable = [$this,$method];
+            if(is_callable($callable)){
+                return call_user_func_array($callable,$arguments);
+            }
         }
     }
     
@@ -136,7 +164,7 @@ abstract class BaseFacade extends AbstractFacade
      * @return void
      */
     protected function loggedIn(array $config){
-        if(!$this->user->isLoggedIn()){
+        if($this->user instanceof User && !$this->user->isLoggedIn()){
             $this->aclError($config, PermissionException::NOT_LOGGED_IN);
         }
         return;
@@ -149,7 +177,7 @@ abstract class BaseFacade extends AbstractFacade
      * @return void
      */
     protected function isAllowed(array $config,$data){
-        if(!$this->user->isAllowed(
+        if($this->user instanceof User && !$this->user->isAllowed(
             $config["resource"],
             isset($config["resource"]) ? $config["resource"] : self::DEFAULT_PRIVILEGE
         )){
@@ -164,7 +192,7 @@ abstract class BaseFacade extends AbstractFacade
      * @param int $defaultCode
      * @param mixed $data
      * @return mixed
-     * @throws mixed
+     * @throws \Exception
      */
     protected function aclError(array $config,int $defaultCode,$data=null)
     {
