@@ -27,13 +27,15 @@ trait TCallbacks
     {
         if ($column==null) {
             if (isset($this->callbacks->{$callback})) {
-                return Callback::check($this->callbacks->{$callback});
+                Callback::check($this->callbacks->{$callback});
+                return true;
             } else {
                 return false;
             }
         } else {
             if (isset($this->callbacks->{$callback}[$column])) {
-                return Callback::check($this->callbacks->{$callback}[$column]);
+                Callback::check($this->callbacks->{$callback}[$column]);
+                return true;
             } else {
                 return false;
             }
@@ -42,8 +44,7 @@ trait TCallbacks
     
     /**
      * invoke callback
-     * @param callable $callback
-     * @param mixed $params
+     * @param string $callback
      * @return mixed
      * @throws GridCallbackException
      */

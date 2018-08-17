@@ -125,7 +125,7 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object);
             };
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
-            $action->onSelect[] = function($ids) use ($t,$grid) {
+            $action->onSelect[] = function($ids) use ($t,$grid,$config) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
                 $data = $t->object->_gridEventFactory->create(
                     $grid,
@@ -134,7 +134,8 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                     ["ids"=>$ids],
                     $eventName    
                 );
-                return $t->object->on($eventName, $data);
+                $t->object->on($eventName, $data);
+                return;
             };
         }
         return $action;
@@ -144,10 +145,10 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
      * add group select action
      * @param DataGrid $grid
      * @param ArrayHash $config
-     * @return GroupSelectAction
+     * @return GroupAction
      * @throws GridBuilderException
      */
-    protected function addSelect(DataGrid $grid, ArrayHash $config): GroupSelectAction
+    protected function addSelect(DataGrid $grid, ArrayHash $config): GroupAction
     {
         $t = $this;
         if (!$this->checkCallback(GridBuilder::GROUP_ACTION_OPTIONS_CALLBACK, $config->name)) {
@@ -163,7 +164,7 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $option);
             };
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
-            $action->onSelect[] = function($ids,$option) use ($t,$grid) {
+            $action->onSelect[] = function($ids,$option) use ($t,$grid,$config) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
                 $data = $t->object->_gridEventFactory->create(
                     $grid,
@@ -172,7 +173,8 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                     ["ids"=>$ids,"option"=>$option],
                     $eventName
                 );
-                return $t->object->on($eventName, $data);
+                $t->object->on($eventName, $data);
+                return;
             };
         }
         return $action;
@@ -182,10 +184,10 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
      * add group multiselect action
      * @param DataGrid $grid
      * @param ArrayHash $config
-     * @return GroupMultiSelectAction
+     * @return GroupAction
      * @throws GridBuilderException
      */
-    protected function addMultiSelect(DataGrid $grid, ArrayHash $config): GroupMultiSelectAction
+    protected function addMultiSelect(DataGrid $grid, ArrayHash $config): GroupAction
     {
         $t = $this;
         if (!$this->checkCallback(GridBuilder::GROUP_ACTION_OPTIONS_CALLBACK, $config->name)) {
@@ -201,7 +203,7 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $options);
             };
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
-            $action->onSelect[] = function($ids,$options) use ($t,$grid) {
+            $action->onSelect[] = function($ids,$options) use ($t,$grid,$config) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
                 $data = $t->object->_gridEventFactory->create(
                     $grid,
@@ -210,7 +212,8 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                     ["ids"=>$ids,"options"=>$options],
                     $eventName
                 );
-                return $t->object->on($eventName, $data);
+                $t->object->on($eventName, $data);
+                return;
             };
         }
         return $action;
@@ -220,9 +223,9 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
      * add group text action
      * @param DataGrid $grid
      * @param ArrayHash $config
-     * @return GroupTextAction
+     * @return GroupAction
      */
-    protected function addText(DataGrid $grid, ArrayHash $config): GroupTextAction
+    protected function addText(DataGrid $grid, ArrayHash $config): GroupAction
     {
         $t = $this;
         $action = $grid->addGroupTextAction(
@@ -233,7 +236,7 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $value);
             };
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
-            $action->onSelect[] = function($ids,$value) use ($t,$grid) {
+            $action->onSelect[] = function($ids,$value) use ($t,$grid,$config) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
                 $data = $t->object->_gridEventFactory->create(
                     $grid,
@@ -242,7 +245,8 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                     ["ids"=>$ids,"value"=>$value],
                     $eventName
                 );
-                return $t->object->on($eventName, $data);
+                $t->object->on($eventName, $data);
+                return;
             };
         }
         return $action;
@@ -252,9 +256,9 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
      * add group textarea action
      * @param DataGrid $grid
      * @param ArrayHash $config
-     * @return GroupTextareaAction
+     * @return GroupAction
      */
-    protected function addTextArea(DataGrid $grid, ArrayHash $config): GroupTextareaAction
+    protected function addTextArea(DataGrid $grid, ArrayHash $config): GroupAction
     {
         $t = $this;
         $action = $grid->addGroupTextareaAction(
@@ -265,7 +269,7 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $value);
             };
         } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
-            $action->onSelect[] = function($ids,$value) use ($t,$grid) {
+            $action->onSelect[] = function($ids,$value) use ($t,$grid,$config) {
                 $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
                 $data = $t->object->_gridEventFactory->create(
                     $grid,
@@ -274,7 +278,8 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
                     ["ids"=>$ids,"value"=>$value],
                     $eventName
                 );
-                return $t->object->on($eventName, $data);
+                $t->object->on($eventName, $data);
+                return;
             };
         }
         return $action;

@@ -1,7 +1,31 @@
 <?php
+/*
+ * The MIT License
+ *
+ * Copyright 2018 Milan Onderka <milan_onderka@occ2.cz>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace app\Base\controls\FormControl\events;
 
-use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
+use app\Base\controls\Control\ControlEventData as BaseEvent;
 use Nette\Forms\Container as Form;
 use app\Base\controls\FormControl\FormControl;
 use Nette\Utils\ArrayHash;
@@ -17,7 +41,7 @@ class FormEvent extends BaseEvent
 {
 
     /**
-     * @var string
+     * @var string | null
      */
     private $event;
 
@@ -29,7 +53,7 @@ class FormEvent extends BaseEvent
     /**
      * @var FormControl
      */
-    private $control;
+    protected $control;
 
     /**
      * @param Form $form
@@ -37,11 +61,11 @@ class FormEvent extends BaseEvent
      * @param string $event
      * @return void
      */
-    public function __construct(Form $form, FormControl $control, string $event=null)
+    public function __construct(Form $form, FormControl $control, string $event=null,$data=null)
     {
-        $this->event = $event;
         $this->form = $form;
         $this->control = $control;
+        parent::__construct($data, $control, $event);
         return;
     }
 
@@ -80,7 +104,7 @@ class FormEvent extends BaseEvent
 
     /**
      * get presenter
-     * @return Presenter
+     * @return Presenter | null
      */
     public function getPresenter()
     {
@@ -89,7 +113,7 @@ class FormEvent extends BaseEvent
 
     /**
      * get event name
-     * @return string
+     * @return string | null
      */
     public function getEvent()
     {

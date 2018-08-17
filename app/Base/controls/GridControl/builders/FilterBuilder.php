@@ -65,7 +65,8 @@ class FilterBuilder implements IFilterGridBuilder
      */
     public function build()
     {
-        return $this->addFilters($this->column, $this->config);
+        $this->addFilters($this->column, $this->config);
+        return;
     }
 
     /**
@@ -138,7 +139,15 @@ class FilterBuilder implements IFilterGridBuilder
         $php = !isset($config->phpFormat) ? $this->object->_defaultDatetimeFormat["php"] : $config->phpFormat;
         $js = !isset($config->jsFormat) ? $this->object->_defaultDatetimeFormat["js"] : $config->jsFormat;
         $filter->setFormat($php, $js);
-        !isset($config->size) ? $filter->addAttribute("size", 8) : $filter->addAttribute("size", $config->size);
+        if(!isset($config->size)){
+            if($filter instanceof Filter){
+                $filter->addAttribute("size", 8);
+            }
+        } else {
+            if($filter instanceof Filter){
+                $filter->addAttribute("size", $config->size);
+            }
+        }
         return $filter;
     }
 
@@ -151,7 +160,7 @@ class FilterBuilder implements IFilterGridBuilder
      */
     protected function setupFilterRange(FilterRange $filter, ArrayHash $config, string $name)
     {
-        !isset($config->placeholders) ? : $filter->setPlaceholder(explode(",", $config->placeholders));
+        !isset($config->placeholders) ? : $filter->setPlaceholder(implode(",", $config->placeholders));
         return $filter;
     }
 

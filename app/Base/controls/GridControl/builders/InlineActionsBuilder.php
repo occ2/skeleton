@@ -55,8 +55,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
     protected $callbacks;
 
     /**
-     *
-     * @param type $object
+     * @param GridControl $object
      * @param DataGrid $grid
      * @param GridConfig $configurator
      * @param array $callbacks
@@ -103,8 +102,8 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
                     );
                 };
             } else {
-                $inline->onControlAdd[]=function(Container $form) use ($t,$config) {
-                    $t->setupInlineForm($form, $config,$t->grid);
+                $inline->onControlAdd[]=function(Container $form) use ($t) {
+                    $t->setupInlineForm($form);
                 };
             }
             if(!$this->checkCallback(GridBuilder::INLINE_FORM_ADD_SUBMIT_CALLBACK)){
@@ -115,7 +114,8 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
                 $inline->onSubmit[] = function(ArrayHash $values) use ($t,$grid) {
                     $eventName = $t->object->_symfonyEvents["inlineAddSubmit"];
                     $data = $t->object->_gridRowEventFactory->create(null,$values,$grid,$t->object,$eventName);
-                    return $t->object->on($eventName, $data);
+                    $t->object->on($eventName, $data);
+                    return;
                 };
             } else {
                 throw new GridBuilderException("ERROR: Invalid or undefined inline add submit callback or event",GridBuilderException::INVALID_INLINE_ADD_SUBMIT_CALLBACK);
@@ -175,7 +175,8 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
                 $inline->onSubmit[] = function($id, ArrayHash $values) use ($t,$grid) {
                     $eventName = $t->object->_symfonyEvents["inlineEditSubmit"];
                     $data = $t->object->_gridRowEventFactory->create($id,$values,$grid,$t->object,$eventName);
-                    return $t->object->on($eventName, $data);
+                    $t->object->on($eventName, $data);
+                    return;
                 };
             } else {
                 throw new GridBuilderException("ERROR: Invalid or undefined inline edit submit callback",GridBuilderException::INVALID_INLINE_EDIT_SUBMIT_CALLBACK);
@@ -200,7 +201,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
         $t = $this;
         if($this->checkCallback(GridBuilder::INLINE_CUSTOM_REDRAW_CALLBACK)){
             $inline->onCustomRedraw[] = function() use ($t) {
-                $t->invokeCallback(GridBuilder::INLINE_CUSTOM_REDRAW_CALLBACK, null,$t->object->grid,$t->object);
+                $t->invokeCallback(GridBuilder::INLINE_CUSTOM_REDRAW_CALLBACK, null,$t->object["grid"],$t->object);
             };
         } else {
             $inline->onCustomRedraw[] = function() use ($grid) {
@@ -212,7 +213,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
 
     /**
      * @param Container $container
-     * @return type
+     * @return void
      * @throws GridBuilderException
      */
     protected function setupInlineForm(Container $container)
@@ -241,12 +242,12 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
 
     /**
      * @param Container $container
-     * @param ArrayHash $config
+     * @param object $config
      * @param ArrayHash $validator
      * @return BaseControl
      * @throws GridBuilderException
      */
-    protected function addFormItem(Container $container, ArrayHash $config,ArrayHash $validator=null)
+    protected function addFormItem(Container $container,$config,ArrayHash $validator=null)
     {
         if(!isset($config->type) && !array_key_exists($config->type, self::$formControls)){
             throw new GridBuilderException("ERROR: Invalid inline form control type",GridBuilderException::INVALID_INLINE_FORM_CONTROL_TYPE);
@@ -288,7 +289,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
                 $control->addRule(
                     $config->type,
                     isset($config->message) ? $config->message : null,
-                    isset($config->value) ? is_array($config->value) ? explode(";", $config->value) : $config->value : null
+                    isset($config->value) ? !is_array($config->value) ? explode(";", $config->value) : $config->value : null
                 );
             }
         }
@@ -311,7 +312,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
         );
         $this->setupItem($control, $config);
         $this->setupValidators($control,$validator);
-        return $control;
+        return;
     }
 
     /**
@@ -326,12 +327,11 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             $config->name,
             '',
             isset($config->cols) ? $config->cols : null,
-            isset($config->maxLength) ? $config->maxLength : null,
             isset($config->rows) ? $config->rows : null
          );
         $this->setupItem($control, $config);
         $this->setupValidators($control,$validator);
-        return $control;
+        return;
     }
 
     /**
@@ -355,7 +355,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             isset($config->size) ? $config->size :null
         );
         $this->setupValidators($control,$validator);
-        return $control;
+        return;
     }
 
     /**
@@ -379,7 +379,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             isset($config->size) ? $config->size :null
         );
         $this->setupValidators($control,$validator);
-        return $control;
+        return;
     }
 
     /**
@@ -394,7 +394,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             $config->name,
             isset($config->caption) ? $config->caption : null
             );
-        return $control;
+        return;
     }
 
     /**
@@ -413,7 +413,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
         }
         $control = $container->addCheckboxList($config->name, '', $options);
         $this->setupValidators($control,$validator);
-        return $control;
+        return;
     }
 
     /**
@@ -432,6 +432,6 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
         }
         $control = $container->addRadioList($config->name, '', $options);
         $this->setupValidators($control,$validator);
-        return $control;
+        return;
     }
 }

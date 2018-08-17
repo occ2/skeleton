@@ -24,6 +24,8 @@ namespace app\Base\traits;
  * THE SOFTWARE.
  */
 
+use Nette\Application\UI\Presenter;
+
 /**
  * trait that extend flash message functionality
  * if used in presenter put flashes.latte into app/templates
@@ -46,7 +48,13 @@ trait TFlashMessage
     public function flashMessage($message, $type = 'default', $comment=null, $icon=null, $width=50, $iconSize="lg", $timeout=5)
     {
         $id = $this->getParameterId('flash');
-        $messages = $this->getPresenter()->getFlashSession()->$id;
+        $presenter = $this->getPresenter();
+        if($presenter instanceof Presenter){
+            $messages = $presenter->getFlashSession()->$id;
+        } else {
+            $messages = null;
+        }
+        
         $messages[] = $flash = (object) [
              'title' => $message,
              'type' => $type,
@@ -57,7 +65,9 @@ trait TFlashMessage
              'timeout' => $timeout
          ];
         $this->getTemplate()->flashes = $messages;
-        $this->getPresenter()->getFlashSession()->$id = $messages;
+        if($presenter instanceof Presenter){
+            $presenter->getFlashSession()->$id = $messages;
+        }
         return $flash;
     }
 }

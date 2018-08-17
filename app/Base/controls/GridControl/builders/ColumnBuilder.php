@@ -17,7 +17,7 @@ use Ublaboo\DataGrid\Column\ColumnLink;
 use Nette\Reflection\Property;
 use Nette\Utils\Strings;
 use Nette\Utils\ArrayHash;
-use Nette\Localization\ITranslator;
+use Kdyby\Translation\ITranslator;
 
 /**
  * ColumnBuilder
@@ -70,7 +70,8 @@ class ColumnBuilder implements IColumnGridBuilder
      */
     public function build()
     {
-        return $this->addColumns($this->grid, $this->property);
+        $this->addColumns($this->grid, $this->property);
+        return;
     }
 
     /**
@@ -120,7 +121,7 @@ class ColumnBuilder implements IColumnGridBuilder
      * add datetime column
      * @param DataGrid $grid
      * @param GridColumnsConfig $config
-     * @return
+     * @return ColumnDateTime
      */
     protected function addColumnDatetime(DataGrid $grid, GridColumnsConfig $config): ColumnDateTime
     {
@@ -225,7 +226,7 @@ class ColumnBuilder implements IColumnGridBuilder
      * setup column status
      * @param ColumnStatus $column
      * @param ArrayHash $option
-     * @param type $key
+     * @param string $key
      * @return ColumnStatus
      */
     protected function setupColumnStatus(ColumnStatus $column, ArrayHash $option,$key)
@@ -370,11 +371,12 @@ class ColumnBuilder implements IColumnGridBuilder
      * add filters
      * @param Column $column
      * @param GridColumnsConfig $config
-     * @return mixed
+     * @return void
      */
     protected function addFilters(Column $column, GridColumnsConfig $config)
     {
         $b = new FilterBuilder($this->object, $column, $config, $this->callbacks);
-        return $b->build();
+        $b->build();
+        return;
     }
 }

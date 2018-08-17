@@ -1,4 +1,28 @@
 <?php
+/*
+ * The MIT License
+ *
+ * Copyright 2018 Milan Onderka <milan_onderka@occ2.cz>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 namespace app\Base\controls\FormControl\builders;
 
 use app\Base\controls\FormControl\exceptions\FormBuilderException;
@@ -7,11 +31,10 @@ use app\Base\controls\FormControl\FormControl;
 use Nette\Application\UI\Form;
 use Nette\Reflection\ClassType;
 use Nette\Reflection\Property;
-use Nette\Utils\Callback;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
 use Nette\Forms\Controls\TextBase;
-use Nette\Application\UI\Control;;
+use Nette\Forms\Controls\BaseControl;
 
 /**
  * EntityFormBuilder
@@ -40,12 +63,12 @@ class FormBuilder implements IFormBuilder
     ];
 
     /**
-     * @var string
+     * @var ClassType
      */
     protected $classType;
 
     /**
-     * @var Control
+     * @var FormControl
      */
     public $object;
 
@@ -60,7 +83,7 @@ class FormBuilder implements IFormBuilder
     protected $validators;
 
     /**
-     * @var array
+     * @var array | null
      */
     protected $loadOptionsCallback;
 
@@ -113,9 +136,9 @@ class FormBuilder implements IFormBuilder
 
     /**
      * set form control object
-     * @param Control $object
+     * @param FormControl $object
      */
-    public function setObject(Control $object)
+    public function setObject(FormControl $object)
     {
         $this->object = $object;
         $this->classType = ClassType::from($object);
@@ -124,7 +147,7 @@ class FormBuilder implements IFormBuilder
 
     /**
      * set load options callbacks
-     * @param array $optionsCallbacks
+     * @param array | null $optionsCallbacks
      * @return $this
      */
     public function setOptionsCallbacks(array $optionsCallbacks=null)
@@ -142,9 +165,6 @@ class FormBuilder implements IFormBuilder
      */
     protected function invokeCallback(callable $callback, $params=null)
     {
-        if (Callback::check($callback)) {
-            throw new FormBuilderException("ERROR: Invalid callback");
-        }
         return $callback($params);
     }
 
@@ -206,7 +226,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add text element
      */
-    protected function addText(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addText(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addText(
             $config->name,
@@ -223,7 +243,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add email element
      */
-    protected function addEmail(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addEmail(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addEmail(
             $config->name,
@@ -238,7 +258,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add integer element
      */
-    protected function addNumber(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addNumber(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addInteger(
             $config->name,
@@ -253,7 +273,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add password element
      */
-    protected function addPassword(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addPassword(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addPassword(
             $config->name,
@@ -270,7 +290,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add textarea element
      */
-    protected function addTextarea(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addTextarea(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addTextArea(
             $config->name,
@@ -287,7 +307,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add select element
      */
-    protected function addSelect(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addSelect(Form $form, FormItemConfig $config): BaseControl
     {
         $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->name]);
         $element = $form->addSelect(
@@ -305,7 +325,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add multiselect element
      */
-    protected function addMultiselect(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addMultiselect(Form $form, FormItemConfig $config): BaseControl
     {
         $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->name]);
         $element = $form->addMultiSelect(
@@ -323,7 +343,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add checkbox element
      */
-    protected function addCheckbox(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addCheckbox(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addCheckbox(
             $config->name,
@@ -338,7 +358,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add checkboxlist element
      */
-    protected function addCheckboxList(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addCheckboxList(Form $form, FormItemConfig $config): BaseControl
     {
         $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->name]);
         $element = $form->addCheckboxList(
@@ -355,7 +375,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add radiolist element
      */
-    protected function addRadioList(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addRadioList(Form $form, FormItemConfig $config): BaseControl
     {
         $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->name]);
         $element = $form->addRadioList(
@@ -372,7 +392,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add upload element
      */
-    protected function addUpload(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addUpload(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addUpload(
             $config->name,
@@ -388,7 +408,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add multiupload element
      */
-    protected function addMultiUpload(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addMultiUpload(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addMultiUpload(
             $config->name,
@@ -403,7 +423,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add hidden lement
      */
-    protected function addHidden(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addHidden(Form $form, FormItemConfig $config): BaseControl
     {
         return $form->addHidden($config->name);
     }
@@ -411,7 +431,7 @@ class FormBuilder implements IFormBuilder
     /**
      * add submit
      */
-    protected function addSubmit(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addSubmit(Form $form, FormItemConfig $config): BaseControl
     {
         return $form->addSubmit($config->name, $config->label);
     }
@@ -419,27 +439,29 @@ class FormBuilder implements IFormBuilder
     /**
      * add recaptcha control
      * @param Form $form
-     * @param \app\Base\controls\FormControl\builders\FormItemConfig $config
-     * @return \Nette\Forms\Controls\BaseControl
+     * @param FormItemConfig $config
+     * @return BaseControl
      */
-    protected function addRecaptcha(Form $form, FormItemConfig $config): \Nette\Forms\Controls\BaseControl
+    protected function addRecaptcha(Form $form, FormItemConfig $config): BaseControl
     {
-        $element = $form->addReCaptcha(
-                $config->name,
-                $config->label == null ? "": $config->label,
-                $config->required == null ? true : $config->required,
-                $config->message == null ? "Are you bot?" : $config->message
-        );
-        return $element;
+        if(method_exists($form, "addReCaptcha")){
+            $element = $form->addReCaptcha(
+                    $config->name,
+                    $config->label == null ? "": $config->label,
+                    $config->required == null ? true : $config->required,
+                    $config->message == null ? "Are you bot?" : $config->message
+            );
+            return $element;
+        }
     }
 
     /**
      * set validators
-     * @param \Nette\Forms\Controls\BaseControl $element
+     * @param BaseControl $element
      * @param array $validators
      * @return void
      */
-    protected function setValidators(\Nette\Forms\Controls\BaseControl $element, array $validators)
+    protected function setValidators(BaseControl $element, array $validators)
     {
         foreach ($validators as $validator) {
             if ($validator->type==":equal") {
@@ -448,7 +470,7 @@ class FormBuilder implements IFormBuilder
                 $element->addRule(
                         $validator->type,
                         isset($validator->message) ? $validator->message : null,
-                        isset($validator->value) ? is_array($validator->value) ? explode(";", $validator->value) : $validator->value : null
+                        isset($validator->value) ? !is_array($validator->value) ? explode(";", $validator->value) : $validator->value : null
                     );
             }
         }

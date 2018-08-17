@@ -2,7 +2,7 @@
 namespace app\Base\controls\GridControl\interfaces;
 
 use app\Base\controls\GridControl\events\GridRowEventData;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 use Nette\Application\UI\Control;
 
 /**
@@ -14,7 +14,7 @@ interface IGridRowEventFactory
 {
     /**
      * create row event data object
-     * @param int | string $id
+     * @param int|string|null $id
      * @param mixed $data
      * @param DataGrid $datagrid
      * @param Control $control

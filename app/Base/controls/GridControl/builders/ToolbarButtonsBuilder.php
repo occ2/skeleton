@@ -55,11 +55,12 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
 
     /**
      * build toolbar btns
-     * @return vod
+     * @return void
      */
     public function build()
     {
-        return $this->addToolbarButtons($this->grid);
+        $this->addToolbarButtons($this->grid);
+        return;
     }
 
     /**

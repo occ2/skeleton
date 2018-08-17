@@ -9,6 +9,7 @@ use app\Base\controls\GridControl\builders\GridBuilder;
 use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Column\Action;
+use Ublaboo\DataGrid\Column\ActionCallback;
 use Ublaboo\DataGrid\Column\MultiAction;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
@@ -24,17 +25,17 @@ class ActionsBuilder implements IAdditionalGridBuilder
     use TCallbacks;
 
     /**
-     * @var \app\Base\controls\GridControl\GridControl
+     * @var GridControl
      */
     protected $object;
 
     /**
-     * @var \Ublaboo\DataGrid\DataGrid
+     * @var DataGrid
      */
     protected $grid;
 
     /**
-     * @var \app\Base\controls\GridControl\configurators\GridConfig
+     * @var GridConfig
      */
     protected $configurator;
 
@@ -106,31 +107,36 @@ class ActionsBuilder implements IAdditionalGridBuilder
                     $config->name,
                     !isset($config->label) ? "" : $config->label
             );
-            $action->onClick[] = function ($id) use ($t,$grid,$config) {
-                $this->invokeCallback(
-                    GridBuilder::ACTION_CALLBACK,
-                    $config->name,
-                    $id,
-                    $grid,
-                    $t->object
-                );
-            };
+            if($action instanceof ActionCallback){
+                $action->onClick[] = function ($id) use ($t,$grid,$config) {
+                    $this->invokeCallback(
+                        GridBuilder::ACTION_CALLBACK,
+                        $config->name,
+                        $id,
+                        $grid,
+                        $t->object
+                    );
+                };
+            }
         } elseif(array_key_exists("action" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
             $eventName = $this->object->_symfonyEvents["action" . Strings::firstUpper($config->name)];
             $action = $grid->addActionCallback(
                     $config->name,
                     !isset($config->label) ? "" : $config->label
             );
-            $action->onClick[] = function ($id) use ($t,$grid,$eventName) {
-                $data = $t->object->_gridRowEventFactory->create(
-                   $id,
-                   null,
-                   $grid,
-                   $t->object,
-                   $eventName
-                );
-                return $t->object->on($eventName, $data);
-            };
+            if($action instanceof ActionCallback){
+                $action->onClick[] = function ($id) use ($t,$grid,$eventName) {
+                    $data = $t->object->_gridRowEventFactory->create(
+                       $id,
+                       null,
+                       $grid,
+                       $t->object,
+                       $eventName
+                    );
+                    $t->object->on($eventName, $data);
+                    return;
+                };
+            }
         } else {
             $action = $grid->addAction(
                     $config->name,
@@ -182,7 +188,7 @@ class ActionsBuilder implements IAdditionalGridBuilder
         
         !isset($config->newTab) ?: $action->setOpenInNewTab($config->newTab);
         if (isset($config->dataAttribute)) {
-            $a = explode("=>", $this->dataAttribute);
+            $a = explode("=>", $config->dataAttribute);
             $action->setDataAttribute($a[0], $a[1]);
         }
         if ($this->checkCallback(GridBuilder::ACTION_CONFIRM_CALLBACK, $config->name)) {
@@ -197,7 +203,7 @@ class ActionsBuilder implements IAdditionalGridBuilder
      * setup allow callback
      * @param DataGrid $grid
      * @param ArrayHash $config
-     * @param type $multiaction
+     * @param mixed | null $multiaction
      */
     protected function setupAllowCallback(DataGrid $grid, ArrayHash $config, $multiaction=null)
     {
@@ -289,6 +295,6 @@ class ActionsBuilder implements IAdditionalGridBuilder
             );
         $action = $multiaction->getAction($config->name);
         $this->setupAction($action, $config);
-        return $action;
+        return;
     }
 }

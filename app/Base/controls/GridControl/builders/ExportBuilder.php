@@ -59,7 +59,8 @@ class ExportBuilder implements IAdditionalGridBuilder
      */
     public function build()
     {
-        return $this->addExports($this->grid);
+        $this->addExports($this->grid);
+        return;
     }
 
     /**
@@ -118,7 +119,8 @@ class ExportBuilder implements IAdditionalGridBuilder
                     $data_source,
                     $eventName
                 );
-                return $t->object->on($eventName, $data);
+                $t->object->on($eventName, $data);
+                return;
             },
             $filtered
         );

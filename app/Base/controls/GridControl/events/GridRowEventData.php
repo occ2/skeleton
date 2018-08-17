@@ -16,27 +16,27 @@ class GridRowEventData extends BaseEvent
     /**
      * @var Control
      */
-    public $control;
+    protected $control;
 
     /**
      * @var DataGrid
      */
-    public $datagrid;
+    protected $datagrid;
 
     /**
      * @var mixed
      */
-    public $id;
+    protected $id;
 
     /**
      * @var mixed
      */
-    public $data;
+    protected $data;
 
     /**
-     * @var string
+     * @var string | null
      */
-    public $event;
+    protected $event;
 
     /**
      * @param mixed $id
@@ -55,4 +55,32 @@ class GridRowEventData extends BaseEvent
         $this->event = $event;
         return;
     }
+
+    public function getControl(): Control
+    {
+        return $this->control;
+    }
+
+    public function getDatagrid(): DataGrid
+    {
+        return $this->datagrid;
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
+
+
 }

@@ -1,7 +1,7 @@
 <?php
 namespace app\Base\controls\GridControl\interfaces;
 
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 use Nette\Application\UI\Control;
 use Nette\Forms\Container as Form;
 use app\Base\controls\GridControl\events\GridEventData;

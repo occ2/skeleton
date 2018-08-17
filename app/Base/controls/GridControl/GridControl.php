@@ -17,11 +17,13 @@ use app\Base\controls\GridControl\factories\GridRowEventFactory;
 use Ublaboo\DataGrid\Column\Column;
 use Ublaboo\DataGrid\Column\Action;
 use Ublaboo\DataGrid\Filter\Filter;
+use Ublaboo\DataGrid\Components\DataGridPaginator\DataGridPaginator;
 use Contributte\EventDispatcher\EventDispatcher;
+use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
 use Contributte\Cache\ICacheFactory;
-use Nette\Localization\ITranslator;
+use Kdyby\Translation\ITranslator;
 use Nette\Utils\Strings;
-use Nette\Utils\ArrayHash;
+use Nette\Application\UI\ITemplate;
 use Nette\Utils\Callback;
 
 /**
@@ -229,8 +231,8 @@ abstract class GridControl extends Control
     /**
      * @param IGridFactory $gridFactory
      * @param EventDispatcher $eventDispatcher
+     * @param ICacheFactory $cacheFactory
      * @param ITranslator $translator
-     * @param IStorage $cachingStorage
      * @param string $gridEventFactoryClass
      * @param string $gridRowEventFactoryClass
      * @return void
@@ -247,12 +249,13 @@ abstract class GridControl extends Control
         $this->_configurator = new GridConfig($this);
         $this->_links = $this->_configurator->getLinks(true);
         $this->_symfonyEvents = $this->_configurator->getEvents();
-        $this->_callbacks = new ArrayHash;
+        $this->_callbacks = [];
         $this->_gridFactory = $gridFactory;
         $this->_gridClass = $gridFactory->getClass();
         $this->_gridEventFactory = new $gridEventFactoryClass;
         $this->_gridRowEventFactory = new $gridRowEventFactoryClass;
-        return parent::__construct($eventDispatcher, $cacheFactory, $translator);
+        parent::__construct($eventDispatcher, $cacheFactory, $translator);
+        return;
     }
 
     /**
@@ -303,7 +306,7 @@ abstract class GridControl extends Control
      * universal callback setter
      * @param string $name
      * @param array $args
-     * @return void
+     * @return mixed
      */
     public function __call($name, $args)
     {
@@ -550,8 +553,11 @@ abstract class GridControl extends Control
         $this->template->links = $this->_links;
         $this->template->simple = $this->_simpleGrid;
         $this->template->name = $this->name;
-        $this->template->setFile($this->_templatePath);
-        $this->template->render();
+        if($this->template instanceof ITemplate){
+            $this->template->setFile($this->_templatePath);
+            $this->template->render();
+        }
+
         $this->afterRender($this[self::GRID_CONTROL]);
         return;
     }
@@ -575,7 +581,11 @@ abstract class GridControl extends Control
         $this->configGrid($grid);
         $this->buildGrid($grid);
         $this->afterBuild($grid);
-        $grid->getPaginator()==null ?: $grid->getPaginator()->setTemplateFile($this->_gridPaginatorTemplatePath);
+        $paginator = $grid->getPaginator();
+        if($paginator!=null && $paginator instanceof DataGridPaginator){
+            $paginator->setTemplateFile($this->_gridPaginatorTemplatePath);
+        }
+        
         return $grid;
     }
 
@@ -623,13 +633,15 @@ abstract class GridControl extends Control
     {
         if ($column==null) {
             if (isset($this->_callbacks->{$callback})) {
-                return Callback::check($this->_callbacks->{$callback});
+                Callback::check($this->_callbacks->{$callback});
+                return true;
             } else {
                 return false;
             }
         } else {
             if (isset($this->_callbacks->{$callback}[$column])) {
-                return Callback::check($this->_callbacks->{$callback}[$column]);
+                Callback::check($this->_callbacks->{$callback}[$column]);
+                return true;
             } else {
                 return false;
             }
@@ -638,9 +650,14 @@ abstract class GridControl extends Control
     
     /**
      * invoke callback
-     * @param callable $callback
-     * @param mixed $params
-     * @return mixed
+     * @param string $callback
+     * @param mixed | null $column
+     * @param mixed | null $param1
+     * @param mixed | null $param2
+     * @param mixed | null $param3
+     * @param mixed | null $param4
+     * @param mixed | null $param5
+     * @return mixed | null
      * @throws GridCallbackException
      */
     protected function invokeCallback(string $callback, $column=null, $param1=null, $param2=null, $param3=null, $param4=null, $param5=null)
@@ -702,9 +719,21 @@ abstract class GridControl extends Control
     public function handleSort($item_id, $prev_id, $next_id, $parent_id=null)
     {
         if ($this->checkCallback(GridBuilder::SORTING_CALLBACK)) {
-            return $this->invokeCallback(GridBuilder::SORTING_CALLBACK, null, $itemId, $prevId, $nextId, $parent_id, $this);
+            return $this->invokeCallback(GridBuilder::SORTING_CALLBACK, null, $item_id, $prev_id, $next_id, $parent_id, $this);
         } else {
             $this->sort($this[self::GRID_CONTROL], $item_id, $prev_id, $next_id, $parent_id);
         }
+    }
+
+    /**
+     * fire event
+     * @param string $eventName
+     * @param BaseEvent $data
+     * @return void
+     */
+    public function on(string $eventName,BaseEvent $data)
+    {
+        $this->_eventDispatcher->dispatch($eventName, $data);
+        return;
     }
 }

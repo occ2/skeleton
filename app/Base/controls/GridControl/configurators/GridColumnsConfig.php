@@ -17,7 +17,6 @@ use Nette\Reflection\ClassType;
 class GridColumnsConfig
 {
     const CACHE_PREFIX="grid";
-
     const CONFIG_ITEMS=[
         "type",
         "name",
@@ -91,7 +90,7 @@ class GridColumnsConfig
     ];
 
     /**
-     * @var Nette\Reflection\Property
+     * @var Property
      */
     protected $property;
 

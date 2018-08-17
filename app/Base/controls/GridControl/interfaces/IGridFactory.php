@@ -1,7 +1,7 @@
 <?php
 namespace app\Base\controls\GridControl\interfaces;
 
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 
 /**
  * IGridFactory interface

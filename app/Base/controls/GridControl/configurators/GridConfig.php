@@ -41,7 +41,6 @@ class GridConfig
     protected $cache;
 
     /**
-     * @param string $class
      * @param GridControl $parent
      * @return void
      */

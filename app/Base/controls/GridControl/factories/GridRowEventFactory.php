@@ -3,7 +3,7 @@ namespace app\Base\controls\GridControl\factories;
 
 use app\Base\controls\GridControl\interfaces\IGridRowEventFactory;
 use app\Base\controls\GridControl\events\GridRowEventData;
-use Ublaboo\DataGrid\DataGrid;
+use app\Base\controls\GridControl\DataGrid;
 use Nette\Application\UI\Control;
 
 /**

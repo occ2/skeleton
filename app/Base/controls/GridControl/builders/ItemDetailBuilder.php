@@ -57,7 +57,8 @@ class ItemDetailBuilder implements IAdditionalGridBuilder
      */
     public function build()
     {
-        return $this->addDetails($this->grid);
+        $this->addDetails($this->grid);
+        return;
     }
 
     /**
