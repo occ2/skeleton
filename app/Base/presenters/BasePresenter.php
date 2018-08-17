@@ -11,6 +11,9 @@ use Nette\Security\IUserStorage;
  */
 abstract class BasePresenter extends AbstractPresenter
 {
+    const INACTIVITY_MESSAGE_TITLE="user.error.inactivity.title",
+          INACTIVITY_MESSAGE_COMMENT="user.error.inactivity.comment";
+
     /**
      * test user logged in, if not redirect to sign in page
      * @return void
@@ -20,7 +23,7 @@ abstract class BasePresenter extends AbstractPresenter
         parent::startup();
         if (!$this->user->isLoggedIn()) {
             if ($this->user->logoutReason === IUserStorage::INACTIVITY) {
-                $this->flashMessage("user.signInForm.error.inactivity", static::STATUS_INFO, "", static::$iconPrefix . static::ICON_INFO);
+                $this->flashMessage(self::INACTIVITY_MESSAGE_TITLE, static::STATUS_INFO, "", static::$iconPrefix . static::ICON_INFO);
             }
             $this->redirect(self::SIGN_IN_LINK, ['backlink' => $this->storeRequest()]);
         }
