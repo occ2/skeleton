@@ -9,6 +9,8 @@ namespace app\User\presenters;
  */
 final class MainPresenter extends BasePresenter
 {
+    const ACTION_DEFAULT=":User:Main:default";
+
     public function actionDefault()
     {
 

@@ -33,7 +33,6 @@ final class AdminPresenter extends BasePresenter
 
     public function actionAdd()
     {
-        $this->id = $id;
     }
 
     public function actionEdit($id)
