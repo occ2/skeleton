@@ -4,6 +4,7 @@ namespace app\Base\factories;
 use Nette\Mail\Message;
 use Nette\Mail\SendmailMailer;
 use Nette\Mail\SmtpMailer;
+#use Nette\Localization\ITranslator;
 use Nette\Localization\ITranslator;
 
 /**
