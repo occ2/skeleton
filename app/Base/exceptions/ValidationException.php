@@ -1,6 +1,8 @@
 <?php
 namespace app\Base\exceptions;
 
+use app\Base\exceptions\AbstractException as Exception;
+
 /**
  * ValidationException
  * code interval 1001-1099
@@ -9,7 +11,7 @@ namespace app\Base\exceptions;
  * @version 1.1.0
  *
  */
-abstract class ValidationException extends \Exception
+abstract class ValidationException extends Exception
 {
     const NOT_NUMBER=1001,
           NOT_NUMERIC=1002,
