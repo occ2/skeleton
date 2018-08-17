@@ -3,6 +3,7 @@ namespace app\Base\controls\Control;
 
 use app\Base\events\Event;
 use Nette\Application\UI\Control;
+use Nette\Utils\ArrayHash;
 
 /**
  * ControlEventData
@@ -15,15 +16,15 @@ use Nette\Application\UI\Control;
 class ControlEventData extends Event
 {
     /**
-     * @var \Nette\Application\UI\Control
+     * @var Control | null
      */
     public $control;
 
     /**
-     * @param array | ArryHash $data
+     * @param array | ArrayHash $data
      * @param Control $control
      * @param string $event
-     * @return type
+     * @return void
      */
     public function __construct($data, Control $control=null, string $event = null)
     {

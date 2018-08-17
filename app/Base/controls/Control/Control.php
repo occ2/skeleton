@@ -6,7 +6,7 @@ use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
 use Contributte\EventDispatcher\EventDispatcher;
 use Contributte\Cache\ICacheFactory;
 use Nette\Application\UI\Control as NControl;
-use Nette\Localization\ITranslator;
+use Kdyby\Translation\ITranslator;
 
 /**
  * parent of all controls
@@ -19,7 +19,7 @@ abstract class Control extends NControl
     use TFlashMessage;
 
     /**
-     * @var ITranslator
+     * @var ITranslator | null
      */
     protected $_translator;
 
@@ -40,11 +40,14 @@ abstract class Control extends NControl
 
     /**
      * @param EventDispatcher $eventDispatcher
+     * @param ICacheFactory $cacheFactory
      * @param ITranslator $translator
-     * @param IStorage $cachingStorage
      * @return void
      */
-    public function __construct(EventDispatcher $eventDispatcher, ICacheFactory $cacheFactory, ITranslator $translator=null)
+    public function __construct(
+            EventDispatcher $eventDispatcher,
+            ICacheFactory $cacheFactory,
+            ITranslator $translator=null)
     {
         $this->_eventDispatcher = $eventDispatcher;
         $this->_translator = $translator;
@@ -103,7 +106,7 @@ abstract class Control extends NControl
      * translator getter
      * @return ITranslator
      */
-    public function getTranslator(): ITranslator
+    public function getTranslator(): ?ITranslator
     {
         return $this->_translator;
     }
