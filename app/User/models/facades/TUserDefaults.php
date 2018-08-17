@@ -2,6 +2,7 @@
 namespace app\User\models\facades;
 
 use app\User\models\entities\User as UserEntity;
+use Nette\Utils\Random;
 
 /**
  * TUserDefaults
@@ -16,7 +17,7 @@ trait TUserDefaults
      * @param UserEntity $user
      * @return string
      */
-    protected function setDefaults(UserEntity $user)
+    protected function setDefaults(UserEntity $user): string
     {
         $secret = Random::generate($this->config["randomSecretLength"]);
         $datetime = $this->datetimeFactory->create();

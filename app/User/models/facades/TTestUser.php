@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -23,38 +24,54 @@
  * THE SOFTWARE.
  */
 
-namespace app\User\models\exceptions;
+namespace app\User\models\facades;
 
-use app\Base\exceptions\EntityException as BaseException;
+use Nette\Security\User;
+use app\User\models\exceptions\PermissionException;
+use app\User\models\entities\User as UserEntity;
 
 /**
- * ProfileException
- * code interval 2200-2299
+ * TTestUser
+ *
+ * provide current user testing
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-final class ProfileException extends BaseException
+trait TTestUser
 {
-    const NOT_FOUND=2216,
-          PASSWORDS_NOT_SAME=2200, // exception when passwords on change passwords form not same
-          USERNAME_NOT_UNIQUE=2201, // exception if usernane is not unique
-          NON_ACCESSABLE_USER=2202, // exception when user's id not be equal with logged user id
-          UNAUTHORIZED_USERS_LISTING=2203, // exception when user try to show users list and not have permissions
-          UNAUTHORIZED_USER_STATUS_CHANGE=2204,
-          UNAUTHORIZED_USER_LOAD=2205,
-          UNAUTHORIZED_HISTORY_LOAD=2206,
-          UNAUTHORIZED_USER_ADD=2207,
-          UNAUTHORIZED_USER_EDIT=2208,
-          UNAUTHORIZED_PASSWORD_RESET=2209,
-          UNAUTHORIZED_PASSWORD_DELETE=2210,
-          UNAUTHORIZED_CONFIG_LOAD=2211,
-          UNAUTHORIZED_CONFIG_RESET=2212,
-          UNAUTHORIZED_CONFIG_UPDATE=2213,
-          UNAUTHORIZED_CONFIG_RELOAD=2214,
-          UNAUTHORIZED_USER_DELETE=2215,
+    /**
+     * @var User
+     */
+    protected $user;
 
-          MESSAGE_NOT_FOUND="user.error.user.notFound",
-          MESSAGE_NOT_UNIQUE="user.error.username.unique"
-    ;
+    /**
+     * nette security user setter
+     * @param User $user
+     * @return $this
+     */
+    public function setUser(User $user)
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * test if entity user is same asi logged in user
+     * @param UserEntity $user
+     * @param bool $throwException
+     * @return bool
+     * @throws PermissionException
+     */
+    protected function testUser(UserEntity $user,bool $throwException=true):bool
+    {
+        if(!$this->user instanceof User || $user->getId()!=$this->user->getId()){
+            if($throwException){
+                throw new PermissionException(PermissionException::MESSAGE_OPERATION_NOT_PERMITTED, PermissionException::OPERATION_NOT_PERMITTED);
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
 }
