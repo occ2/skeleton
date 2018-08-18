@@ -47,8 +47,8 @@ abstract class AbstractPresenter extends NPresenter
 
     const CACHE_PREFIX="presenter";
 
-    const AUTHENTICATOR="authenticator",
-          AUTHORIZATOR="authorizator",
+    const AUTHENTICATOR="userAuthenticator",
+          AUTHORIZATOR="userAuthorizator",
           ICON_SUCCESS="check-circle",
           ICON_DANGER="times-circle",
           ICON_WARNING="exclamation-circle",
