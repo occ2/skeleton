@@ -1,13 +1,37 @@
 <?php
-namespace occ2\inventar\User\controls\grids;
+/*
+ * The MIT License
+ *
+ * Copyright 2018 Milan Onderka <milan_onderka@occ2.cz>.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
-use occ2\GridControl\GridControl;
+namespace app\User\controls\grids;
+
+use app\Base\controls\GridControl\GridControl;
 
 /**
  * UsersGrid
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.0.0
+ * @version 1.1.0
  * @columnsHidable
  * @title user.usersGrid.title
  *
@@ -19,7 +43,7 @@ use occ2\GridControl\GridControl;
  * @action (name="reset",href=":resetPassword!",title="user.usersGrid.reset",icon="unlock-alt",class="btn-dark ajax",confirmCol="realname",confirm="user.usersGrid.confirmReset")
  * @action (name="delete",href=":delete!",title="user.usersGrid.delete",icon="trash",class="btn-danger ajax",confirmCol="realname",confirm="user.usersGrid.confirmDelete")
  */
-final class UsersGrid extends GridControl
+final class UsersAdminGrid extends GridControl
 {
     const ID="id",
           USERNAME="username",

@@ -28,45 +28,62 @@ namespace app\User\controls\grids;
 use app\Base\controls\GridControl\GridControl;
 
 /**
- * UserRolesGrid
+ * UserSettingsGrid
+ * datagrid of user application custom settings
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  * @columnsHidable
- * @title user.userRolesGrid.title
- * @pagination false
- *
- * @inlineActions true
- * @inlineAdd (topPosition=true)
- * @inlineFormControl (name="role",type="select")
- *
- * @action (name="delete",title="user.userRolesGrid.delete",icon="trash",confirm="user.userRolesGrid.confirmDelete",class="ajax btn btn-xs btn-danger")
+ * @title user.userConfigGrid.title
+ * @defaultPerPage 50
+ * @toolbarButton (name="reload", title="user.userConfigGrid.reload",icon="retweet",class="ajax btn btn-xs btn-primary")
+ * @toolbarButton (name="reset", title="user.userConfigGrid.reset",icon="eraser",class="ajax btn btn-xs btn-danger")
  */
-final class UserRolesGrid extends GridControl
+final class UserSettingsGrid extends GridControl
 {
     const ID="id",
-          USER="Users_id",
-          ROLE="role",
           COMMENT="comment",
-          ACTION_DELETE="delete";
+          KEY="key",
+          VALUE="value",
+          TOOLBAR_BUTTON_RESET="reset",
+          TOOLBAR_BUTTON_RELOAD="reload";
+
+    const YES_NO=[
+        0=>"base.shared.no",
+        1=>"base.shared.yes"
+    ];
     
     /**
-     * @label user.userRolesGrid.id
+     * @label user.userConfigGrid.id
      * @type number
      * @hidden true
      */
     public $id;
 
     /**
-     * @label user.userRolesGrid.role
+     * @label user.userConfigGrid.type
      * @type text
+     * @hidden true
      */
-    public $role;
-
+    public $type;
+    
     /**
-     * @label user.userRolesGrid.comment
+     * @label user.userConfigGrid.comment
      * @type text
-     * @dbCol role
+     * @translate
      */
     public $comment;
+
+    /**
+     * @label user.userConfigGrid.key
+     * @type text
+     * @hidden true
+     */
+    public $key;
+
+    /**
+     * @label user.userConfigGrid.value
+     * @type text
+     */
+    public $value;
 }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -23,50 +24,17 @@
  * THE SOFTWARE.
  */
 
-namespace app\User\controls\grids;
-
-use app\Base\controls\GridControl\GridControl;
+namespace app\User\controls\factories;
 
 /**
- * UserRolesGrid
- *
+ * IUserSettingsGrid factory interface
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
- * @columnsHidable
- * @title user.userRolesGrid.title
- * @pagination false
- *
- * @inlineActions true
- * @inlineAdd (topPosition=true)
- * @inlineFormControl (name="role",type="select")
- *
- * @action (name="delete",title="user.userRolesGrid.delete",icon="trash",confirm="user.userRolesGrid.confirmDelete",class="ajax btn btn-xs btn-danger")
  */
-final class UserRolesGrid extends GridControl
+interface IUserSettingsGrid
 {
-    const ID="id",
-          USER="Users_id",
-          ROLE="role",
-          COMMENT="comment",
-          ACTION_DELETE="delete";
-    
     /**
-     * @label user.userRolesGrid.id
-     * @type number
-     * @hidden true
+     * @return \app\User\controls\grids\UserSettingsGrid
      */
-    public $id;
-
-    /**
-     * @label user.userRolesGrid.role
-     * @type text
-     */
-    public $role;
-
-    /**
-     * @label user.userRolesGrid.comment
-     * @type text
-     * @dbCol role
-     */
-    public $comment;
+    public function create();
 }
