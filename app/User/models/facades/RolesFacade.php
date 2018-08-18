@@ -33,6 +33,7 @@ use app\User\models\exceptions\ProfileException;
 use app\User\events\data\RolesEvent;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
+use Nette\DI\Config\Helpers;
 
 /**
  * RolesFacade
@@ -52,11 +53,20 @@ final class RolesFacade extends BaseFacade
     /**
      * @var array
      */
-    protected $config=[
-        "defaultRoles"=>[
-            "authenticated"
-        ]
+    protected $defaultRoles=[
+        "authenticated"
     ];
+
+    /**
+     * set default roles
+     * @param array | string $defaultRoles
+     * @return void
+     */
+    public function setDefaultRoles($defaultRoles)
+    {
+        $this->defaultRoles = (array) Helpers::merge($defaultRoles, $this->defaultRoles);
+        return;
+    }
 
     /**
      * load roles
@@ -122,6 +132,7 @@ final class RolesFacade extends BaseFacade
         $user = $this->em->find(UserEntity::class, $userId);
         $this->testFound($user, ProfileException::class);
         $this->testUnique($user, $role);
+        $this->testRole($role);
 
         // create new role entity
         if($user!=null){
@@ -186,7 +197,7 @@ final class RolesFacade extends BaseFacade
     {
         $arr = [];
         // iterate defautl roles
-        foreach ($this->config["defaultRoles"] as $role){
+        foreach ($this->defaultRoles as $role){
             // crete new role 
             $entity = new RoleEntity;
 
@@ -234,6 +245,19 @@ final class RolesFacade extends BaseFacade
             if($entity!=null){
                 throw new RolesException(RolesException::MESSAGE_ROLE_IN_USE, RolesException::ROLE_IS_IN_USE);
             }
+        }
+        return;
+    }
+
+    /**
+     * test if role is in role catalogue
+     * @param string $role
+     * @return void
+     * @throws RolesException
+     */
+    private function testRole(string $role){
+        if(!in_array($role, $this->config)){
+            throw new RolesException(RolesException::MESSAGE_INVALID_ROLE, RolesException::INVALID_ROLE);
         }
         return;
     }
