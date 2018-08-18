@@ -25,7 +25,7 @@
 
 namespace app\Base\traits;
 
-use Nette\Localization\ITranslator;
+use Kdyby\Translation\ITranslator;
 
 /**
  * TTranslator

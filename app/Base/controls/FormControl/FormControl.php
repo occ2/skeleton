@@ -39,7 +39,7 @@ use Kdyby\Translation\ITranslator;
 use Nette\Application\UI\ITemplate;
 use Nette\Application\UI\Form as NForm;
 use Nette\Application\BadRequestException;
-use Nette\ComponentModel\IComponent;
+use Nette\Application\ApplicationException;
 use Nette\Utils\ArrayHash;
 use Nette\Forms\Controls\BaseControl;
 
@@ -267,11 +267,16 @@ abstract class FormControl extends Control
     /**
      * enable direct accesst to form elements
      * @param string $name
-     * @return IComponent
+     * @return BaseControl
      */
     public function getItem($name)
     {
-        return $this["form"][$name];
+        $i = $this["form"][$name];
+        if($i instanceof BaseControl){
+            return $i;
+        } else {
+            throw new ApplicationException();
+        }
     }
 
     /**

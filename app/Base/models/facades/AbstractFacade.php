@@ -127,7 +127,7 @@ abstract class AbstractFacade
      * test if entity found
      * @param IEntity | null $entity
      * @param string $exceptionClass
-     * @return IEntity
+     * @return IEntity | null
      * @throws AbstractException
      */
     protected function testFound(?IEntity $entity,string $exceptionClass=null){

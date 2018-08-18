@@ -30,6 +30,7 @@ use Nette\Forms\Container as Form;
 use app\Base\controls\FormControl\FormControl;
 use Nette\Utils\ArrayHash;
 use Nette\Application\UI\Presenter;
+use Nette\Application\InvalidPresenterException;
 
 /**
  * form event data container
@@ -104,11 +105,16 @@ class FormEvent extends BaseEvent
 
     /**
      * get presenter
-     * @return Presenter | null
+     * @return Presenter
      */
     public function getPresenter()
     {
-        return $this->control->getPresenter();
+        $presenter=$this->control->getPresenter();
+        if($presenter instanceof Presenter){
+            return $presenter;
+        } else {
+            throw new InvalidPresenterException();
+        }
     }
 
     /**
