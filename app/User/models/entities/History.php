@@ -70,7 +70,7 @@ class History implements IEntity
     private $datetime;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string")
      */
     private $type;
 
@@ -101,7 +101,7 @@ class History implements IEntity
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getType()
     {
@@ -135,10 +135,10 @@ class History implements IEntity
     }
 
     /**
-     * @param int $type
+     * @param string $type
      * @return $this
      */
-    public function setType(int $type)
+    public function setType(string $type)
     {
         $this->type = $type;
         return $this;

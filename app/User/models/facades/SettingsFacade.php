@@ -150,10 +150,9 @@ final class SettingsFacade extends BaseFacade
         // find user
         $user = $this->em->find(UserEntity::class, $userId);
         $this->testFound($user, ProfileException::class);
-
         if($user!=null){
             // clear user settings
-            $oldCollection = $this->clear($user);
+            $this->clear($user);
 
             // set default settings
             $this->setDefault($user);
@@ -164,7 +163,6 @@ final class SettingsFacade extends BaseFacade
             static::EVENT_RESET,
             new SettingsEvent(
                 [
-                    SettingsEvent::OLD_COLLECTION=>isset($oldCollection) ? $oldCollection : null,
                     SettingsEvent::COLLECTION=>$user instanceof UserEntity ? $user->getSettings() : null
                 ],
                 static::EVENT_RESET
@@ -230,8 +228,11 @@ final class SettingsFacade extends BaseFacade
         foreach ($this->config as $config){
             // add new item and fill
             $entity = new SettingsEntity;
-            $entity->fill($config);
-            $entity->setUser($user);
+            $entity->setUser($user)
+                   ->setKey($config[SettingsEntity::KEY])
+                   ->setValue((string) $config[SettingsEntity::VALUE])
+                   ->setComment($config[SettingsEntity::COMMENT])
+                   ->setType($config[SettingsEntity::TYPE]);
             $this->em->persist($entity);
         }
         
@@ -243,9 +244,9 @@ final class SettingsFacade extends BaseFacade
     /**
      * clear user settings
      * @param UserEntity $user
-     * @return Collection
+     * @return void
      */
-    private function clear(UserEntity $user): Collection
+    private function clear(UserEntity $user)
     {
         // get collection of user settings
         $collection = $user->getSettings();
@@ -258,6 +259,6 @@ final class SettingsFacade extends BaseFacade
 
         // save to DB
         $this->em->flush();
-        return $collection;
+        return;
     }
 }

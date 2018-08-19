@@ -40,7 +40,7 @@ use Nettrine\ORM\Entity\Attributes\Id;
  * @ORM\Table (
  *  name="`UsersSettings`",
  *  indexes={
- *         @ORM\Index(name="key_idx", columns={"key"})
+ *         @ORM\Index(name="xkey_idx", columns={"xkey"})
  *          }
  *  )
  */
@@ -64,29 +64,29 @@ class Settings implements IEntity
     /**
      * @ORM\Column(type="string")
      */
-    private $key;
+    private $xkey;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $value;
+    private $xvalue;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $comment;
+    private $xcomment;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $type;
+    private $xtype;
 
     /**
      * @return string
      */
     public function getKey()
     {
-        return $this->key;
+        return $this->xkey;
     }
 
     /**
@@ -94,7 +94,7 @@ class Settings implements IEntity
      */
     public function getValue()
     {
-        return $this->value;
+        return $this->xvalue;
     }
 
     /**
@@ -102,7 +102,7 @@ class Settings implements IEntity
      */
     public function getComment()
     {
-        return $this->comment;
+        return $this->xcomment;
     }
 
     /**
@@ -110,7 +110,7 @@ class Settings implements IEntity
      */
     public function getType()
     {
-        return $this->type;
+        return $this->xtype;
     }
 
     /**
@@ -119,7 +119,7 @@ class Settings implements IEntity
      */
     public function setKey(string $key)
     {
-        $this->key = $key;
+        $this->xkey = $key;
         return $this;
     }
 
@@ -129,7 +129,7 @@ class Settings implements IEntity
      */
     public function setValue(string $value)
     {
-        $this->value = $value;
+        $this->xvalue = $value;
         return $this;
     }
 
@@ -139,7 +139,7 @@ class Settings implements IEntity
      */
     public function setComment(string $comment)
     {
-        $this->comment = $comment;
+        $this->xcomment = $comment;
         return $this;
     }
 
@@ -149,7 +149,7 @@ class Settings implements IEntity
      */
     public function setType(string $type)
     {
-        $this->type = $type;
+        $this->xtype = $type;
         return $this;
     }
 

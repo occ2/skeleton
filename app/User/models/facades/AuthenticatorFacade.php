@@ -134,7 +134,8 @@ final class AuthenticatorFacade extends AbstractFacade implements IAuthenticator
                 self::EVENT_SUCCESS_RESET,
                 new AuthenticationEvent(
                     [
-                        AuthenticationEvent::VALUES=>$values
+                        AuthenticationEvent::VALUES=>$values,
+                        AuthenticationEvent::ENTITY=>$user
                     ],
                     self::EVENT_SUCCESS_RESET
                 )

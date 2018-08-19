@@ -53,9 +53,7 @@ final class RolesFacade extends BaseFacade
     /**
      * @var array
      */
-    protected $defaultRoles=[
-        "authenticated"
-    ];
+    protected $defaultRoles=[];
 
     /**
      * set default roles

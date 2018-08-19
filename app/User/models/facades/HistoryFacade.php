@@ -46,14 +46,14 @@ final class HistoryFacade extends BaseFacade
      * save history item
      * @param UserEntity | int $user
      * @param string $message
-     * @param int $type
+     * @param string $type
      * @param array $data
      * @return void
      */
     public function save(
         $user,
         string $message,
-        int $type=self::DEFAULT_TYPE,
+        string $type=self::DEFAULT_TYPE,
         array $data=[]
 
     )
