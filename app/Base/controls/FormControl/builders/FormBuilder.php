@@ -463,14 +463,16 @@ class FormBuilder implements IFormBuilder
      */
     protected function setValidators(BaseControl $element, array $validators)
     {
+        //bdump($validators);
         foreach ($validators as $validator) {
+            //bdump($validator);
             if ($validator->type==":equal") {
                 $element->addRule(Form::EQUAL, isset($validator->message) ? $validator->message : null, $this->{$validator->value});
             } else {
                 $element->addRule(
                         $validator->type,
                         isset($validator->message) ? $validator->message : null,
-                        isset($validator->value) ? !is_array($validator->value) ? explode(";", $validator->value) : $validator->value : null
+                        isset($validator->value) ? is_array($validator->value) ? implode(";", $validator->value) : $validator->value : null
                     );
             }
         }
