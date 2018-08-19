@@ -1,5 +1,6 @@
 <?php
-/*
+
+/* 
  * The MIT License
  *
  * Copyright 2018 Milan Onderka <milan_onderka@occ2.cz>.
@@ -23,15 +24,30 @@
  * THE SOFTWARE.
  */
 
-namespace app\Base\models\interfaces;
+namespace app\Base\presenters;
 
-use Contributte\Logging\ILogger as BaseLogger;
+use Nette;
+use app\Base\traits\TFlashMessage;
 
-/**
- * ILogger inteface
- * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.1.0
- */
-interface ILogger extends BaseLogger
+class Error4xxPresenter extends BasePresenter
 {
+        use TFlashMessage;
+
+	public function startup(): void
+	{
+		parent::startup();
+		if (!$this->getRequest()->isMethod(Nette\Application\Request::FORWARD)) {
+			$this->error();
+		}
+	}
+        
+	public function renderDefault(Nette\Application\BadRequestException $exception): void
+	{
+                //\Tracy\Debugger::fireLog($exception);
+                bdump($exception);
+		// load template 403.latte or 404.latte or ... 4xx.latte
+		$file = __DIR__ . '/../templates/Error/{$exception->getCode()}.latte';
+		$file = is_file($file) ? $file : __DIR__ . '/../templates/Error/4xx.latte';
+		$this->template->setFile($file);
+	}
 }

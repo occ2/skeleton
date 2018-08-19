@@ -153,6 +153,7 @@ abstract class AbstractFacade
                 unset($data[$value]);
             }
         }
+        return $data;
     }
 
     /**

@@ -83,13 +83,17 @@ trait TMail
     {
         $admins = $adminFacade->getAdmins();
         $message = $this->mailFactory->createMessage();
+        $c=0;
         foreach ($admins as $admin) {
             $message->addTo($admin->getMail());
+            $c++;
         }
-        $message->setSubject($subject);
-        $message->setBody($body);
-        $mailer = $this->mailFactory->createMailer();
-        $mailer->send($message);
+        if($c>0){
+            $message->setSubject($subject);
+            $message->setBody($body);
+            $mailer = $this->mailFactory->createMailer();
+            $mailer->send($message);
+        }
         return;
     }
 }
