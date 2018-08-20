@@ -18,10 +18,14 @@ parameters:
             -   authenticated
 
 application:
-    errorPresenter: Error
+    errorPresenter: Base:Error
     catchExceptions: yes
     mapping:
         *: ['app', '*', 'presenters\*Presenter']
+
+forms:
+    messages:
+        PROTECTION: 'base.error.form.protection'
 
 translation:
     default: cz
@@ -32,6 +36,7 @@ session:
 
 extensions:
     console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    console.extra: Contributte\Console\Extra\DI\ConsoleBridgesExtension
     dbal: Nettrine\DBAL\DI\DbalExtension
     orm: Nettrine\ORM\DI\OrmExtension
     orm.annotations: Nettrine\ORM\DI\OrmAnnotationsExtension
@@ -43,6 +48,7 @@ extensions:
     translation: Kdyby\Translation\DI\TranslationExtension
     recaptcha: Contributte\ReCaptcha\DI\ReCaptchaExtension
     ajaxHistory: VojtechDobes\NetteAjax\HistoryExtension
+    cacheFactory: Contributte\Cache\DI\CacheFactoryExtension
     # console setup on https://github.com/contributte/console/blob/master/.docs/README.md#usage
 
 orm.annotations:

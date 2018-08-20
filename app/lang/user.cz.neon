@@ -9,208 +9,300 @@ navbar:
         
 signInForm:
     title:  "Přihlášení uživatele"
-    username:   "Uživatel: "
-    password:   "Heslo: "
-    submit: "Přihlásit"
-    register:   "Nový uživatel"
-    forget: "Zapomenuté heslo"
+    username:
+        label:   "Uživatel: "
+    password:
+        label:   "Heslo: "
+    submit:
+        label: "Přihlásit"
+    link:
+        register:   "Nový uživatel"
+        forget: "Zapomenuté heslo"
+
 registerForm:
     title:  "Registrace uživatele"
-    name:   "Jméno a příjmení: "
-    username: "Přihlašovací jméno: "
-    password:   "Heslo: "
-    repeatedPassword:   "Heslo (kontrola): "
-    email:  "Email: "
-    phone:  "Telefon: "
-    question: "Kontrolní otázka: "
-    answer:   "Odpověď: "
-    submit: "Uložit registraci"
-    nameDescription:    "Zadejte Vaše skutečné jméno a příjmení"
-    usernameDescription:    "Jméno, pomocí kterého se budete přihlašovat musí být unikátní a musí mít alespoň 4 znaky"
-    passwordDescription:    "Heslo musí mít alespoň 8 znaků a musí obsahovat alespoň jedno velké a malé písmenu a číslo."
-    repeatedPasswordDescription:    "Zadejte stejné heslo pro kontrolu správnosti"
-    emailDescription:   "Zadejte platný email ve formátu jmeno@domena.tld"
-    phoneDescription:   "Zadejte platné telefonní číslo v mezinárodním formátu  +yyyXXXXXXXXX (např +420123456789)"
-    questionDescription:  "Napište kontrolní otázku, která Vám bude položena v případě resetu hesla. Odpověď by měla být jednoslovná (např. jméno matky za svobodna apod.)"
-    answerDescription:    "Napište odpověď na otázku výše. Tato odpověď bude vyžadována při resetu Vašeho hesla."
-resetPassForm:
+    name:
+        label:   "Jméno a příjmení: "
+        description:    "Zadejte Vaše skutečné jméno a příjmení"
+    username:
+        label: "Přihlašovací jméno: "
+        description:    "Jméno, pomocí kterého se budete přihlašovat musí být unikátní a musí mít alespoň 4 znaky"
+    password:
+        label:   "Heslo: "
+        description:    "Heslo musí mít alespoň 8 znaků a musí obsahovat alespoň jedno velké a malé písmenu a číslo."
+    repeatedPassword:
+        label:   "Heslo (kontrola): "
+        description:    "Zadejte stejné heslo pro kontrolu správnosti"
+    email:
+        label:  "Email: "
+        description:   "Zadejte platný email ve formátu jmeno@domena.tld"
+    phone:
+        label:  "Telefon: "
+        description:   "Zadejte platné telefonní číslo v mezinárodním formátu  +yyyXXXXXXXXX (např +420123456789)"
+    question:
+        label: "Kontrolní otázka: "
+        description:  "Napište kontrolní otázku, která Vám bude položena v případě resetu hesla. Odpověď by měla být jednoslovná (např. jméno matky za svobodna apod.)"
+    answer:
+        label:   "Odpověď: "
+        description:    "Napište odpověď na otázku výše. Tato odpověď bude vyžadována při resetu Vašeho hesla."
+    submit:
+        label: "Uložit registraci"
+    
+resetPasswordForm:
     title:  "Reset hesla"
     comment:    "Aby bylo možné provést reset hesla musíte vyplnit Vaše uživatelské jméno a email, který máte registrovaný v profilu. V další fázi budete muset odpovědět na kontrolní otázku, kterou jste zadali při registraci."
-    username:   "Uživatelské jméno"
-    email:  "Email:"
-    submit: "Další krok >>"
+    username:
+        label:   "Uživatelské jméno"
+    email:
+        label:  "Email:"
+    submit:
+        label: "Další krok >>"
+
 controlQuestionForm:
     title:  "Kontrolní otázka před resetem hesla"
-    answer: "Odpověď"
-    recaptcha:  "Jste robot?"
-    reset:  "<< Vrátit zpět"
-    submit: "Další krok >>"
-controlRecaptchaForm:
-    title:  "Dokončení resetu hesla"
-    comment:    "Po dokončení bude Vaše heslo nahrazeno náhodně vygenerovaným jednorázovým heslem, které Vám bude odesláno na email."
-    submit: "Dokončit"
-expiredPassForm:
+    answer:
+        label: "Odpověď"
+    link:
+        reset:  "<< Vrátit zpět"
+    submit:
+        label: "Další krok >>"
+
+expiredPasswordForm:
     title:  "Změna expirovaného/jednorázového hesla"
     comment:    "Platnost hesla vypršela. Prosím změňte své heslo do systému. Systém žádným způsobem neukládá historii hesel. Mějte prosím na paměti, že používání stále stejného hesla je potencionálně nebezpečné."
-    username:   "Uživatelské jméno: "
-    oldPassword:    "Staré heslo: "
-    oldPasswordDescription: "Zadejte prosím své staré heslo. Pokud přistupujete po resetu hesla, zadejte prosím přidělené jednorázové heslo"
-    newPassword:   "Nové heslo: " 
-    newPasswordDescription: "Heslo musí mít alespoň 8 znaků a musí obsahovat alespoň jedno velké a malé písmenu a číslo."
-    repeatedPassword:   "Heslo (kontrola): "
-    repeatedPasswordDescription:    "Zadejte stejné heslo pro kontrolu správnosti"
-    submit: "Změnit heslo"
+    username:
+        label:   "Uživatelské jméno: "
+    oldPassword:
+        label:    "Staré heslo: "
+        description: "Zadejte prosím své staré heslo. Pokud přistupujete po resetu hesla, zadejte prosím přidělené jednorázové heslo"
+    newPassword:
+        label:   "Nové heslo: " 
+        description: "Heslo musí mít alespoň 8 znaků a musí obsahovat alespoň jedno velké a malé písmenu a číslo."
+    repeatedPassword:
+        label:   "Heslo (kontrola): "
+        description:    "Zadejte stejné heslo pro kontrolu správnosti"
+    submit:
+        label: "Změnit heslo"
+
 settingsForm:
     title:  "Nastavení uživatele"
-    name:   "Jméno a příjmení: "
-    username: "Přihlašovací jméno: "
-    email:  "Email: "
-    phone:  "Telefon: "
-    question: "Kontrolní otázka: "
-    answer:   "Odpověď: "
-    submit: "Uložit změny"
-    nameDescription:    "Zadejte Vaše skutečné jméno a příjmení"
-    usernameDescription:    "Jméno, pomocí kterého se budete přihlašovat musí být unikátní a musí mít alespoň 4 znaky"
-    emailDescription:   "Zadejte platný email ve formátu jmeno@domena.tld"
-    phoneDescription:   "Zadejte platné telefonní číslo v mezinárodním formátu  +yyyXXXXXXXXX (např +420123456789)"
-    questionDescription:  "Napište kontrolní otázku, která Vám bude položena v případě resetu hesla. Odpověď by měla být jednoslovná (např. jméno matky za svobodna apod.)"
-    answerDescription:    "Napište odpověď na otázku výše. Tato odpověď bude vyžadována při resetu Vašeho hesla."    
-    hidden: "-- beze změny --"
-changePassForm:
+    name:
+        label:   "Jméno a příjmení: "
+        description:    "Zadejte Vaše skutečné jméno a příjmení"
+    username:
+        label: "Přihlašovací jméno: "
+        description:    "Jméno, pomocí kterého se budete přihlašovat musí být unikátní a musí mít alespoň 4 znaky"
+    email:
+        label:  "Email: "
+        description:   "Zadejte platný email ve formátu jmeno@domena.tld"
+    phone:
+        label:  "Telefon: "
+        description:   "Zadejte platné telefonní číslo v mezinárodním formátu  +yyyXXXXXXXXX (např +420123456789)"
+    question:
+        label:  "Kontrolní otázka: "
+        description:  "Napište kontrolní otázku, která Vám bude položena v případě resetu hesla. Odpověď by měla být jednoslovná (např. jméno matky za svobodna apod.)"
+    answer:
+        label:   "Odpověď: "
+        description:    "Napište odpověď na otázku výše. Tato odpověď bude vyžadována při resetu Vašeho hesla."
+        hidden: "-- beze změny --"
+    submit:
+        label:  "Uložit změny"
+    hidden: "Skryto"
+
+passwordForm:
     title:  "Změna hesla"
     comment:    "Systém žádným způsobem neukládá historii hesel. Mějte prosím na paměti, že používání stále stejného hesla je potencionálně nebezpečné"
-    oldPassword:    "Staré heslo: "
-    oldPasswordDescription: "Zadejte prosím své původní staré heslo."
-    newPassword:    "Nové heslo: "
-    newPasswordDescription: "Heslo musí mít alespoň 8 znaků a musí obsahovat alespoň jedno velké a malé písmenu a číslo."
-    repeatedPassword:   "Heslo (kontrola): "
-    repeatedPasswordDescription:    "Zadejte stejné heslo pro kontrolu správnosti"
-    submit: "Změnit heslo"
+    oldPassword:
+        label:    "Staré heslo: "
+        description: "Zadejte prosím své původní staré heslo."
+    newPassword:
+        label:    "Nové heslo: "
+        description: "Heslo musí mít alespoň 8 znaků a musí obsahovat alespoň jedno velké a malé písmenu a číslo."
+    repeatedPassword:
+        label:   "Heslo (kontrola): "
+        description:    "Zadejte stejné heslo pro kontrolu správnosti"
+    submit:
+        label: "Změnit heslo"
 addUserForm:
     title:  "Přidat uživatele"
     
 userHistoryGrid:
     title:  "Historie událostí uživatele"
-    datetime:   "Datum a čas"
-    type:   "Typ události"
-    message:    "Záznam události"
-    question: "Smazat událost s ID: %s ?"
+    column:
+        datetime:   "Datum a čas"
+        type:   "Typ události"
+        message:    "Záznam události"
+        question: "Smazat událost s ID: %s ?"
+
 usersGrid:
     title:  "Správa uživatelů"
-    id: "UID"
-    username:   "Uživatelské jméno"
-    realname:   "Skutečné jméno"
-    email:  "E-Mail"
-    phone:  "Telefon"
-    question:   "Kontrolní otázka"
-    secret: "Výměnný token"
-    status: "Stav"
-    active: "Aktivní"
-    inactive:   "Neaktivní" 
-    add:    "Nový uživatel"
-    edit:   "Editace"
-    delete: "Smazat"
-    reset:  "Reset hesla"
-    history:    "Historie uživatele"
-    settings: "Uživatelská nastavení"
-    roles:  "Role oprávnění"
-    confirmDelete:  "Opravdu chcete smazat uživatele %s ?"
-    confirmReset:   "Opravdu chcete provést reset hesla uživatele %s ?"
+    column:
+        id: "UID"
+        username:   "Uživatelské jméno"
+        realname:   "Skutečné jméno"
+        email:  "E-Mail"
+        phone:  "Telefon"
+        question:   "Kontrolní otázka"
+        secret: "Výměnný token"
+        status:
+            title: "Stav"
+            active: "Aktivní"
+            inactive:   "Neaktivní" 
+    action:
+        add:    "Nový uživatel"
+        edit:   "Editace"
+        delete: "Smazat"
+        reset:  "Reset hesla"
+        history:    "Historie uživatele"
+        settings: "Uživatelská nastavení"
+        roles:  "Role oprávnění"
+    confirm:
+        delete:  "Opravdu chcete smazat uživatele %s ?"
+        reset:   "Opravdu chcete provést reset hesla uživatele %s ?"
+
 userConfigGrid:
     title:  "Osobní nastavení"
-    id: "ID"
-    comment:   "Vlastnost"
-    key:    "Klíč"
-    value:  "Hodnota"
-    type:   "Typ"
-    reset:  "Reset do výchozího nastavení"
-    reload: "Zkontrolovat moduly a doplnit chybějící nastavení"
+    column:
+        id: "ID"
+        comment:   "Vlastnost"
+        key:    "Klíč"
+        value:  "Hodnota"
+        type:   "Typ"
+    action:
+        reset:  "Reset do výchozího nastavení"
+        reload: "Zkontrolovat moduly a doplnit chybějící nastavení"
+
 userRolesGrid:
     title:  "Role oprávnění"
-    id: "ID"
-    role:   "Role"
-    comment:    "Popis"
-    delete: "Odebrat oprávnění"
-    confirmDelete:  "Opravdu chcete uživateli odebrat tuto roli?"
+    column:
+        id: "ID"
+        role:   "Role"
+        comment:    "Popis"
+    action:
+        delete: "Odebrat oprávnění"
+    confirm:
+        delete:  "Opravdu chcete uživateli odebrat tuto roli?"
+
 settings:
-    notifyAdminChange:  "Upozornit na změnu dat administrátorem"
-    notifyChangePassword:   "Upozornit na změnu hesla."
-    notifyAdminChangePassword:  "Upozornit na změnu hesla administrátorem"
-    notifyChangeStatus: "Upozornit na změnu stavu administrátorem"
-    notifyChangeConfig: "Upozornit na změnu nastavení administrátorem"
-    notifyResetConfig:  "Upozornit na reset konfigurace"
-    notifyReloadConfig: "Upozornit na doplnění konfigurace administrátorem"
-    notifyAddRole:  "Upozornit na přidání role"
-    notifyRemoveRole:   "Upozornit na odebrání role"
+    notify:
+        admin:
+            change:  "Upozornit na změnu dat administrátorem"
+            changePassword:  "Upozornit na změnu hesla administrátorem"
+            changeStatus: "Upozornit na změnu stavu administrátorem"
+            changeSettings: "Upozornit na změnu nastavení administrátorem"
+            reloadSettings: "Upozornit na doplnění konfigurace administrátorem"
+        user:
+            changePassword:   "Upozornit na změnu hesla."          
+            resetSettings:  "Upozornit na reset konfigurace"
+            addRole:  "Upozornit na přidání role"
+            removeRole:   "Upozornit na odebrání role"
 
 error:
-    protection: "Vypršel časový limit, odešlete formulář znovu"
-    inactivity: "Proběhlo odhlášení uživatele z důvodu neaktivity."
-    requiredUsername:   "Uživatelské jméno musí být vyplněno"
-    minLengthUsername:  "Uživatelské jméno musí mít minimálně 4 znaky"
-    requiredPassword:   "Heslo musí být vyplněno"
-    minLengthPassword:  "Heslo musí být minimálně 8 znaků dlouhé"
-    equalPassword:  "Hesla se neshodují"
-    patternPassword:    "Heslo musí obsahovat alespoň jedno malé písmeno, jedno velké písmeno a jednu číslici"
-    invalidUsername:    "Neznámý uživatel"
-    invalidPassword:    "Neplatné heslo"
-    invalidEmail:   "Neplatný email"
-    blockedUser:    "Uživatel je blokován"
-    maxAttemptsReached: "Byl překročen maximální počet neúspěšných pokusů"
-    expiredPassword:    "Platnost hesla vypršela"
-    requiredName:   "Musíte zadat i skutečné jméno"
-    requiredEmail:  "Musíte zadat e-mail"
-    requiredPhone: "Musíte zadat telefonní číslo"
-    invalidPhone:   "Telefonní číslo musí být v mezinárodním formátu formátu +yyyXXXXXXXXX (např +420123456789)"
-    requiredQuestion:   "Musíte zadat kontrolní otázku"
-    requiredAnswer: "Musíte zadat odpověď na kontrolní otázku"
-    uniqueUsername: "Bohužel toto uživatelské jméno je již používáno. Zkuste jiné"
-    invalidAnswer:  "Bohužel tato odpověď je špatná"
-    unaccessible:   "Nelze měnit data jiného uživatele než je aktuálně přihlášen"
+    authentication:
+        identity:   "Neznámý uživatel"
+        password:   "Neplatné heslo"
+        expired:    "Platnost hesla vypršela"
+        attempts: "Byl překročen maximální počet neúspěšných pokusů"
+        status:    "Uživatel je blokován"
+    permission:
+        notLoggedIn:    "Operace není pro nepřihlášené uživatele povolena"
+        notPermitted:   "Nemáte oprávnění provést tuto operaci"
+    user:
+        notFound:   "Uživatel nenalezen"
+        unaccessible:   "Nelze měnit data jiného uživatele než je aktuálně přihlášen"
+        inactivity: "Proběhlo odhlášení uživatele z důvodu neaktivity."
+    username:
+        minLength:  "Uživatelské jméno musí mít minimálně 4 znaky"
+        required:   "Uživatelské jméno musí být vyplněno"
+        unique: "Bohužel toto uživatelské jméno je již používáno. Zkuste jiné"
+    email:
+        invalid:   "Neplatný email"
+        required:  "Musíte zadat e-mail"
+    password:
+        required:   "Heslo musí být vyplněno"
+        equal:  "Hesla se neshodují"
+        minLength:  "Heslo musí mít délku minimálně 8 znaků"
+        pattern:    "Heslo musí obsahovat alespoň jedno malé písmeno, jedno velké písmeno a jednu číslici"
+    name:
+        required:   "Musíte zadat i skutečné jméno"
+    phone:
+        required: "Musíte zadat telefonní číslo"
+        invalid:   "Telefonní číslo musí být v mezinárodním formátu formátu +yyyXXXXXXXXX (např +420123456789)"
+    question:
+        required:   "Musíte zadat kontrolní otázku"               
+    answer:
+        invalid:  "Bohužel tato odpověď je špatná"
+        required: "Musíte zadat odpověď na kontrolní otázku"
+    role:
+        notFound:   "Role nenalezena"
+        inUse:  "Role už je uživateli přiřazena"
+        invalid:    "Neplatná role"
+    
 success:
-    login: "Úspěšné přihlášení"
-    logout: "Odhlášení bylo úspěšné"
-    register:   "Registrace uživatelem."
-    registerComment:    "Na Váš email přijde rekapitulace registrace, jejíž součástí je bezpečnostní kód, který použijete, pokud chcete být přiřazeni k již existujícímu účtu."
-    reset:  "Reset hesla proběhl úspěšně"
-    resetComment:   "Na Vámi registrovaný email bylo odesláno jednorázové heslo. Po přihlášení pomocí tohoto hesla je potřeba ho změnit."
-    changePassword: "Heslo bylo změněno"
-    changePasswordComment:  "Platnost nového hesla je 90 dní."
-    saveSettings:   "Nastavení bylo uloženo"
-    changePass: "Heslo bylo změněno"
-    addUser:    "Úspěšná registrace administrátorem"
-    editUser:   "Úspěšná změna  změna nastavení administrátorem"
-    changeStatus:   "Úspěšná změna stavu administrátorem"
-    deleteUser: "Uživatel smazán administrátorem"
-    resetAdmin:  "Úspěšný reset hesla administrátorem"
-    editConfig: "Hodnota nastavení byla uložena"
-    configReset:    "Uživatelské nastavení bylo úspěšně resetováno do výchozího stavu"
-    configReload:    "Uživatelské nastavení zkontrolováno a doplněny chybějící položky"
-    addRole:    "Role oprávnění byla přidána."
-    removeRole: "Role oprávnění byla odebrána."
+    password:
+        title: "Heslo bylo změněno"
+        comment:  "Platnost nového hesla je 90 dní."        
+    login:
+        title: "Úspěšné přihlášení"
+    logout:
+        title: "Odhlášení bylo úspěšné"
+    register:
+        title:   "Úspěšná registrace uživatelem."
+        comment:    "Na Váš email přijde rekapitulace registrace, jejíž součástí je bezpečnostní kód, který použijete, pokud chcete být přiřazeni k již existujícímu účtu."
+    reset:
+        title:  "Reset hesla proběhl úspěšně"
+        comment:   "Na Vámi registrovaný email bylo odesláno jednorázové heslo. Po přihlášení pomocí tohoto hesla je potřeba ho změnit."
+    settings:
+        title:   "Nastavení bylo uloženo"
+        reset:    "Uživatelské nastavení bylo úspěšně resetováno do výchozího stavu"
+        reload:    "Uživatelské nastavení zkontrolováno a doplněny chybějící položky"
+    user:
+        add:    "Úspěšná registrace administrátorem"
+        edit:   "Úspěšná změna  změna nastavení administrátorem"
+        status:   "Úspěšná změna stavu administrátorem"
+        delete: "Uživatel smazán administrátorem"
+        reset:  "Úspěšný reset hesla administrátorem"
+    roles:
+        add:    "Role oprávnění byla přidána."
+        remove: "Role oprávnění byla odebrána."
+    profile:
+        title:  "Data uložena"
+        comment:    "Profile uživatele byl úspěšně aktualizován"
+
 email:
-    admin:
-        registerNoticeSubject:    "Notifikace administrátorovi - nový uživatel"
-        registerNoticeMessage:    "Do systému se registroval nový uživatel \n\n Rekapitulace registrace: \n Jméno uživatele: %realname% \n Přihlašovací jméno: %username% \n Registrovaný email: %email% \n\n . \n\n\n Notificator"
-        addSubject:    "INVENTAR.CLOUD - Registrace uživatele"
-        addMessage:    "Bylo provedeno přidání uživatele do systému INVENTAR.CLOUD.\n\n Rekapitulace Vašeho účtu: \n Jméno uživatele: %realname% \n Přihlašovací jméno: %username% \n Jednorázové přihlašovací heslo: %password% \n Registrovaný email: %email% \n\n Po prvním přihlášení do systému po Vás bude vyžádována změna hesla. Doporučujeme také nastavit kontrolní otázku a odpověď pro případ ztráty nebo zapomenutí hesla. \n\n\n Team INVENTAR.CLOUD"
-        editSubject:    "INVENTAR.CLOUD - Změna dat uživatele"
-        editMessage:    "V systému INVENTAR.CLOUD byla provedena změna Vašich dat administrátorem \n\n Rekapitulace Vašeho účtu: \n Jméno uživatele: %realname% \n Přihlašovací jméno: %username% \n Registrovaný email: %email% \n \n\n\n Team INVENTAR.CLOUD"
-        statusSubject:    "INVENTAR.CLOUD - Změna stavu uživatele"
-        statusMessage:    "V systému INVENTAR.CLOUD byla provedena změna stavu uživatele administrátorem \n\n Rekapitulace Vašeho účtu: \n Jméno uživatele: %realname% \n Stav uživatele: %realStatus% \n Přihlašovací jméno: %username% \n Registrovaný email: %email% \n\n \n\n\n Team INVENTAR.CLOUD"
-        deleteSubject:    "INVENTAR.CLOUD - Smazání uživatele"
-        deleteMessage:    "V systému INVENTAR.CLOUD byl odstraněn Váš účet uživatele \n\n\n Team INVENTAR.CLOUD"
-        resetSubject:   "INVENTAR.CLOUD - Reset hesla administrátorem"
-        resetMessage:   "Administrátorem byl proveden reset hesla Vašeho účtu. \n Bylo Vám vygenerováno jednorázové heslo. Po přihlášení pomocí tohoto hesla budete požádáni o změnu a nastavení nového. \n Vaše dočasné heslo pro účet %username% je %password% \n\n\n Team INVENTAR.CLOUD"
-    resetConfigSubject: "INVENTAR.CLOUD - reset nastavení uživatele"
-    resetConfigMessage: "V systému INVENTAR.CLOUD proběhl reset nastavení uživatele do výchozích hodnot. \n\n\n Team INVENTAR.CLOUD"
-    reloadConfigSubject: "INVENTAR.CLOUD -rozšíření nastavení uživatele"
-    reloadConfigMessage:    "V systému INVENTAR.CLOUD proběhla kontrola nastavení uživatele a doplnění chybějících hodnot. \n\n\n Team INVENTAR.CLOUD"
-    registerSubject:    "INVENTAR.CLOUD - Registrace uživatele"
-    registerMessage:    "Děkujeme Vám za registraci do systému INVENTAR.CLOUD \n\n Rekapitulace Vašeho účtu: \n Jméno uživatele: %realname% \n Přihlašovací jméno: %username% \n Registrovaný email: %email% \n\n Bezpečnostní kód si prosím uschovejte. Pokud by Vás někdo chtěl přiřadit ke svému účtu bude ho potřebovat. \n\n\n Team INVENTAR.CLOUD"
-    resetSubject:   "INVENTAR.CLOUD - Reset hesla"
-    resetMessage:   "Byl proveden reset hesla Vašeho účtu. \n Bylo Vám vygenerováno jednorázové heslo. Po přihlášení pomocí tohoto hesla budete požádáni o změnu a nastavení nového. \n Vaše dočasné heslo pro účet %username% je %newPass% \n\n\n Team INVENTAR.CLOUD"
-    changePasswordSubject:  "INVENTAR.CLOUD - změněno heslo"
-    changePasswordMessage:  "Informace \n\n Na Vašem účtu s přihlašovacím jménem %username% bylo změněno heslo. \n\n\n Team INVENTAR.CLOUD"
+    registerAdmin:
+        subject:    "Notifikace administrátorovi - nový uživatel"
+        body:    "Do systému se registroval nový uživatel \n\n Rekapitulace registrace: \n Jméno uživatele: %realname% \n Přihlašovací jméno: %username% \n Registrovaný email: %email% \n\n . \n\n\n Notificator"
+    add:
+        subject:    "INVENTAR.CLOUD - Registrace uživatele"
+        body:    "Bylo provedeno přidání uživatele do systému INVENTAR.CLOUD.\n\n Rekapitulace Vašeho účtu: \n Jméno uživatele: %realname% \n Přihlašovací jméno: %username% \n Jednorázové přihlašovací heslo: %password% \n Registrovaný email: %email% \n\n Po prvním přihlášení do systému po Vás bude vyžádována změna hesla. Doporučujeme také nastavit kontrolní otázku a odpověď pro případ ztráty nebo zapomenutí hesla. \n\n\n Team INVENTAR.CLOUD"
+    edit:
+        subject:    "INVENTAR.CLOUD - Změna dat uživatele"
+        body:    "V systému INVENTAR.CLOUD byla provedena změna Vašich dat administrátorem \n\n Rekapitulace Vašeho účtu: \n Jméno uživatele: %realname% \n Přihlašovací jméno: %username% \n Registrovaný email: %email% \n \n\n\n Team INVENTAR.CLOUD"
+    status:
+        subject:    "INVENTAR.CLOUD - Změna stavu uživatele"
+        body:    "V systému INVENTAR.CLOUD byla provedena změna stavu uživatele administrátorem \n\n Rekapitulace Vašeho účtu: \n Jméno uživatele: %realname% \n Stav uživatele: %realStatus% \n Přihlašovací jméno: %username% \n Registrovaný email: %email% \n\n \n\n\n Team INVENTAR.CLOUD"
+    delete:
+        subject:    "INVENTAR.CLOUD - Smazání uživatele"
+        body:    "V systému INVENTAR.CLOUD byl odstraněn Váš účet uživatele \n\n\n Team INVENTAR.CLOUD"
+    reset:
+        subject:   "INVENTAR.CLOUD - Reset hesla administrátorem"
+        body:   "Administrátorem byl proveden reset hesla Vašeho účtu. \n Bylo Vám vygenerováno jednorázové heslo. Po přihlášení pomocí tohoto hesla budete požádáni o změnu a nastavení nového. \n Vaše dočasné heslo pro účet %username% je %password% \n\n\n Team INVENTAR.CLOUD"
+    resetConfig:
+        subject: "INVENTAR.CLOUD - reset nastavení uživatele"
+        body: "V systému INVENTAR.CLOUD proběhl reset nastavení uživatele do výchozích hodnot. \n\n\n Team INVENTAR.CLOUD"
+    reloadConfig:
+        subject: "INVENTAR.CLOUD -rozšíření nastavení uživatele"
+        body:    "V systému INVENTAR.CLOUD proběhla kontrola nastavení uživatele a doplnění chybějících hodnot. \n\n\n Team INVENTAR.CLOUD"
+    register:
+        subject:    "INVENTAR.CLOUD - Registrace uživatele"
+        body:    "Děkujeme Vám za registraci do systému INVENTAR.CLOUD \n\n Rekapitulace Vašeho účtu: \n Jméno uživatele: %realname% \n Přihlašovací jméno: %username% \n Registrovaný email: %email% \n\n Team INVENTAR.CLOUD"
+    passwordReset:
+        subject:   "INVENTAR.CLOUD - Reset hesla"
+        body:   "Byl proveden reset hesla Vašeho účtu. \n Bylo Vám vygenerováno jednorázové heslo. Po přihlášení pomocí tohoto hesla budete požádáni o změnu a nastavení nového. \n Vaše dočasné heslo pro účet %username% je %password% \n\n\n Team INVENTAR.CLOUD"
+    password:
+        subject:  "INVENTAR.CLOUD - změněno heslo"
+        body:  "Informace \n\n Na Vašem účtu s přihlašovacím jménem %username% bylo změněno heslo. \n\n\n Team INVENTAR.CLOUD"
+
 roles:
     manager:    "Správa uživatelů"

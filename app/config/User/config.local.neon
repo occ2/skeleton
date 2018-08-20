@@ -2,47 +2,47 @@ parameters:
     defaultUserConfigs:
         -   
             key:    "userNotifyAdminChange"
-            comment:    "user.settings.notifyAdminChange"
+            comment:    "user.settings.notify.admin.change"
             value:  true
-            type:   bool
-        -   
-            key:    "userNotifyChangePassword"
-            comment:    "user.settings.notifyChangePassword"
-            value:  true
-            type:   bool
+            type:   "bool"
         -   
             key:    "userNotifyAdminChangePassword"
-            comment:    "user.settings.notifyAdminChangePassword"
+            comment:    "user.settings.notify.admin.changePassword"
             value:  true
-            type:   bool
+            type:   "bool"
         -   
             key:    "userNotifyChangeStatus"
-            comment:    "user.settings.notifyChangeStatus"
+            comment:    "user.settings.notify.admin.changeStatus"
             value:  true
-            type:   bool
+            type:   "bool"
         -   
-            key:    "userNotifyChangeConfig"
-            comment:    "user.settings.notifyChangeConfig"
+            key:    "userNotifyChangeSettings"
+            comment:    "user.settings.notify.admin.changeSettings"
             value:  true
-            type:   bool
+            type:   "bool"
         -   
-            key:    "userNotifyResetConfig"
-            comment:    "user.settings.notifyResetConfig"
+            key:    "userNotifyReloadsettings"
+            comment:    "user.settings.notify.admin.reloadSettings"
             value:  true
-            type:   bool
+            type:   "bool"
         -   
-            key:    "userNotifyReloadConfig"
-            comment:    "user.settings.notifyReloadConfig"
+            key:    "userNotifyChangePassword"
+            comment:    "user.settings.notify.user.changePassword"
             value:  true
-            type:   bool
+            type:   "bool"
+        -   
+            key:    "userNotifyResetSettings"
+            comment:    "user.settings.notify.user.resetSettings"
+            value:  true
+            type:   "bool"
         -   
             key:    "userNotifyAddRole"
-            comment:    "user.settings.notifyAddRole"
+            comment:    "user.settings.notify.user.addRole"
             value:  true
-            type:   bool
+            type:   "bool"
         -   
             key:    "userNotifyRemoveRole"
-            comment:    "user.settings.notifyRemoveRole"
+            comment:    "user.settings.notify.user.removeRole"
             value:  true
             type:   bool
 
@@ -61,7 +61,8 @@ parameters:
                     -   read
                     -   write
                     -   delete
-
+        defaultRoles:
+            -   authenticated
     navbar:
         user:
             name:   "user.navbar.user"

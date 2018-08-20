@@ -5,15 +5,38 @@ orm.annotations:
 parameters:
     module:
         user:   User
+    defaultRoles:
+        -   authenticated
 services:    
     # ORM facades
-    authenticator:   app\User\models\facades\AuthenticatorFacade(@Contributte\Utils\DatetimeFactory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,@Nette\Caching\IStorage,%users%)
-    authorizator:   app\User\models\facades\AuthorizationFacade(%acl%)
+    userAuthenticator:   app\User\models\facades\AuthenticatorFacade(@Contributte\Utils\DatetimeFactory,@cacheFactory.factory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,%users%)
+    userAuthorizator:   app\User\models\facades\AuthorizationFacade(%acl%)
+    userPassword:   app\User\models\facades\PasswordFacade(@Contributte\Utils\DatetimeFactory,@cacheFactory.factory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,%users%)
+    userProfile:    app\User\models\facades\ProfileFacade(@Contributte\Utils\DatetimeFactory,@cacheFactory.factory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,%users%)
+    userAdmin:  app\User\models\facades\AdminFacade(@Contributte\Utils\DatetimeFactory,@cacheFactory.factory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,%users%)
+    userHistory:  app\User\models\facades\HistoryFacade(@Contributte\Utils\DatetimeFactory,@cacheFactory.factory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,%users%)
+    userRoles:
+        class:  app\User\models\facades\RolesFacade(@Contributte\Utils\DatetimeFactory,@cacheFactory.factory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,%acl%)
+        setup:
+            -   setDefaultRoles(%defaultRoles%)
+    userSettings:  app\User\models\facades\SettingsFacade(@Contributte\Utils\DatetimeFactory,@cacheFactory.factory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,%defaultUserConfigs%)
 
     # forms
+    signInForm: app\User\controls\factories\ISignInForm
+    resetPasswordForm: app\User\controls\factories\IResetPasswordForm
+    controlQuestionForm:    app\User\controls\factories\IControlQuestionForm
+    expiredPasswordForm:    app\User\controls\factories\IExpiredPasswordForm
+    registerForm:   app\User\controls\factories\IRegisterForm
+    changePasswordForm: app\User\controls\factories\IPasswordForm
+    profileForm:   app\User\controls\factories\IProfileForm
+    userForm:   app\User\controls\factories\IUserForm
 
     # grids
 
     # processors
 
     # events
+    signInEvents:   app\User\events\subscribers\SignInEvents
+    passwordEvents: app\User\events\subscribers\PasswordEvents
+    registerEvents: app\User\events\subscribers\RegisterEvents
+    profileEvents:  app\User\events\subscribers\ProfileEvents

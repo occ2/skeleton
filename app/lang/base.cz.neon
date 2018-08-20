@@ -5,6 +5,7 @@ shared:
     yes:    "Ano"
     no:     "Ne"
     question:   "Otázka"
+    answer: "Odpověď"
 logger:
     status:
         info:   "Informace"
@@ -39,3 +40,8 @@ error:
         title:  "500 - Interní chyba aplikace"
         content:    "Došlo k interní chybě aplikace. Zkuste prosím požadavek později"
         footer: "V případě komplikací kontaktujte administrátora admin@inventar.cloud"
+    inactivity:
+        title:  "Automatické odhlášení"
+        comment:    "Z důvodu delší neaktivity, jste byl(a) ze systému automaticky odhlášen(a)."
+    form:
+        protection: "Vypršel časový limit, odešlete formulář znovu"
