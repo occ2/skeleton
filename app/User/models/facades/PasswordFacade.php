@@ -44,10 +44,9 @@ final class PasswordFacade extends AbstractFacade
 {
     use TTestUser;
 
-    const EVENT_RESET="password.onReset",
-          EVENT_EXPIRED="password.onExpiredChange",
-          EVENT_CHANGE="password.onChange",
-          ENTITY_CLASS=UserEntity::class;
+    const EVENT_RESET="User.password.onReset",
+          EVENT_EXPIRED="User.password.onExpiredChange",
+          EVENT_CHANGE="User.password.onChange";
 
     /**
      * @var array

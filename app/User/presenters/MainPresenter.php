@@ -35,6 +35,9 @@ final class MainPresenter extends BasePresenter
 {
     const ACTION_DEFAULT=":User:Main:default";
 
+    /**
+     * @title user.navbar.user
+     */
     public function actionDefault()
     {
 

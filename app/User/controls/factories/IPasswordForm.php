@@ -27,14 +27,14 @@
 namespace app\User\controls\factories;
 
 /**
- * IChangePassForm interface
+ * IPasswordForm interface
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-interface IChangePassForm
+interface IPasswordForm
 {
     /**
-     * @return \app\User\controls\forms\ChangePassForm
+     * @return \app\User\controls\forms\PasswordForm
      */
     public function create();
 }

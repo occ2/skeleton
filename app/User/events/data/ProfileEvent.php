@@ -36,5 +36,8 @@ use app\Base\events\Event;
 class ProfileEvent extends Event
 {
     const PASSWORD="password",
-          SECRET="secret";
+          SECRET="secret",
+          REALNAME="realname",
+          USERNAME="username",
+          EMAIL="email";
 }

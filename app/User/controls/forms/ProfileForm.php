@@ -49,7 +49,8 @@ final class ProfileForm extends FormControl
           EMAIL="email",
           PHONE="phone",
           QUESTION="cQuestion",
-          ANSWER="cAnswer";
+          ANSWER="cAnswer",
+          EVENT_SUCCESS="User.ProfileEvents.onSuccess";
     
     /**
      * @type hidden
@@ -57,70 +58,70 @@ final class ProfileForm extends FormControl
     public $id;
     
     /**
-     * @leftAddon user.settingsForm.name
+     * @leftAddon user.settingsForm.name.label
      * @rightIcon id-badge
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredName')
-     * @description user.settingsForm.nameDescription
+     * @validator (type=':filled',message='user.error.name.required')
+     * @description user.settingsForm.name.description
      */
     public $realname;
     
     /**
-     * @leftAddon user.settingsForm.username
+     * @leftAddon user.settingsForm.username.label
      * @rightIcon user
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredUsername')
-     * @validator (type=':minLength',message='user.error.minLengthUsername',value=4)
-     * @description user.settingsForm.usernameDescription
+     * @validator (type=':filled',message='user.error.username.required')
+     * @validator (type=':minLength',message='user.error.username.minLength',value=4)
+     * @description user.settingsForm.username.description
      */
     public $username;
     
     /**
-     * @leftAddon user.settingsForm.email
+     * @leftAddon user.settingsForm.email.label
      * @rightIcon at
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredEmail')
-     * @validator (type=':email',message='user.error.invalidEmail')
-     * @description user.settingsForm.emailDescription
+     * @validator (type=':filled',message='user.error.email.required')
+     * @validator (type=':email',message='user.error.email.invalid')
+     * @description user.settingsForm.email.description
      */
     public $email;
     
     /**
-     * @leftAddon user.settingsForm.phone
+     * @leftAddon user.settingsForm.phone.label
      * @rightIcon phone
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredPhone')
-     * @validator (type=':pattern',message='user.error.invalidPhone',value='\+(?:[0-9]?){6,14}[0-9]')
-     * @description user.settingsForm.phoneDescription
+     * @validator (type=':filled',message='user.error.phone.required')
+     * @validator (type=':pattern',message='user.error.phone.invalid',value='\+(?:[0-9]?){6,14}[0-9]')
+     * @description user.settingsForm.phone.description
      */
     public $phone;
     
     /**
-     * @leftAddon user.settingsForm.question
+     * @leftAddon user.settingsForm.question.label
      * @rightIcon question-circle
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredQuestion')
-     * @description user.settingsForm.questionDescription
+     * @validator (type=':filled',message='user.error.question.required')
+     * @description user.settingsForm.question.description
      */
     public $cQuestion;
     
     /**
-     * @leftAddon user.settingsForm.answer
+     * @leftAddon user.settingsForm.answer.label
      * @rightIcon user-secret
      * @type text
      * @cols 20
-     * @description user.settingsForm.answerDescription
+     * @description user.settingsForm.answer.description
      * @placeholder user.settingsForm.hidden
      */
     public $cAnswer;
     
     /**
-     * @label user.settingsForm.submit
+     * @label user.settingsForm.submit.label
      * @type submit
      */
     public $submit;

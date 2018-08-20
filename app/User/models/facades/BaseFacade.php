@@ -43,7 +43,6 @@ abstract class BaseFacade extends Facade
 {
     const EVENT_USER_NOT_FOUND="authenticator.onUserNotFound",
           EVENT_INVALID_CREDENTIAL="authenticator.onInvalidCredential",
-          ENTITY_CLASS=UserEntity::class,
           EVENT_FIND="";
 
     /**

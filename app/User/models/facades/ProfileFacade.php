@@ -1,5 +1,4 @@
 <?php
-
 /*
  * The MIT License
  *
@@ -45,8 +44,7 @@ final class ProfileFacade extends BaseFacade
     use TUserDefaults;
     use TTestUser;
 
-    const ENTITY_CLASS=UserEntity::class,
-          EVENT_FIND="User.ProfileFacade.onFind",
+    const EVENT_FIND="User.ProfileFacade.onFind",
           EVENT_REGISTER="User.ProfileFacade.onRegister",
           EVENT_SAVE="User.ProfileFacade.onSave",
           EVENT_ADD="User.ProfileFacade.onAdd";
@@ -70,12 +68,17 @@ final class ProfileFacade extends BaseFacade
      */
     public function save(array $data,array $exclude=[])
     {
+        // find user
         $user = $this->em->find(UserEntity::class, $data[UserEntity::ID]);
         $this->testFound($user, ProfileException::class);
         if($user!=null){
+            // test of user is same as logged in user
             $this->testUser($user);
+            // modify entity data
             $this->modify($user, $data, $exclude);
+            // save to DB
             $this->em->flush();
+            // fire event
             $this->on(
                 self::EVENT_SAVE,
                 new ProfileEvent(
@@ -97,15 +100,21 @@ final class ProfileFacade extends BaseFacade
      */
     public function register(array $data,array $exclude=[])
     {
+        // test if registerd username is unique
         $u = $this->loadUser($data[UserEntity::USERNAME],false);
         if($u!=null){
             throw new ProfileException(ProfileException::MESSAGE_NOT_UNIQUE, ProfileException::USERNAME_NOT_UNIQUE);
         }
+        // create new entity
         $user = new UserEntity;
+        // fill it with data
         $user->fill($this->exclude($data, $exclude));
+        // set default data and create secret
         $secret = $this->setDefaults($user);
+        // save to DB
         $this->em->persist($user);
         $this->em->flush($user);
+        // fire event
         $this->on(
             self::EVENT_REGISTER,
             new ProfileEvent(
