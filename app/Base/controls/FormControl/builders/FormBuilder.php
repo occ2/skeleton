@@ -450,7 +450,7 @@ class FormBuilder implements IFormBuilder
         foreach ($validators as $validator) {
             //bdump($validator);
             if ($validator->type==":equal") {
-                $element->addRule(Form::EQUAL, isset($validator->message) ? $validator->message : null, $this->{$validator->value});
+                $element->addRule(Form::EQUAL, isset($validator->message) ? $validator->message : null, $this->object->{$validator->value});
             } else {
                 $element->addRule(
                         $validator->type,
