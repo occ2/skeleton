@@ -31,6 +31,7 @@ use Contributte\EventDispatcher\EventDispatcher;
 use Contributte\Cache\ICacheFactory;
 use Nette\Application\UI\Control as NControl;
 use Kdyby\Translation\ITranslator;
+use Nette\Utils\ArrayHash;
 
 /**
  * parent of all controls
@@ -45,22 +46,28 @@ abstract class Control extends NControl
     /**
      * @var ITranslator | null
      */
-    protected $_translator;
+    //protected $_translator;
 
     /**
      * @var EventDispatcher
      */
-    protected $_eventDispatcher;
+    //protected $_eventDispatcher;
 
     /**
      * @var ICacheFactory
      */
-    public $_cacheFactory;
+    //public $_cacheFactory;
 
     /**
      * @var mixed
      */
-    protected $_configurator;
+    //protected $_configurator;
+
+    /**
+     * property container
+     * @var ArrayHash
+     */
+    //protected $c;
 
     /**
      * @param EventDispatcher $eventDispatcher
@@ -73,9 +80,14 @@ abstract class Control extends NControl
             ICacheFactory $cacheFactory,
             ITranslator $translator=null)
     {
-        $this->_eventDispatcher = $eventDispatcher;
-        $this->_translator = $translator;
-        $this->_cacheFactory = $cacheFactory;
+        $this->c = new ArrayHash();
+        $this->c->ed = $eventDispatcher;
+        $this->c->translator = $translator;
+        $this->c->cacheFactory = $cacheFactory;
+        $this->c->configurator = [];
+        //$this->_eventDispatcher = $eventDispatcher;
+        //$this->_translator = $translator;
+        //$this->_cacheFactory = $cacheFactory;
         parent::__construct();
         $this->startup();
         return;
@@ -86,24 +98,13 @@ abstract class Control extends NControl
     }
 
     /**
-     * render
-     */
-    public function render()
-    {
-        if (property_exists($this, "_modal")) {
-            $this->template->modal = $this->_modal;
-        }
-        return;
-    }
-
-    /**
      * shorter alias for text()
      * @param string $text
      * @return string
      */
     public function _(string $text) : string
     {
-        return $this->_translator instanceof ITranslator ? $this->_translator->translate($text) : $text;
+        return $this->container->translator instanceof ITranslator ? $this->container->translator->translate($text) : $text;
     }
 
     /**
@@ -112,7 +113,7 @@ abstract class Control extends NControl
      */
     public function getEventDispatcher(): EventDispatcher
     {
-        return $this->_eventDispatcher;
+        return $this->container->ed;
     }
 
     /**
@@ -121,7 +122,7 @@ abstract class Control extends NControl
      */
     public function getTranslator(): ?ITranslator
     {
-        return $this->_translator;
+        return $this->container->translator;
     }
 
     /**
@@ -130,7 +131,7 @@ abstract class Control extends NControl
      */
     public function getConfigurator()
     {
-        return $this->_configurator;
+        return $this->container->configurator;
     }
 
     /**
@@ -141,6 +142,6 @@ abstract class Control extends NControl
      */
     public function on(string $eventName, BaseEvent $data)
     {
-        return $this->_eventDispatcher->dispatch($eventName, $data);
+        return $this->container->ed->dispatch($eventName, $data);
     }
 }
