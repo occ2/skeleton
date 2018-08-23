@@ -60,20 +60,14 @@ abstract class FormControl extends Control
 {
     use TFlashMessage;
 
-    /**
-     * @var string
-     */
-    public static $_iconPrefix="fas fa-";
-
-    /**
-     * @var bool
-     */
-    public $_simple=false;
+    const FORM="form";
+    const DEFAULT_ICON_PREFIX="fas fa-";
+    const DEFAULT_TEMPLATE_PATH=__DIR__ . "/form.latte";
 
     /**
      * @var array
      */
-    public $_rendererWrappers=[
+    public static $defaultWrappers=[
         'form' => [
             'container' => null,
         ],
@@ -127,72 +121,6 @@ abstract class FormControl extends Control
     ];
 
     /**
-     * @var string
-     */
-    public $name;
-
-    /**
-     * @var string
-     */
-    public $_templatePath=__DIR__ . "/form.latte";
-
-    /**
-     * @var IFormFactory
-     */
-    public $_formFactory;
-
-    /**
-     * @var array
-     */
-    public $_loadOptionsCallback;
-
-    /**
-     * @var callable
-     */
-    public $_loadValuesCallback;
-
-    /**
-     * @var object
-     */
-    public $_values=null;
-
-    /**
-     * @var array
-     */
-    public $_links=[];
-
-    /**
-     * @var bool
-     */
-    public $_ajax=false;
-
-    /**
-     * @var bool
-     */
-    public $_disableBuilder=false;
-
-    /**
-     * @var IFormBuilder
-     */
-    public $_builder;
-
-    /**
-     * @var array
-     */
-    public $_override;
-
-    /**
-     * error, validate, submit, success
-     * @var array
-     */
-    public $_symfonyEvents=[];
-
-    /**
-     * @var IEventFactory
-     */
-    public $_eventDataFactory;
-
-    /**
      * @var null | array
      */
     public $onError;
@@ -222,33 +150,20 @@ abstract class FormControl extends Control
      */
     public function __construct(IFormFactory $formFactory, EventDispatcher $eventDispatcher, ICacheFactory $cacheFactory,ITranslator $translator = null,$formEventDataFactoryClass=FormEventFactory::class)
     {
+        // set base DI objects
         parent::__construct($eventDispatcher, $cacheFactory, $translator);
-        $this->_formFactory = $formFactory;
-        $this->_configurator = new FormConfig($this);
-        $this->_links = $this->_configurator->getLinks(true);
-        $this->_eventDataFactory = new $formEventDataFactoryClass;
-        return;
-    }
-
-    /**
-     * set form without Bootstrap Card
-     * @return $this
-     */
-    public function setSimple()
-    {
-        $this->_simple=true;
-        return $this;
-    }
-
-    /**
-     * set custom template
-     * @param string $path
-     * @return $this
-     */
-    public function setTemplate($path)
-    {
-        $this->_templatePath = $path;
-        return $this;
+        // set default form settings
+        $this->setIconPrefix(static::DEFAULT_ICON_PREFIX);
+        $this->setRendererWrappers(self::$defaultWrappers);
+        $this->setSimple(false);
+        $this->setTemplatePath(static::DEFAULT_TEMPLATE_PATH);
+        // set basic factories
+        $this->c->eventDataFactory = new $formEventDataFactoryClass;
+        $this->c->formFactory = $formFactory;
+        // create annotation configurator
+        $this->c->configurator = new FormConfig($this);
+        // set links
+        $this->setLinks($this->getConfigurator()->get("links", true));
     }
 
     /**
@@ -258,37 +173,36 @@ abstract class FormControl extends Control
      */
     public function &__get($name)
     {
-        if ($name=="form") {
+        if ($name==static::FORM) {
             return $this[$name];
         }
         return parent::__get($name);
     }
 
     /**
-     * enable direct accesst to form elements
+     * alias for get column
      * @param string $name
      * @return BaseControl
+     * @deprecated
      */
     public function getItem($name)
     {
-        $i = $this["form"][$name];
+        return $this->getColumn($name);
+    }
+
+    /**
+     * enable direct access to form elements
+     * @param string $name
+     * @return BaseControl
+     */
+    public function getColumn($name)
+    {
+        $i = $this[static::FORM][$name];
         if($i instanceof BaseControl){
             return $i;
         } else {
             throw new ApplicationException();
         }
-    }
-
-    /**
-     * @return void
-     */
-    protected function config()
-    {
-        $this->_ajax = $this->_configurator->getAjax();
-        if(!empty($this->_configurator->getEvents())){
-            $this->_symfonyEvents = $this->_configurator->getEvents();
-        }
-        return;
     }
 
     /**
@@ -298,19 +212,15 @@ abstract class FormControl extends Control
      */
     public function setAjax(bool $ajax=true)
     {
-        $this->_ajax = $ajax;
+        $this->c->ajax = $ajax;
         return $this;
     }
 
     /**
-     * set form to using Symfony events
-     * @param array $events
-     * @return $this
+     * @return bool
      */
-    public function setEvents(array $events)
-    {
-        $this->_symfonyEvents = $events;
-        return $this;
+    public function getAjax(){
+        return isset($this->c->ajax) ? $this->c->ajax : true;
     }
 
     /**
@@ -320,7 +230,7 @@ abstract class FormControl extends Control
      */
     public function setTitle(string $text)
     {
-        $this->_override["title"] = $this->text($text);
+        $this->c->title = $this->_($text);
         return $this;
     }
 
@@ -331,7 +241,7 @@ abstract class FormControl extends Control
      */
     public function setComment(string $text)
     {
-        $this->_override["comment"] = $this->text($text);
+        $this->c->comment = $this->_($text);
         return $this;
     }
 
@@ -342,46 +252,68 @@ abstract class FormControl extends Control
      */
     public function setFooter(string $text)
     {
-        $this->_override["footer"] = $this->text($text);
+        $this->c->footer = $this->_($text);
         return $this;
     }
 
     /**
+     * @param ArrayHash $styles
+     * @return $this
+     */
+    public function setStyles(ArrayHash $styles)
+    {
+        $this->c->styles = $styles;
+        return $this;
+    }
+
+    /**
+     * @return ArrayHash | null
+     */
+    public function getStyles()
+    {
+        if(isset($this->c->styles)){
+            return $this->c->styles;
+        } else {
+            return $this->getConfigurator()->get("styles");
+        }
+    }
+
+    /**
      * get control title (if set)
-     * @return string
+     * @return string | null
      */
     public function getTitle()
     {
-        if (isset($this->_override["title"]) && !empty($this->_override["title"])) {
-            return $this->_override["title"];
+        if (isset($this->c->title) && !empty($this->c->title)) {
+            return $this->c->title;
         } else {
-            return $this->_configurator->getTitle()==null ? null : $this->_configurator->getTitle();
+            return $this->getConfigurator()->get("title");
         }
     }
 
     /**
      * get control comment (if set)
-     * @return string
+     * @return string | null
      */
     public function getComment()
     {
-        if (isset($this->_override["comment"]) && !empty($this->_override["comment"])) {
-            return $this->_override["comment"];
+        if (isset($this->c->comment) && !empty($this->c->comment)) {
+            return $this->c->comment;
         } else {
-            return $this->_configurator->getComment()==null ? null : $this->_configurator->getComment();
+            return $this->getConfigurator()->get("comment");
         }
     }
 
     /**
      * get control footer (if set)
-     * @return string
+     * @return string | null
      */
     public function getFooter()
     {
-        if (isset($this->_override["footer"]) && !empty($this->_override["footer"])) {
-            return $this->_override["footer"];
+        if (isset($this->c->footer) && !empty($this->c->footer)) {
+            return $this->c->footer;
         } else {
-            return $this->_configurator->getFooter()==null ? null : $this->_configurator->getFooter();
+            return $this->getConfigurator()->get("footer");
         }
     }
 
@@ -391,47 +323,82 @@ abstract class FormControl extends Control
      */
     public function disableBuilder()
     {
-        $this->_disableBuilder = true;
+        $this->c->disableBuilder = true;
         return $this;
     }
 
     /**
+     * is builder enabled?
+     * @return boolean
+     */
+    public function isBuilderEnabled()
+    {
+        if(isset($this->c->disableBuilder) && $this->c->disableBuilder==true){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
      * set load options callback
-     * @param string $control
+     * @param string $column
      * @param callable $callback
      */
-    public function setLoadOptionsCallback(string $control, callable $callback)
+    public function setLoadOptionsCallback(string $column, callable $callback)
     {
-        $this->_loadOptionsCallback[$control] = $callback;
+        $this->c->loadOptionsCallback[$column] = $callback;
         return $this;
+    }
+
+    /**
+     * @return callable | null
+     */
+    public function getLoadOptionsCallback()
+    {
+        return isset($this->c->loadOptionsCallback) ? $this->c->loadOptionsCallback : null;
     }
 
     /**
      * set load values callback
      * @param callable $callback
+     * @return $this
      */
     public function setLoadValuesCallback(callable $callback)
     {
-        $this->_loadValuesCallback = $callback;
+        $this->c->loadValuesCallback = $callback;
         return $this;
     }
 
     /**
+     * @return callable
+     */
+    public function getLoadValuesCallback()
+    {
+        return isset($this->c->loadValuesCallback) ? $this->c->loadValuesCallback : null;
+    }
+
+    /**
      * form factory
-     * @return \Nette\Application\UI\Form
+     * @return NForm
      */
     public function createComponentForm(): NForm
     {
-        $this->config();
-        $form = $this->_formFactory->create();
+        // set ajax from configuration
+        $this->setAjax($this->getConfigurator()->get("ajax"));
+        // create form
+        $form = $this->getFormFactory()->create();
+        // set renderer wrappers
         if(isset($form->getRenderer()->wrappers)){
-            $form->getRenderer()->wrappers = $this->_rendererWrappers;
+            $form->getRenderer()->wrappers = $this->getRendererWrappers();
         }
-        
-        if ($this->_ajax) {
+        // set form ajax
+        if ($this->getAjax()) {
             $form->getElementPrototype()->class('ajax');
         }
+        // setup form settings
         $this->setupForm($form);
+        // setup form events
         $this->setupEvents($form);
         return $form;
     }
@@ -458,21 +425,17 @@ abstract class FormControl extends Control
     protected function setupOnError(NForm $form)
     {
         $t = $this;
-        $event = $this->_configurator->onError[0];
-        
-        if(array_key_exists("error", $this->_symfonyEvents)){
-            $form->onError[] = function (NForm $form) use ($t) {
-                $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["error"]);
-                $t->on($t->_symfonyEvents["error"], $data);
-                return;
-            };
-        } elseif ($event!==null) {
+        // try to find event from annotations
+        $event = $this->getConfigurator()->get("onError");
+        // if found set event to be fired by Symfony event dispatcher
+        if ($event!==null) {
             $form->onError[] = function (NForm $form) use ($t,$event) {
-                $data = $this->_eventDataFactory->create($form,$t,$event);
+                $data = $t->getEventDataFactory()->create($form,$t,$event);
                 $t->on($event, $data);
                 return;
             };
         } else {
+            // if not try to find control event and if found set it into form
             if(!empty($this->onError)){
                 $form->onError = $this->onError;
             }
@@ -488,18 +451,16 @@ abstract class FormControl extends Control
     protected function setupOnValidate(NForm $form)
     {
         $t = $this;
-        $event = $this->_configurator->onValidate[0];
-        if(array_key_exists("validate", $this->_symfonyEvents)){
-            $form->onValidate[] = function (NForm $form) use ($t) {
-                $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["validate"]);
-                return $t->on($t->_symfonyEvents["validate"], $data);
-            };
-        } elseif ($event!==null) {
+        // try to find event from annotations
+        $event = $this->getConfigurator()->get("onValidate");
+        // if found set event to be fired by Symfony event dispatcher
+        if ($event!==null) {
             $form->onValidate[] = function (NForm $form) use ($t,$event) {
-                $data = $this->_eventDataFactory->create($form,$t,$event);
+                $data = $t->getEventDataFactory()->create($form,$t,$event);
                 return $t->on($event, $data);
             };
         } else {
+            // if not try to find control event and if found set it into form
             if(!empty($this->onValidate)){
                 $form->onValidate = $this->onValidate;
             }
@@ -515,18 +476,16 @@ abstract class FormControl extends Control
     protected function setupOnSubmit(NForm $form)
     {
         $t = $this;
-        $event = $this->_configurator->onSubmit[0];
-        if(array_key_exists("submit", $this->_symfonyEvents)){
-            $form->onSubmit[] = function (NForm $form) use ($t) {
-                $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["submit"]);
-                return $t->on($t->_symfonyEvents["submit"], $data);
-            };
-        } elseif ($event!==null) {
+        // try to find event from annotations
+        $event = $this->getConfigurator()->get("onSubmit");
+        // if found set event to be fired by Symfony event dispatcher
+        if ($event!==null) {
             $form->onSubmit[] = function (NForm $form) use ($t,$event) {
-                $data = $this->_eventDataFactory->create($form,$t,$event);
+                $data = $t->getEventDataFactory()->create($form,$t,$event);
                 return $t->on($event, $data);
             };
         } else {
+            // if not try to find control event and if found set it into form
             if(!empty($this->onSubmit)){
                 $form->onSubmit = $this->onSubmit;
             }
@@ -534,30 +493,30 @@ abstract class FormControl extends Control
         return;
     }
 
+    /**
+     * setup form on success events
+     * @param NForm $form
+     * @return void
+     */
     protected function setupOnSuccess(NForm $form)
     {
         $t = $this;
-        $event = $this->_configurator->onSuccess[0];
-        
-        if(array_key_exists("success", $this->_symfonyEvents)){
-            $form->onSuccess[] = function (NForm $form) use ($t) {
-                $data = $this->_eventDataFactory->create($form,$t,$t->_symfonyEvents["success"]);
-                return $t->on($t->_symfonyEvents["success"], $data);
-            };
-        } elseif ($event!=null) {
+        // try to find event from annotations
+        $event = $this->getConfigurator()->get("onSuccess");
+        // if found set event to be fired by Symfony event dispatcher
+        if ($event!=null) {
             $form->onSuccess[] = function (NForm $form) use ($t,$event) {
-                $data = $this->_eventDataFactory->create($form,$t,$event);
+                $data = $t->getEventDataFactory()->create($form,$t,$event);
                 return $t->on($event, $data);
             };
         } else {
+            // if not try to find control event and if found set it into form
             if(!empty($this->onSuccess)){
                 $form->onSuccess = $this->onSuccess;
             }
         }
         return;
     }
-
-
 
     /**
      * overwrite by final classes
@@ -566,19 +525,22 @@ abstract class FormControl extends Control
      */
     public function setupForm(NForm $form):NForm
     {
-        if ($this->_builder instanceof IFormBuilder) {
-            $form = $this->_builder
+        // if some builder set use this
+        if ($this->getBuilder() instanceof IFormBuilder) {
+            $form = $this->getBuilder()
                          ->setObject($this)
-                         ->setTranslator($this->_translator)
-                         ->setOptionsCallbacks($this->_loadOptionsCallback)
+                         ->setTranslator($this->getTranslator())
+                         ->setOptionsCallbacks($this->getLoadOptionsCallback())
                          ->build($form);
-        } elseif ($this->_disableBuilder == false) {
-            $this->_builder = new FormBuilder;
-            $form = $this->_builder
+        // if not check if builder enabled and if true create new instance
+        } elseif ($this->isBuilderEnabled()) {
+            $this->setBuilder(new FormBuilder);
+            $form = $this->getBuilder()
                          ->setObject($this)
-                         ->setTranslator($this->_translator)
-                         ->setOptionsCallbacks($this->_loadOptionsCallback)
+                         ->setTranslator($this->getTranslator())
+                         ->setOptionsCallbacks($this->getLoadOptionsCallback())
                          ->build($form);
+        // if not skip builders
         } else {}
         return $form;
     }
@@ -589,16 +551,15 @@ abstract class FormControl extends Control
      */
     public function render()
     {
-        parent::render();
-        $this->template->styles = $this->_configurator->getStyles();
-        $this->template->title = isset($this->_override["title"]) ? $this->_override["title"] : $this->_configurator->getTitle();
-        $this->template->comment = isset($this->_override["comment"]) ? $this->_override["comment"] : $this->_configurator->getComment();
-        $this->template->footer = isset($this->_override["footer"]) ? $this->_override["footer"] : $this->_configurator->getFooter();
-        $this->template->links = $this->_links;
-        $this->template->name = $this->name;
-        $this->template->simple = $this->_simple;
+        $this->template->styles = $this->getStyles();
+        $this->template->title = $this->getTitle();
+        $this->template->comment = $this->getComment();
+        $this->template->footer = $this->getFooter();
+        $this->template->links = $this->getLinks();
+        $this->template->name = $this->getName();
+        $this->template->simple = $this->getSimple();
         if($this->template instanceof ITemplate){
-            $this->template->setFile($this->_templatePath);
+            $this->template->setFile($this->getTemplatePath());
             $this->template->render();
         }
         return;
@@ -607,22 +568,21 @@ abstract class FormControl extends Control
     /**
      * load values into form
      * @param mixed $id
-     * @throws \BadFunctionCallException
-     * @throws \Nette\Application\BadRequestException
+     * @throws \Exception
      */
     public function loadValues($id)
     {
-        if (!is_callable($this->_loadValuesCallback)) {
+        if (!is_callable($this->getLoadValuesCallback())) {
             throw new \BadFunctionCallException;
         }
         try {
-            $this->_values = call_user_func_array($this->_loadValuesCallback, [$id]);
-            if (!$this->_values) {
+            $this->setValues(call_user_func_array($this->getLoadValuesCallback(), [$id]));
+            if (!$this->getValues()) {
                 throw new BadRequestException;
             }
-            $this['form']->setDefaults($this->_values);
+            $this[static::FORM]->setDefaults($this->getValues());
         } catch (\Exception $exc) {
-            throw new BadRequestException;
+            throw $exc;
         }
         return $this;
     }
@@ -634,7 +594,7 @@ abstract class FormControl extends Control
      */
     public function setDefaults($values)
     {
-        $this['form']->setDefaults($values);
+        $this[static::FORM]->setDefaults($values);
         return $this;
     }
 
@@ -644,7 +604,7 @@ abstract class FormControl extends Control
      */
     public function clearValues()
     {
-        $this['form']->reset();
+        $this[static::FORM]->reset();
         return $this;
     }
 
@@ -655,7 +615,7 @@ abstract class FormControl extends Control
      */
     protected function loadOptions(string $option):array
     {
-        return (array) call_user_func($this->_loadOptionsCallback[$option]);
+        return (array) call_user_func($this->getLoadOptionsCallback()[$option]);
     }
 
     /**
@@ -665,17 +625,17 @@ abstract class FormControl extends Control
      */
     public function setBuilder(IFormBuilder $builder)
     {
-        $this->_builder = $builder;
+        $this->c->builder = $builder;
         return $this;
     }
 
     /**
      * get form builder
-     * @return IFormBuilder
+     * @return IFormBuilder | null
      */
-    public function getBuilder():IFormBuilder
+    public function getBuilder()
     {
-        return $this->_builder;
+        return isset($this->c->builder) ? $this->c->builder : null;
     }
 
     /**
@@ -686,8 +646,8 @@ abstract class FormControl extends Control
      */
     public function throwError(string $element, string $message)
     {
-        if($this["form"][$element] instanceof BaseControl){
-            $this["form"][$element]->addError($message);
+        if($this[static::FORM][$element] instanceof BaseControl){
+            $this[static::FORM][$element]->addError($message);
             $this->reload();
         }
 
@@ -700,7 +660,161 @@ abstract class FormControl extends Control
      */
     public function reload()
     {
-        $this->redrawControl("form");
+        $this->redrawControl(static::FORM);
         return;
+    }
+
+    /**
+     * @param string $iconPrefix
+     * @return $this
+     */
+    public function setIconPrefix($iconPrefix)
+    {
+        $this->c->iconPrefix = $iconPrefix;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIconPrefix()
+    {
+        return $this->c->iconPrefix;
+    }
+
+    /**
+     *  @return boolaen
+     */
+    public function getSimple()
+    {
+        return $this->c->simple;
+    }
+
+    /**
+     * set form without Bootstrap Card
+     * @param bool $simple
+     * @return $this
+     */
+    public function setSimple($simple=true)
+    {
+        $this->c->simple = $simple;
+        return $this;
+    }
+
+    /**
+     * @return IFormFactory
+     */
+    public function getFormFactory()
+    {
+        return $this->c->formFactory;
+    }
+
+    /**
+     * @return array
+     */
+    public function getLinks()
+    {
+        return isset($this->c->links) && !empty($this->c->links) ? $this->c->links : [];
+    }
+
+    /**
+     * @param array | null $links
+     * @return $this
+     */
+    public function setLinks(?array $links)
+    {
+        $this->c->links = $links;
+        return $this;
+    }
+
+    /**
+     * @return IEventFactory
+     */
+    public function getEventDataFactory()
+    {
+        return $this->c->eventDataFactory;
+    }
+
+    /**
+     * @param array $wrappers
+     * @return $this
+     */
+    public function setRendererWrappers(array $wrappers)
+    {
+        $this->c->rendererWrappers = $wrappers;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRendererWrappers()
+    {
+        return isset($this->c->rendererWrappers) ? $this->c->rendererWrappers : [];
+    }
+
+    /**
+     * @param string $path
+     * @return $this
+     */
+    public function setTemplatePath(string $path)
+    {
+        $this->c->templatePath = $path;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTemplatePath()
+    {
+        return $this->c->templatePath;
+    }
+
+    /**
+     * set form name
+     * @param string $name
+     * @return $this
+     */
+    public function setName(string $name)
+    {
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @param array | null $values
+     * @return $this
+     */
+    public function setValues(?array $values)
+    {
+        $this->c->values = $values;
+        return $this;
+    }
+
+    /**
+     * @return array | null
+     */
+    public function getValues()
+    {
+        return isset($this->c->values) ? $this->c->values : null;
+    }
+
+    /**
+     * @param IFormBuilder $builder
+     * @return $this
+     */
+    public function setFormBuilder(IFormBuilder $builder)
+    {
+        $this->c->formBuilder = $builder;
+        return $this;
+    }
+
+    /**
+     * @return IFormBuilder | null
+     */
+    public function getFormBuilder()
+    {
+        return isset($this->c->formBuilder) ? $this->c->formBuilder : null;
     }
 }

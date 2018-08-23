@@ -26,6 +26,7 @@
 namespace app\Base\controls\FormControl\configurators;
 
 use app\Base\controls\FormControl\FormControl;
+use app\Base\controls\Control\IConfigurator;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Strings;
 use Nette\Utils\ArrayHash;
@@ -38,7 +39,7 @@ use Nette\Caching\Cache;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.0.0
  */
-class FormConfig
+class FormConfig implements IConfigurator
 {
     const CACHE_PREFIX="forms";
 
@@ -88,7 +89,7 @@ class FormConfig
     public function __construct(FormControl $parent)
     {
         $classType = ClassType::from($parent);
-        $this->cache = $parent->_cacheFactory->create(static::CACHE_PREFIX);
+        $this->cache = $parent->getCacheFactory()->create(static::CACHE_PREFIX);
         $this->annotations = $this->cache->load($classType->getName());
         if($this->annotations===null){
             $this->annotations = $classType->getAnnotations();
@@ -108,46 +109,28 @@ class FormConfig
     {
         foreach ($this->renderers as $key=>$anchor) {
             if (isset($this->annotations[$anchor])) {
-                $this->parent->_rendererWrappers[$key] = Helpers::merge((array) $this->annotations[$anchor][0], $this->parent->_rendererWrappers[$key]);
+                $wrapper = $this->parent->getRendererWrappers();
+                $wrapper[$key] = Helpers::merge((array) $this->annotations[$anchor][0], $wrapper[$key]);
+                $this->parent->setRendererWrappers($wrapper);
             }
         }
         return;
     }
 
     /**
-     * test if method begins on get and then read from annotation and send as ArrayHash
+     * get annotation key
      * @param string $name
-     * @param array $arguments
-     * @return mixed
-     * @throws \BadMethodCallException
+     * @param bool $multiple
+     * @return mixed | null
      */
-    public function __call($name, $arguments)
+    public function get(string $name,bool $multiple=false)
     {
-        if (!Strings::startsWith($name, "get")) {
-            throw new \BadMethodCallException;
-        }
-        $anchor = Strings::firstLower(str_replace("get", "", $name));
-        if (array_key_exists($anchor, static::CONFIGS) && array_key_exists($anchor, $this->annotations)) {
-            return $this->parent->{static::CONFIGS[$anchor]}();
-        } elseif (in_array($anchor, static::TEXTS) && array_key_exists($anchor, $this->annotations)) {
-            return $this->annotations[$anchor][0];
-        } elseif (array_key_exists($anchor, $this->annotations)) {
-            return (isset($arguments[0]) && $arguments[0]==true) ? ArrayHash::from($this->annotations[$anchor]) : ArrayHash::from($this->annotations[$anchor][0]);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * annotation getter
-     * @param string $name
-     * @return array | null
-     */
-    public function __get($name):?array
-    {
-        $anchor = Strings::firstLower($name);
-        if(array_key_exists($anchor, $this->annotations)){
-            return $this->annotations[$anchor];
+        if(array_key_exists($name, $this->annotations)){
+            if($multiple==true){
+                return (array) $this->annotations[$name];
+            } else {
+                return $this->annotations[$name][0];
+            }
         } else {
             return null;
         }

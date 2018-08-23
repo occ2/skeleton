@@ -35,6 +35,7 @@ use Nette\Utils\Strings;
 use Nette\Utils\Html;
 use Nette\Forms\Controls\TextBase;
 use Nette\Forms\Controls\BaseControl;
+use Kdyby\Translation\ITranslator;
 
 /**
  * EntityFormBuilder
@@ -88,40 +89,19 @@ class FormBuilder implements IFormBuilder
     protected $loadOptionsCallback;
 
     /**
-     * @var \Nette\Localization\ITranslator
+     * @var ITranslator
      */
     protected $translator=null;
 
     /**
-     * magic metadata getter
-     * @param string $name
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return isset($this->object->{$name}) ? $this->object->{$name} : false;
-    }
-
-    /**
      * translator setter
-     * @param \Nette\Localization\ITranslator $translator
+     * @param ITranslator $translator
      * @return $this
      */
-    public function setTranslator(\Nette\Localization\ITranslator $translator)
+    public function setTranslator(ITranslator $translator)
     {
         $this->translator = $translator;
         return $this;
-    }
-
-    /**
-     * text
-     * @param string $text
-     * @return string
-     * @deprecated since version 1.1.0
-     */
-    protected function text(string $text)
-    {
-        return $this->translator instanceof \Nette\Localization\ITranslator ?  $this->translator->translate($text): $text;
     }
 
     /**
@@ -131,12 +111,13 @@ class FormBuilder implements IFormBuilder
      */
     public function _(string $text)
     {
-        return $this->translator instanceof \Nette\Localization\ITranslator ?  $this->translator->translate($text): $text;
+        return $this->translator instanceof ITranslator ?  $this->translator->translate($text): $text;
     }
 
     /**
      * set form control object
      * @param FormControl $object
+     * @return $this
      */
     public function setObject(FormControl $object)
     {
@@ -189,7 +170,9 @@ class FormBuilder implements IFormBuilder
      */
     protected function add(Form $form, Property $property)
     {
-        if ($property->getName()!="name" &&
+        if (!$property->isStatic() &&
+           $property->isPublic() && 
+           $property->getName()!="name" &&
            $property->getName()!="parent" &&
            $property->getName()!="presenter" &&
            $property->getName()!="params" &&
@@ -199,7 +182,7 @@ class FormBuilder implements IFormBuilder
            !Strings::startsWith($property->getName(), "_") &&
            !Strings::startsWith($property->getName(), "on")) {
             $config = new FormItemConfig($property,$this->object);
-            $this->object->{$config->name} = $this->{self::COLUMN_TYPES[$config->type]}(
+            $this->object->{$config->get("name")} = $this->{self::COLUMN_TYPES[$config->get("type")]}(
                     $form,
                     $config
            );
@@ -214,12 +197,12 @@ class FormBuilder implements IFormBuilder
      */
     protected function setupText(TextBase $element, FormItemConfig $config):TextBase
     {
-        $config->leftIcon==null ?: $element->setOption("left-addon", Html::el("i")->setAttribute("class", FormControl::$_iconPrefix . $config->leftIcon));
-        $config->rightIcon==null?: $element->setOption("right-addon", Html::el("i")->setAttribute("class", FormControl::$_iconPrefix . $config->rightIcon));
-        $config->leftAddon==null ?: $element->setOption("left-addon", $this->text($config->leftAddon));
-        $config->rightAddon==null ?: $element->setOption("right-addon", $this->text($config->rightAddon));
-        $config->placeholder==null ?: $element->setAttribute('placeholder', $this->text($config->placeholder));
-        $config->description==null ?: $element->setOption("description", $config->description);
+        $config->get("leftIcon")==null ?: $element->setOption("left-addon", Html::el("i")->setAttribute("class", $this->object->getIconPrefix() . $config->get("leftIcon")));
+        $config->get("rightIcon")==null?: $element->setOption("right-addon", Html::el("i")->setAttribute("class", $this->object->getIconPrefix() . $config->get("rightIcon")));
+        $config->get("leftAddon")==null ?: $element->setOption("left-addon", $this->_($config->get("leftAddon")));
+        $config->get("rightAddon")==null ?: $element->setOption("right-addon", $this->_($config->get("rightAddon")));
+        $config->get("placeholder")==null ?: $element->setAttribute('placeholder', $this->_($config->get("placeholder")));
+        $config->get("description")==null ?: $element->setOption("description", $config->get("description"));
         return $element;
     }
 
@@ -229,13 +212,13 @@ class FormBuilder implements IFormBuilder
     protected function addText(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addText(
-            $config->name,
-                                  $config->label,
-                                  $config->cols,
-                                  $config->maxlength
-                    );
+            $config->get("name"),
+            $config->get("label"),
+            $config->get("cols"),
+            $config->get("maxlength")
+        );
         $this->setupText($element, $config);
-        $validators = $config->validator;
+        $validators = $config->get("validator", true);
         empty($validators) ?: $this->setValidators($element, $validators);
         return $element;
     }
@@ -246,10 +229,10 @@ class FormBuilder implements IFormBuilder
     protected function addEmail(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addEmail(
-            $config->name,
-                                   $config->label
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
         $this->setupText($element, $config);
         return $element;
@@ -261,10 +244,10 @@ class FormBuilder implements IFormBuilder
     protected function addNumber(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addInteger(
-            $config->name,
-                                     $config->label
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
         $this->setupText($element, $config);
         return $element;
@@ -276,12 +259,12 @@ class FormBuilder implements IFormBuilder
     protected function addPassword(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addPassword(
-            $config->name,
-                                      $config->label,
-                                      $config->cols,
-                                      $config->maxlength
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label"),
+            $config->get("cols"),
+            $config->get("maxlength")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
         $this->setupText($element, $config);
         return $element;
@@ -293,14 +276,14 @@ class FormBuilder implements IFormBuilder
     protected function addTextarea(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addTextArea(
-            $config->name,
-                                      $config->label,
-                                      $config->cols,
-                                      $config->rows
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label"),
+            $config->get("cols"),
+            $config->get("rows")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
-        $config->description==null ?: $element->setOption("description", $this->text($config->description));
+        $config->get("description")==null ?: $element->setOption("description", $this->_($config->get("description")));
         return $element;
     }
 
@@ -309,16 +292,16 @@ class FormBuilder implements IFormBuilder
      */
     protected function addSelect(Form $form, FormItemConfig $config): BaseControl
     {
-        $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->name]);
+        $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->get("name")]);
         $element = $form->addSelect(
-            $config->name,
-                                    $config->label,
-                                    $items,
-                                    $config->size
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label"),
+            $items,
+            $config->get("size")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
-        $config->description==null ?: $element->setOption("description", $this->text($config->description));
+        $config->get("description")==null ?: $element->setOption("description", $this->_($config->get("description")));
         return $element;
     }
 
@@ -327,16 +310,16 @@ class FormBuilder implements IFormBuilder
      */
     protected function addMultiselect(Form $form, FormItemConfig $config): BaseControl
     {
-        $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->name]);
+        $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->get("name")]);
         $element = $form->addMultiSelect(
-            $config->name,
-                                         $config->label,
-                                         $items,
-                                         $config->size
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label"),
+            $items,
+            $config->get("size")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
-        $config->description==null ?: $element->setOption("description", $this->text($config->description));
+        $config->get("description")==null ?: $element->setOption("description", $this->_($config->get("description")));
         return $element;
     }
 
@@ -346,12 +329,12 @@ class FormBuilder implements IFormBuilder
     protected function addCheckbox(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addCheckbox(
-            $config->name,
-                                      $config->caption
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("caption")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
-        $config->description==null ?: $element->setOption("description", $this->text($config->description));
+        $config->get("description")==null ?: $element->setOption("description", $this->_($config->get("description")));
         return $element;
     }
 
@@ -360,15 +343,15 @@ class FormBuilder implements IFormBuilder
      */
     protected function addCheckboxList(Form $form, FormItemConfig $config): BaseControl
     {
-        $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->name]);
+        $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->get("name")]);
         $element = $form->addCheckboxList(
-            $config->name,
-                                          $config->label,
-                                          $items
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label"),
+            $items
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
-        $config->description==null ?: $element->setOption("description", $this->text($config->description));
+        $config->get("description")==null ?: $element->setOption("description", $this->_($config->get("description")));
         return $element;
     }
 
@@ -377,15 +360,15 @@ class FormBuilder implements IFormBuilder
      */
     protected function addRadioList(Form $form, FormItemConfig $config): BaseControl
     {
-        $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->name]);
+        $items = (array) $this->invokeCallback($this->loadOptionsCallback[$config->get("name")]);
         $element = $form->addRadioList(
-            $config->name,
-                                       $config->label,
-                                       $items
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label"),
+            $items
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
-        $config->description==null ?: $element->setOption("description", $this->text($config->description));
+        $config->get("description")==null ?: $element->setOption("description", $this->_($config->get("description")));
         return $element;
     }
 
@@ -395,13 +378,13 @@ class FormBuilder implements IFormBuilder
     protected function addUpload(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addUpload(
-            $config->name,
-                                    $config->label,
-                                    $config->multiple
-                    );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label"),
+            $config->get("multiple")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
-        $config->description==null ?: $element->setOption("description", $this->text($config->description));
+        $config->get("description")==null ?: $element->setOption("description", $this->_($config->get("description")));
         return $element;
     }
 
@@ -411,12 +394,12 @@ class FormBuilder implements IFormBuilder
     protected function addMultiUpload(Form $form, FormItemConfig $config): BaseControl
     {
         $element = $form->addMultiUpload(
-            $config->name,
-                                         $config->label
-                );
-        $validators = $config->validator;
+            $config->get("name"),
+            $config->get("label")
+        );
+        $validators = $config->get("validator",true);
         empty($validators) ?: $this->setValidators($element, $validators);
-        $config->description==null ?: $element->setOption("description", $this->text($config->description));
+        $config->get("description")==null ?: $element->setOption("description", $this->_($config->get("description")));
         return $element;
     }
 
@@ -425,7 +408,7 @@ class FormBuilder implements IFormBuilder
      */
     protected function addHidden(Form $form, FormItemConfig $config): BaseControl
     {
-        return $form->addHidden($config->name);
+        return $form->addHidden($config->get("name"));
     }
 
     /**
@@ -433,7 +416,7 @@ class FormBuilder implements IFormBuilder
      */
     protected function addSubmit(Form $form, FormItemConfig $config): BaseControl
     {
-        return $form->addSubmit($config->name, $config->label);
+        return $form->addSubmit($config->get("name"), $config->get("label"));
     }
 
     /**
@@ -442,7 +425,7 @@ class FormBuilder implements IFormBuilder
      * @param FormItemConfig $config
      * @return BaseControl
      */
-    protected function addRecaptcha(Form $form, FormItemConfig $config): BaseControl
+    /*protected function addRecaptcha(Form $form, FormItemConfig $config): BaseControl
     {
         if(method_exists($form, "addReCaptcha")){
             $element = $form->addReCaptcha(
