@@ -26,6 +26,7 @@
 namespace app\Base\controls\Control;
 
 use app\Base\traits\TFlashMessage;
+use app\Base\controls\Control\IConfigurator;
 use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
 use Contributte\EventDispatcher\EventDispatcher;
 use Contributte\Cache\ICacheFactory;
@@ -44,30 +45,10 @@ abstract class Control extends NControl
     use TFlashMessage;
 
     /**
-     * @var ITranslator | null
-     */
-    //protected $_translator;
-
-    /**
-     * @var EventDispatcher
-     */
-    //protected $_eventDispatcher;
-
-    /**
-     * @var ICacheFactory
-     */
-    //public $_cacheFactory;
-
-    /**
-     * @var mixed
-     */
-    //protected $_configurator;
-
-    /**
      * property container
      * @var ArrayHash
      */
-    //protected $c;
+    protected $c;
 
     /**
      * @param EventDispatcher $eventDispatcher
@@ -85,12 +66,8 @@ abstract class Control extends NControl
         $this->c->translator = $translator;
         $this->c->cacheFactory = $cacheFactory;
         $this->c->configurator = [];
-        //$this->_eventDispatcher = $eventDispatcher;
-        //$this->_translator = $translator;
-        //$this->_cacheFactory = $cacheFactory;
         parent::__construct();
         $this->startup();
-        return;
     }
 
     public function startup()
@@ -104,7 +81,7 @@ abstract class Control extends NControl
      */
     public function _(string $text) : string
     {
-        return $this->container->translator instanceof ITranslator ? $this->container->translator->translate($text) : $text;
+        return $this->c->translator instanceof ITranslator ? $this->c->translator->translate($text) : $text;
     }
 
     /**
@@ -113,7 +90,7 @@ abstract class Control extends NControl
      */
     public function getEventDispatcher(): EventDispatcher
     {
-        return $this->container->ed;
+        return $this->c->ed;
     }
 
     /**
@@ -122,16 +99,24 @@ abstract class Control extends NControl
      */
     public function getTranslator(): ?ITranslator
     {
-        return $this->container->translator;
+        return $this->c->translator;
     }
 
     /**
      * configurator getter
-     * @return mixed
+     * @return IConfigurator
      */
     public function getConfigurator()
     {
-        return $this->container->configurator;
+        return $this->c->configurator;
+    }
+
+    /**
+     * @return ICacheFactory | null
+     */
+    public function getCacheFactory()
+    {
+        return isset($this->c->cacheFactory) ? $this->c->cacheFactory : null;
     }
 
     /**
@@ -142,6 +127,6 @@ abstract class Control extends NControl
      */
     public function on(string $eventName, BaseEvent $data)
     {
-        return $this->container->ed->dispatch($eventName, $data);
+        return $this->c->ed->dispatch($eventName, $data);
     }
 }
