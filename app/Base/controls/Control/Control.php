@@ -97,17 +97,6 @@ abstract class Control extends NControl
     }
 
     /**
-     * translate text if translator set
-     * @param string $text
-     * @return string
-     * @deprecated since version 1.1.0
-     */
-    public function text(string $text):string
-    {
-        return $this->_translator instanceof ITranslator ? $this->_translator->translate($text) : $text;
-    }
-
-    /**
      * shorter alias for text()
      * @param string $text
      * @return string
