@@ -37,10 +37,16 @@
 		"nettrine/dbal": "^0.2.6",
 		"nettrine/orm": "^0.2.1",
 		"contributte/console": "^0.5.0",
-		"psr/log": "^1.0"
+		"psr/log": "^1.0",
+		"contributte/cache": "^0.2.0",
+		"contributte/console-extra": "^0.3.0",
+		"robmorgan/phinx": "^0.10.6"
 	},
 	"require-dev": {
-		"nette/tester": "^2.0"
+		"nette/tester": "^2.0",
+		"phpstan/phpstan": "^0.10.3",
+		"phpstan/phpstan-nette": "^0.10.1",
+		"phpstan/phpstan-doctrine": "^0.10.0"
 	},
 	"minimum-stability": "stable",
 	"config": {
