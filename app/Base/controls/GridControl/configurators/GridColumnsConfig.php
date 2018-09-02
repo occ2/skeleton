@@ -25,10 +25,9 @@
 
 namespace app\Base\controls\GridControl\configurators;
 
-use app\Base\controls\GridControl\exceptions\GridBuilderException;
 use app\Base\controls\GridControl\GridControl;
+use app\Base\controls\Control\IConfigurator;
 use Nette\Reflection\Property;
-use Nette\Utils\Strings;
 use Nette\Caching\Cache;
 use Nette\Reflection\ClassType;
 
@@ -38,85 +37,9 @@ use Nette\Reflection\ClassType;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-class GridColumnsConfig
+class GridColumnsConfig implements IConfigurator
 {
     const CACHE_PREFIX="grid";
-    const CONFIG_ITEMS=[
-        "type",
-        "name",
-        "label",
-        "dbCol",
-        "translate",
-        "sortable",
-        "href",
-        "option",
-        "template",
-        "filter",
-        "replacement",
-        "templateEscaping",
-        "resetPaginationAfterSorting",
-        "align",
-        "hidden",
-        "datetimeFormat",
-        "numberFormat",
-        "params",
-        "newTab",
-        "attributes",
-        "fitContent",
-        "headerEscaping",
-        "translatableHeader",
-        "sort",
-        "icon",
-        "class",
-        "title",
-        "dataAttributes",
-        "parameters",
-        "options"
-    ];
-
-    /**
-     * @var array
-     */
-    public $config=[
-        "type"=>"text",
-        "label"=>"",
-        "dbCol"=>null,
-        "translate"=>null,
-        "sortable"=>null,
-        "href"=>"this",
-        "option"=>null,
-        "template"=>null,
-        "filter"=>null,
-        "replacement"=>null,
-        "templateEscaping"=>null,
-        "resetPaginationAfterSorting"=>null,
-        "align"=>null,
-        "hidden"=>null,
-        "datetimeFormat"=>null,
-        "numberFormat"=>null,
-        "params"=>null,
-        "newTab"=>null,
-        "attributes"=>null,
-        "fitContent"=>null,
-        "headerEscaping"=>null,
-        "translatableHeader"=>null,
-        "sort"=>null,
-        "icon"=>null,
-        "class"=>null,
-        "title"=>null,
-        "dataAttributes"=>null,
-        "parameters"=>null,
-        "options"=>null
-    ];
-    
-    public $multipleConfigs=[
-        "option",
-    ];
-
-    /**
-     * @var Property
-     */
-    protected $property;
 
     /**
      * @var array
@@ -126,7 +49,7 @@ class GridColumnsConfig
     /**
      * @var string
      */
-    public $name;
+    protected $name;
 
     /**
      * @var Cache
@@ -140,10 +63,9 @@ class GridColumnsConfig
      */
     public function __construct(Property $property, GridControl $parent)
     {
-        $this->property = $property;
         $this->name = $property->getName();
         $classType = ClassType::from($parent);
-        $this->cache = $parent->_cacheFactory->create(self::CACHE_PREFIX);
+        $this->cache = $parent->getCacheFactory()->create(self::CACHE_PREFIX);
         $this->annotations = $this->cache->load($classType->getName() . "." . $this->name);
         if($this->annotations===null){
             $this->annotations = $property->getAnnotations();
@@ -156,55 +78,19 @@ class GridColumnsConfig
     }
 
     /**
-     * name getter
-     * @return string
-     */
-    public function getName():string
-    {
-        return $this->name;
-    }
-
-    /**
-     * magic universal getter - getSomething()
+     * get property annotation
      * @param string $name
-     * @param array $arguments
-     * @return array
-     * @throws GridBuilderException
+     * @param bool $multiple
+     * @return mixed | null
      */
-    public function __call($name, $arguments)
+    public function get(string $name, bool $multiple = false)
     {
-        if (!Strings::startsWith($name, "get")) {
-            throw new GridBuilderException("Error: invalid config", GridBuilderException::INVALID_CONFIG);
-        }
-        return $this->columns(Strings::firstLower(str_replace("get", "", $name)));
-    }
-
-    /**
-     * getter
-     * @param string $name
-     * @return array
-     * @throws GridBuilderException
-     */
-    public function __get($name)
-    {
-        $anchor = Strings::firstLower($name);
-        return $this->columns($anchor);
-    }
-
-    /**
-     * @param string $anchor
-     * @return mixed
-     * @throws GridBuilderException
-     */
-    protected function columns(string $anchor)
-    {
-        if (!in_array($anchor, static::CONFIG_ITEMS)) {
-            throw new GridBuilderException("Error: invalid column config", GridBuilderException::INVALID_COLUMN_CONFIG);
-        }
-        if (!isset($this->annotations[$anchor])) {
-            return isset($this->config[$anchor]) ? $this->config[$anchor] : null;
+        if($name=="name"){
+            return $this->name;
+        } elseif (array_key_exists($name, $this->annotations)) {
+            return $multiple==true ? $this->annotations[$name] : $this->annotations[$name][0];
         } else {
-            return in_array($anchor, $this->multipleConfigs) ? $this->annotations[$anchor] : $this->annotations[$anchor][0];
+            return null;
         }
     }
 }

@@ -101,7 +101,7 @@ class ActionsBuilder implements IAdditionalGridBuilder
      */
     protected function addActions(DataGrid $grid)
     {
-        $actions = $this->configurator->getAction(true);
+        $actions = $this->configurator->get("action", true);
         foreach ($actions as $config) {
             if (!isset($config->multiaction)) {
                 $this->addAction($grid, $config);
@@ -131,36 +131,32 @@ class ActionsBuilder implements IAdditionalGridBuilder
                     $config->name,
                     !isset($config->label) ? "" : $config->label
             );
-            if($action instanceof ActionCallback){
-                $action->onClick[] = function ($id) use ($t,$grid,$config) {
-                    $this->invokeCallback(
-                        GridBuilder::ACTION_CALLBACK,
-                        $config->name,
-                        $id,
-                        $grid,
-                        $t->object
-                    );
-                };
-            }
-        } elseif(array_key_exists("action" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
-            $eventName = $this->object->_symfonyEvents["action" . Strings::firstUpper($config->name)];
+            $action->onClick[] = function ($id) use ($t,$grid,$config) {
+                $this->invokeCallback(
+                    GridBuilder::ACTION_CALLBACK,
+                    $config->name,
+                    $id,
+                    $grid,
+                    $t->object
+                );
+            };
+        } elseif(isset($config->event)) {
+            $eventName = $config->event;
             $action = $grid->addActionCallback(
                     $config->name,
                     !isset($config->label) ? "" : $config->label
             );
-            if($action instanceof ActionCallback){
-                $action->onClick[] = function ($id) use ($t,$grid,$eventName) {
-                    $data = $t->object->_gridRowEventFactory->create(
-                       $id,
-                       null,
-                       $grid,
-                       $t->object,
-                       $eventName
-                    );
-                    $t->object->on($eventName, $data);
-                    return;
-                };
-            }
+            $action->onClick[] = function ($id) use ($t,$grid,$eventName) {
+                $data = $t->object->getGridRowEventFactory()->create(
+                    $id,
+                    null,
+                    $grid,
+                    $t->object,
+                    $eventName
+                );
+                $t->object->on($eventName, $data);
+                return;
+            };
         } else {
             $action = $grid->addAction(
                     $config->name,
@@ -192,7 +188,7 @@ class ActionsBuilder implements IAdditionalGridBuilder
             !isset($config->icon) ?: $action->setIcon($config->icon);
         }
               
-        (isset($config->ajax) && $config->ajax==true) ? $ajax="" : $ajax="ajax ";
+        $ajax=(isset($config->ajax) && $config->ajax==true) ? "" : "ajax ";
         
         if ($this->checkCallback(GridBuilder::ACTION_CLASS_CALLBACK, $config->name)) {
             $action->setIcon(function ($item) use ($t,$config) {
@@ -254,7 +250,7 @@ class ActionsBuilder implements IAdditionalGridBuilder
      */
     protected function addMultiActions(DataGrid $grid)
     {
-        $actions = $this->configurator->getMultiAction(true);
+        $actions = $this->configurator->get("multiAction",true);
         if ($actions==null) {
             return;
         }

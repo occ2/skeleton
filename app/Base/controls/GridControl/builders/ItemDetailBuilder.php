@@ -92,7 +92,10 @@ class ItemDetailBuilder implements IAdditionalGridBuilder
      */
     protected function addDetails(DataGrid $grid)
     {
-        $this->addItemDetail($grid, $this->configurator->getItemDetail());
+        $config = $this->configurator->get("itemDetail");
+        if($config!=null){
+            $this->addItemDetail($grid, $config);
+        }
         return;
     }
 
@@ -105,14 +108,14 @@ class ItemDetailBuilder implements IAdditionalGridBuilder
     protected function addItemDetail(DataGrid $grid, $config): ItemDetail
     {
         $t = $this;
-        if ($config instanceof ArrayHash && isset($config->template)) {
+        if (isset($config->template)) {
             $detail = $grid->setItemsDetail(__DIR__ . $config->template, !isset($config->primaryColumn) ? null : $config->primaryColumn);
         } elseif ($this->checkCallback(GridBuilder::ITEM_DETAIL_CALLBACK)) {
             $detail = $grid->setItemsDetail(function ($item) use ($t) {
                 return $t->invokeCallback(GridBuilder::ITEM_DETAIL_CALLBACK, null, $item, $t->object);
             }, !isset($config->primaryColumn) ? null : $config->primaryColumn);
         } else {
-            $detail = $grid->setItemsDetail($this->object->_gridDetailTemplatePath);
+            $detail = $grid->setItemsDetail($this->object->getDetailTemplatePath());
         }
         
         if ($this->checkCallback(GridBuilder::ITEM_DETAIL_CONDITION_CALLBACK)) {
@@ -132,10 +135,10 @@ class ItemDetailBuilder implements IAdditionalGridBuilder
      */
     protected function setupItemDetail(ItemDetail $detail, $config)
     {
-        !($config instanceof ArrayHash && isset($config->text)) ?: $detail->setText($this->object->text($config->text));
-        !($config instanceof ArrayHash && isset($config->title)) ?: $detail->setTitle($this->object->text($config->title));
-        !($config instanceof ArrayHash && isset($config->class)) ?: $detail->setClass($config->class);
-        !($config instanceof ArrayHash && isset($config->icon)) ?: $detail->setIcon($config->icon);
+        !(isset($config->text)) ?: $detail->setText($this->object->_($config->text));
+        !(isset($config->title)) ?: $detail->setTitle($this->object->_($config->title));
+        !(isset($config->class)) ?: $detail->setClass($config->class);
+        !(isset($config->icon)) ?: $detail->setIcon($config->icon);
         return;
     }
 }

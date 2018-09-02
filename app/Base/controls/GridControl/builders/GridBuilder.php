@@ -164,8 +164,7 @@ class GridBuilder implements IGridBuilder
         $this->setupGridCallbacks($grid);
         
         foreach ($this->additionalBuilder as $configKey => $builderClass) {
-            $configLoader = "get" . Strings::firstUpper($configKey);
-            if ($this->configurator->$configLoader(true)!=null) {
+            if ($this->configurator->get($configKey,true)!=null) {
                 $o = new $builderClass($this->object, $grid, $this->configurator, $this->callbacks);
                 $o->build();
             }
@@ -197,26 +196,26 @@ class GridBuilder implements IGridBuilder
         if (!$this->object instanceof GridControl) {
             throw new GridBuilderException("ERROR: Grid object must be set before build", GridBuilderException::NO_PARENT_SET);
         }
-        $this->callbacks = $this->object->getCallbacks();
+        $this->callbacks = (array) $this->object->getCallbacks();
         $this->translator = $this->object->getTranslator();
         $this->configurator = $this->object->getConfigurator();
         
-        $primaryKey = $this->configurator->getPrimaryKey();
+        $primaryKey = $this->configurator->get("primaryKey.");
         if ($primaryKey!=null) {
             $grid->setPrimaryKey($primaryKey);
         }
         
-        $pagination = $this->configurator->getPagination();
+        $pagination = $this->configurator->get("pagination");
         if ($pagination!=null) {
             $grid->setPagination($pagination);
         }
  
-        $itemsPerPageList = $this->configurator->getItemsPerPageList();
+        $itemsPerPageList = $this->configurator->get("itemsPerPageList");
         if ($itemsPerPageList!=null) {
             $grid->setItemsPerPageList($itemsPerPageList);
         }
         
-        $defaultSort = $this->configurator->getDefaultSort(true);
+        $defaultSort = $this->configurator->get("defaultSort", true);
         if ($defaultSort!=null) {
             if (count($defaultSort)==1) {
                 $grid->setDefaultSort($defaultSort[0]);
@@ -225,22 +224,22 @@ class GridBuilder implements IGridBuilder
             }
         }
         
-        $multiSort = $this->configurator->getMultiSort();
+        $multiSort = $this->configurator->get("multiSort");
         if ($multiSort!=null) {
             $grid->setMultiSortEnabled($multiSort);
         }
         
-        $defaultPerPage = $this->configurator->getDefaultPerPage();
+        $defaultPerPage = $this->configurator->get("defaultPerPage");
         if ($defaultPerPage!=null) {
             $grid->setDefaultPerPage($defaultPerPage);
         }
         
-        $columnsHidable = $this->configurator->getColumnsHidable();
+        $columnsHidable = $this->configurator->get("columnsHidable");
         if ($columnsHidable!=null && $columnsHidable==true) {
             $grid->setColumnsHideable();
         }
         
-        $summary = $this->configurator->getSummary();
+        $summary = $this->configurator->get("summary");
         if ($summary!=null) {
             if ($this->checkCallback(static::SUMMARY_CALLBACK)) {
                 $s = $grid->setColumnsSummary($summary, function ($item, $column) use ($t) {
@@ -250,7 +249,7 @@ class GridBuilder implements IGridBuilder
                 $s = $grid->setColumnsSummary($summary);
             }
             
-            $format = $this->configurator->getSummaryFormat();
+            $format = $this->configurator->get("summaryFormat");
             if ($format!=null) {
                 $s->setFormat(
                     $format["key"],
@@ -266,53 +265,53 @@ class GridBuilder implements IGridBuilder
             }
         }
         
-        $gridTpl = $this->configurator->getGridCustomTemplate();
+        $gridTpl = $this->configurator->get("gridCustomTemplate");
         if ($gridTpl==null) {
-            $grid->setTemplateFile($this->object->_gridTemplatePath);
+            $grid->setTemplateFile($this->object->getGridTemplatePath());
         } else {
             $grid->setTemplateFile($gridTpl);
         }
         
-        $defaultFilters = $this->configurator->getDefaultFilters();
+        $defaultFilters = $this->configurator->get("defaultFilters");
         if ($defaultFilters!=null) {
             $grid->setDefaultFilter($defaultFilters);
         }
         
-        $outerFilter = $this->configurator->getOuterFilter();
+        $outerFilter = $this->configurator->get("outerFilter");
         if ($outerFilter!=null && $outerFilter==true) {
             $grid->setOuterFilterRendering();
         }
         
-        $rememberState = $this->configurator->getRememberState();
+        $rememberState = $this->configurator->get("rememberState");
         if ($rememberState!=null) {
             $grid->setRememberState($rememberState);
         }
         
-        $strictSession = $this->configurator->getStrictSessionFilterValues();
+        $strictSession = $this->configurator->get("strictSessionFilterValues");
         if ($strictSession!=null) {
             $grid->setStrictSessionFilterValues($strictSession);
         }
         
-        $refreshUrl = $this->configurator->getRefreshUrl();
+        $refreshUrl = $this->configurator->get("refreshUrl");
         if ($refreshUrl!=null) {
             $grid->setRefreshUrl($refreshUrl);
         }
         
-        $autosubmit = $this->configurator->getAutosubmitFilter();
+        $autosubmit = $this->configurator->get("autosubmitFilter");
         if ($autosubmit==null) {
             $grid->setAutoSubmit(true);
         } else {
             $grid->setAutoSubmit($autosubmit);
         }
         
-        $sortable = $this->configurator->getSortable();
+        $sortable = $this->configurator->get("sortable");
         if ($sortable!=null) {
             $grid->setSortable($sortable);
-            $handler = $this->configurator->getSortableHandler();
-            $grid->setSortableHandler($handler==null ? $this->object->getName() . ":" . $this->object->_defaultSortableHandler : $handler);
+            $handler = $this->configurator->get("sortableHandler");
+            $grid->setSortableHandler($handler==null ? $this->object->getName() . ":" . $this->object->getSortableHandler() : $handler);
         }
         
-        $happy = $this->configurator->getHappyComponents();
+        $happy = $this->configurator->get("happyComponents");
         if ($happy!=null) {
             $grid->useHappyComponents($happy);
         }

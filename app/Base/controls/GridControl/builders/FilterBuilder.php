@@ -102,12 +102,13 @@ class FilterBuilder implements IFilterGridBuilder
      */
     protected function addFilters(Column $column, GridColumnsConfig $config)
     {
-        if ($config->filter!=null && isset($config->filter["type"])) {
-            if (!array_key_exists($config->filter["type"], GridBuilder::FILTER_TYPES)) {
+        $filter = $config->get("filter");
+        if ($filter!=null && isset($filter["type"])) {
+            if (!array_key_exists($filter["type"], GridBuilder::FILTER_TYPES)) {
                 throw new GridBuilderException("ERROR: Invalid filter type", GridBuilderException::INVALID_FILTER_TYPE);
             }
-            $filterAdder = GridBuilder::FILTER_TYPES[$config->filter["type"]];
-            $this->$filterAdder($column, $config->filter, $config->name);
+            $filterAdder = GridBuilder::FILTER_TYPES[$filter["type"]];
+            $this->$filterAdder($column, $filter, $config->get("name"));
         }
         return;
     }
@@ -160,8 +161,8 @@ class FilterBuilder implements IFilterGridBuilder
      */
     protected function setupFilterDate(IFilterDate $filter, ArrayHash $config, string $name)
     {
-        $php = !isset($config->phpFormat) ? $this->object->_defaultDatetimeFormat["php"] : $config->phpFormat;
-        $js = !isset($config->jsFormat) ? $this->object->_defaultDatetimeFormat["js"] : $config->jsFormat;
+        $php = !isset($config->phpFormat) ? $this->object->getDatetimeFormat("php") : $config->phpFormat;
+        $js = !isset($config->jsFormat) ? $this->object->getDatetimeFormat("js") : $config->jsFormat;
         $filter->setFormat($php, $js);
         if(!isset($config->size)){
             if($filter instanceof Filter){
@@ -201,7 +202,7 @@ class FilterBuilder implements IFilterGridBuilder
         $filter = $column->setFilterText($columns);
         !isset($config->exactSearch) ?: $filter->setExactSearch($config->exactSearch);
         !isset($config->splitWordsSearch) ?: $filter->setSplitWordsSearch($config->splitWordsSearch);
-        $filter->setTemplate(!isset($config->template) ? $this->object->_gridFilterTemplatesPath["text"]: $config->template);
+        $filter->setTemplate(!isset($config->template) ? $this->object->getFilterTemplatePath("text"): $config->template);
         $this->setupFilter($filter, $config, $name);
         !isset($config->size) ? $filter->addAttribute("size", 16) : $filter->addAttribute("size", $config->size);
         return $filter;
@@ -219,7 +220,7 @@ class FilterBuilder implements IFilterGridBuilder
         $col = isset($config->column) ? $config->column : null;
         $options = $this->invokeCallback(GridBuilder::LOAD_OPTIONS_CALLBACK, $name, $this->object);
         $filter = $column->setFilterSelect($options, $col);
-        $filter->setTemplate(!isset($config->template) ? $this->object->_gridFilterTemplatesPath["select"]: $config->template);
+        $filter->setTemplate(!isset($config->template) ? $this->object->getFilterTemplatePath("select"): $config->template);
         $this->setupFilter($filter, $config, $name);
         $this->setupFilterSelect($filter, $config, $name);
         return $filter;
@@ -237,7 +238,7 @@ class FilterBuilder implements IFilterGridBuilder
         $col = isset($config->column) ? $config->column : null;
         $options = $this->invokeCallback(GridBuilder::LOAD_OPTIONS_CALLBACK, $name);
         $filter = $column->setFilterMultiSelect($options, $col);
-        $filter->setTemplate(!isset($config->template) ? $this->object->_gridFilterTemplatesPath["multiselect"]: $config->template);
+        $filter->setTemplate(!isset($config->template) ? $this->object->getFilterTemplatePath("multiselect"): $config->template);
         $this->setupFilter($filter, $config, $name);
         $this->setupFilterSelect($filter, $config, $name);
         return $filter;
@@ -254,7 +255,7 @@ class FilterBuilder implements IFilterGridBuilder
     {
         $col = isset($config->column) ? $config->column : null;
         $filter = $column->setFilterDate($col);
-        $filter->setTemplate(!isset($config->template) ? $this->object->_gridFilterTemplatesPath["date"]: $config->template);
+        $filter->setTemplate(!isset($config->template) ? $this->object->getFilterTemplatePath("date"): $config->template);
         $this->setupFilter($filter, $config, $name);
         $this->setupFilterDate($filter, $config, $name);
         return $filter;
@@ -274,7 +275,7 @@ class FilterBuilder implements IFilterGridBuilder
                 $col,
                 isset($config->nameSecond) ? $config->nameSecond : "-"
         );
-        $filter->setTemplate(!isset($config->template) ? $this->object->_gridFilterTemplatesPath["range"]: $config->template);
+        $filter->setTemplate(!isset($config->template) ? $this->object->getFilterTemplatePath("range"): $config->template);
         $this->setupFilter($filter, $config, $name);
         $this->setupFilterRange($filter, $config, $name);
         !isset($config->size) ? $filter->addAttribute("size", 6) : $filter->addAttribute("size", $config->size);
@@ -295,7 +296,7 @@ class FilterBuilder implements IFilterGridBuilder
                 $col,
                 isset($config->nameSecond) ? $config->nameSecond : "-"
         );
-        $filter->setTemplate(!isset($config->template) ? $this->object->_gridFilterTemplatesPath["daterange"]: $config->template);
+        $filter->setTemplate(!isset($config->template) ? $this->object->getFilterTemplatePath("daterange"): $config->template);
         $this->setupFilter($filter, $config, $name);
         $this->setupFilterRange($filter, $config, $name);
         $this->setupFilterDate($filter, $config, $name);

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * The MIT License
  *
@@ -25,83 +26,35 @@
 
 namespace app\Base\controls\GridControl\events;
 
+use Contributte\EventDispatcher\Events\AbstractEvent;
+use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\DataGrid;
-use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
-use Nette\Application\UI\Control;
 
 /**
- * GridRowEventData
+ * GridEvent
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1.1.0
+ * @version 1.0.0
  */
-class GridRowEventData extends BaseEvent
+class GridEvent extends AbstractEvent
 {
-    /**
-     * @var Control
-     */
     protected $control;
+    protected $grid;
 
-    /**
-     * @var DataGrid
-     */
-    protected $datagrid;
-
-    /**
-     * @var mixed
-     */
-    protected $id;
-
-    /**
-     * @var mixed
-     */
-    protected $data;
-
-    /**
-     * @var string | null
-     */
-    protected $event;
-
-    /**
-     * @param mixed $id
-     * @param mixed $data
-     * @param DataGrid $datagrid
-     * @param Control $control
-     * @param string $event
-     * @return void
-     */
-    public function __construct($id,$data,DataGrid $datagrid,Control $control,string $event=null)
+    public function __construct(GridControl $control, DataGrid $grid)
     {
-        $this->id = $id;
-        $this->data = $data;
-        $this->datagrid = $datagrid;
         $this->control = $control;
-        $this->event = $event;
+        $this->grid = $grid;
         return;
     }
 
-    public function getControl(): Control
+    public function getGrid()
+    {
+        return $this->grid;
+    }
+
+    public function getControl()
     {
         return $this->control;
-    }
-
-    public function getDatagrid(): DataGrid
-    {
-        return $this->datagrid;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function getEvent()
-    {
-        return $this->event;
     }
 }

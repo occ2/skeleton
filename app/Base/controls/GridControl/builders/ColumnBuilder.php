@@ -26,6 +26,7 @@
 namespace app\Base\controls\GridControl\builders;
 
 use app\Base\controls\GridControl\traits\TCallbacks;
+use app\Base\controls\GridControl\traits\TEntity;
 use app\Base\controls\GridControl\builders\IColumnGridBuilder;
 use app\Base\controls\GridControl\GridControl;
 use app\Base\controls\GridControl\configurators\GridColumnsConfig;
@@ -52,6 +53,7 @@ use Kdyby\Translation\ITranslator;
 class ColumnBuilder implements IColumnGridBuilder
 {
     use TCallbacks;
+    use TEntity;
 
     /**
      * @var DataGrid
@@ -80,7 +82,7 @@ class ColumnBuilder implements IColumnGridBuilder
      * @param array $callbacks
      * @return void
      */
-    public function __construct(GridControl $object, DataGrid $grid, Property $property,array  $callbacks)
+    public function __construct(GridControl $object, DataGrid $grid, Property $property,array $callbacks)
     {
         $this->object = $object;
         $this->grid = $grid;
@@ -113,10 +115,12 @@ class ColumnBuilder implements IColumnGridBuilder
            $property->getName()!="snippetMode" &&
            $property->getName()!="linkCurrent" &&
            $property->getName()!="template" &&
+           $property->getName()!="c" &&
            !Strings::startsWith($property->getName(), "_") &&
            !Strings::startsWith($property->getName(), "on")) {
             $config = new GridColumnsConfig($property,$this->object);
-            $this->object->{$config->name} = $this->{GridBuilder::COLUMN_TYPES[$config->type]}(
+            $method = GridBuilder::COLUMN_TYPES[$config->get("type")];
+            $this->object->{$config->get("name")} = $this->$method(
                     $grid,
                     $config
            );
@@ -133,9 +137,9 @@ class ColumnBuilder implements IColumnGridBuilder
     protected function addColumnText(DataGrid $grid, GridColumnsConfig $config): ColumnText
     {
         $column = $grid->addColumnText(
-            $config->name,
-            $config->label,
-            $config->dbCol
+            $config->get("name"),
+            $config->get("label")==null ? $config->get("name") : $config->get("label"),
+            $config->get("dbCol")
         );
         $this->setupColumn($grid, $column, $config);
         return $column;
@@ -150,13 +154,17 @@ class ColumnBuilder implements IColumnGridBuilder
     protected function addColumnDatetime(DataGrid $grid, GridColumnsConfig $config): ColumnDateTime
     {
         $column = $grid->addColumnDateTime(
-            $config->name,
-            $config->label,
-            $config->dbCol
+            $config->get("name"),
+            $config->get("label") == null ? $config->get("name") : $config->get("label"),
+            $config->get("dbCol")
         );
-        $config->datetimeFormat == null ? $column->setFormat($this->object->_defaultDatetimeFormat["php"]) : $column->setFormat(
-                isset($config->datetimeFormat["php"]) ? $config->datetimeFormat["php"] : $this->object->_defaultDatetimeFormat["php"]
-        );
+
+        if($config->get("datetimeFormat") != null && isset($config->get("datetimeFormat")["php"])){
+            $column->setFormat($config->get("datetimeFormat")["php"]);
+        } else {
+            $column->setFormat($this->object->getDatetimeFormat("php"));
+        }
+
         $this->setupColumn($grid, $column, $config);
         return $column;
     }
@@ -170,14 +178,15 @@ class ColumnBuilder implements IColumnGridBuilder
     protected function addColumnNumber(DataGrid $grid, GridColumnsConfig $config): ColumnNumber
     {
         $column = $grid->addColumnNumber(
-            $config->name,
-            $config->label,
-            $config->dbCol
+            $config->get("name"),
+            $config->get("label")==null ? $config->get("name") : $config->get("label"),
+            $config->get("dbCol")
         );
-        $config->numberFormat == null ?: $column->setFormat(
-                isset($config->numberFormat["decimals"]) ? $config->numberFormat["decimals"] : $this->object->_defaultNumberFormat["decimals"],
-                isset($config->numberFormat["decPoint"]) ? $config->numberFormat["decPoint"] : $this->object->_defaultNumberFormat["decPoint"],
-                isset($config->numberFormat["thousandsSeparator"]) ? $config->numberFormat["thousandsSeparator"] : $this->object->_defaultNumberFormat["thousandsSeparator"]
+        $format = $config->get("numberFormat");
+        $format == null ?: $column->setFormat(
+                isset($format["decimals"]) ? $format["decimals"] : $this->object->getNumberFormat("decimals"),
+                isset($format) ? $format["decPoint"] : $this->object->getNumberFormat("decPoint"),
+                isset($format) ? $format["thousandsSeparator"] : $this->object->getNumberFormat("thousandsSeparator")
         );
         
         $this->setupColumn($grid, $column, $config);
@@ -193,19 +202,19 @@ class ColumnBuilder implements IColumnGridBuilder
     protected function addColumnLink(DataGrid $grid, GridColumnsConfig $config): ColumnLink
     {
         $column = $grid->addColumnLink(
-            $config->name,
-            $config->label,
-            $config->href,
-            $config->dbCol,
-            $config->params
+            $config->get("name"),
+            $config->get("label")==null ? $config->get("name") : $config->get("label"),
+            $config->get("href"),
+            $config->get("dbCol"),
+            $config->get("params")
         );
-        $config->newTab == null ?: $column->setOpenInNewTab($config->newTab);
-        $config->icon == null ?: $column->setIcon($config->icon);
-        $config->class == null ?: $column->setClass($config->class);
-        $config->title == null ?: $column->setTitle($this->object->text($config->title));
-        $config->parameters == null ?: $column->addParameters($config->parameters);
-        if (is_array($config->dataAttribute)) {
-            foreach ($config->dataAttribute as $key=>$value) {
+        $config->get("newTab") == null ?: $column->setOpenInNewTab($config->get("newTab"));
+        $config->get("icon") == null ?: $column->setIcon($config->get("icon"));
+        $config->get("class") == null ?: $column->setClass($config->get("class"));
+        $config->get("title") == null ?: $column->setTitle($this->object->_($config->get("title")));
+        $config->get("parameters") == null ?: $column->addParameters($config->get("parameters"));
+        if (is_array($config->get("dataAttribute"))) {
+            foreach ($config->get("dataAttribute") as $key=>$value) {
                 $column->setDataAttribute($key, $value);
             }
         }
@@ -223,22 +232,22 @@ class ColumnBuilder implements IColumnGridBuilder
     {
         $t = $this;
         $column = $grid->addColumnStatus(
-            $config->name,
-            $config->label,
-            $config->dbCol
+            $config->get("name"),
+            $config->get("label")==null ? $config->get("name") : $config->get("label"),
+            $config->get("dbCol")
         );
-        $column->setTemplate($this->object->_gridStatusTemplatePath);
-        $config->options == null ?: $column->setOptions($config->options);
+        $column->setTemplate($this->object->getStatusTemplatePath());
+        $config->get("options") == null ?: $column->setOptions($config->get("options"));
         
-        if ($config->option !=null) {
-            foreach ($config->option as $key=>$option) {
+        if ($config->get("option") !=null) {
+            foreach ($config->get("option") as $key=>$option) {
                 $this->setupColumnStatus($column, $option,$key);
             }
         }
         
-        if ($this->checkCallback(GridBuilder::STATUS_CHANGE_CALLBACK, $config->name)) {
+        if ($this->checkCallback(GridBuilder::STATUS_CHANGE_CALLBACK, $config->get("name"))) {
             $column->onChange[] = function ($id, $new_value) use ($t,$config) {
-                return $t->invokeCallback(GridBuilder::STATUS_CHANGE_CALLBACK, $config->name, $id, $new_value, $t->object);
+                return $t->invokeCallback(GridBuilder::STATUS_CHANGE_CALLBACK, $config->get("name"), $id, $new_value, $t->object);
             };
         }
         
@@ -256,14 +265,14 @@ class ColumnBuilder implements IColumnGridBuilder
     protected function setupColumnStatus(ColumnStatus $column, ArrayHash $option,$key)
     {
         $key = isset($option->key) ? $option->key : $key;
-        $text = !isset($option->text) ? $key : $this->object->text($option->text);
+        $text = !isset($option->text) ? $key : $this->object->_($option->text);
         $o = $column->addOption($key, $text);
         !isset($option->icon) ? : $o->setIcon($option->icon);
         !isset($option->iconSecondary) ? : $o->setIconSecondary($option->iconSecondary);
-        !isset($option->class) ? $this->object->_defaultGridStatusSettings["class"] : $o->setClass($option->class);
-        !isset($option->classSecondary) ? $o->setClassSecondary($this->object->_defaultGridStatusSettings["classSecondary"]) : $o->setClassSecondary($option->classSecondary);
-        !isset($option->title) ? $o->setTitle($this->object->text($text)): $o->setTitle($this->object->text($option->title));
-        !isset($option->classInDropdown) ? $o->setClassInDropdown($this->object->_defaultGridStatusSettings["classInDropdown"]): $o->setClassInDropdown($option->classInDropdown);
+        !isset($option->class) ? $this->object->getGridStatusSettings("class") : $o->setClass($option->class);
+        !isset($option->classSecondary) ? $o->setClassSecondary($this->object->getGridStatusSettings("classSecondary")) : $o->setClassSecondary($option->classSecondary);
+        !isset($option->title) ? $o->setTitle($this->object->_($text)): $o->setTitle($this->object->_($option->title));
+        !isset($option->classInDropdown) ? $o->setClassInDropdown($this->object->getGridStatusSettings("classInDropdown")): $o->setClassInDropdown($option->classInDropdown);
         $o->endOption();
         return $column;
     }
@@ -279,72 +288,72 @@ class ColumnBuilder implements IColumnGridBuilder
     {
         $t = $this;
         // set if column as translatable
-        if ($config->translate!=null) {
+        if ($config->get("translate")!=null) {
             $column->setRenderer(function ($item) use ($config,$t) {
-                return $t->object->text($item->{$config->name});
+                return $t->object->_($t->getEntityProperty($item, $config->get("name")));
             });
         }
         
-        if ($this->checkCallback(GridBuilder::EDITABLE_CALLBACK, $config->name)) {
+        if ($this->checkCallback(GridBuilder::EDITABLE_CALLBACK, $config->get("name"))) {
             $column->setEditableCallback(function ($id, $value) use ($t,$config) {
-                return $t->invokeCallback(GridBuilder::EDITABLE_CALLBACK, $config->name, $id, $value, $t->object);
+                return $t->invokeCallback(GridBuilder::EDITABLE_CALLBACK, $config->get("name"), $id, $value, $t->object);
             });
-            if (isset($config->editableType)) {
-                if ($config->editableInputType!="select") {
+            if ($config->get("editableType")!==null) {
+                if ($config->get("editableType")!="select") {
                     $column->setEditableInputTypeSelect(
-                        $this->invokeCallback(GridBuilder::LOAD_OPTIONS_CALLBACK, $config->name),
-                        isset($config->editableAttributes) ? $config->editableAttributes : []
+                        $this->invokeCallback(GridBuilder::LOAD_OPTIONS_CALLBACK, $config->get("name")),
+                        $config->get("editableAttributes")!==null ? $config->get("editableAttributes") : []
                     );
                 } else {
                     $column->setEditableInputType(
-                        $config->editableType,
-                        isset($config->editableAttributes) ? $config->editableAttributes : []
+                        $config->get("editableType"),
+                        $config->get("editableAttributes")!==null ? $config->get("editableAttributes") : []
                     );
                 }
             }
             
-            if ($this->checkCallback(GridBuilder::EDITABLE_VALUE_CALLBACK, $config->name)) {
+            if ($this->checkCallback(GridBuilder::EDITABLE_VALUE_CALLBACK, $config->get("name"))) {
                 $column->setEditableValueCallback(function ($row) use ($t,$config) {
-                    return $t->invokeCallback(GridBuilder::EDITABLE_VALUE_CALLBACK, $config->name, $row, $t->object);
+                    return $t->invokeCallback(GridBuilder::EDITABLE_VALUE_CALLBACK, $config->get("name"), $row, $t->object);
                 });
             }
         }
         
         // set column as sortable
-        $config->sortable == null || $config->sortable==false ?: is_string($config->sortable) ? $column->setSortable($config->sortable) : $column->setSortable();
+        $config->get("sortable") == null || $config->get("sortable")==false ?: is_string($config->get("sortable")) ? $column->setSortable($config->get("sortable")) : $column->setSortable();
         
         // set custom column template
-        $config->template == null ?: $column->setTemplate($config->template);
+        $config->get("template") == null ?: $column->setTemplate($config->get("template"));
         
         // custom column renderer
-        $config->replacement == null ?: $column->setReplacement($config->replacement);
+        $config->get("replacement") == null ?: $column->setReplacement($config->get("replacement"));
         
         // set template escaping
-        $config->templateEscaping == null ?: $column->setTemplateEscaping($config->templateEscaping);
+        $config->get("templateEscaping") == null ?: $column->setTemplateEscaping($config->get("templateEscaping"));
         
         // set reset pagination after sorting
-        $config->resetPaginationAfterSorting == null ?: $column->setSortableResetPagination($config->resetPaginationAfterSorting);
+        $config->get("resetPaginationAfterSorting") == null ?: $column->setSortableResetPagination($config->get("resetPaginationAfterSorting"));
         
         // set align
-        $config->align == null ?: $column->setAlign($config->align);
+        $config->get("align") == null ?: $column->setAlign($config->get("align"));
         
         // set default hide
-        $config->hidden == null ?: $column->setDefaultHide($config->hidden);
+        $config->get("hidden") == null ?: $column->setDefaultHide($config->get("hidden"));
         
         // add additional attributes
-        $config->attributes == null ?: $column->addAttributes($config->attributes);
+        $config->get("attributes") == null ?: $column->addAttributes($config->get("attributes"));
         
         // set column content fit
-        $config->fitContent == null ?: $column->setFitContent($config->fitContent);
+        $config->get("fitContent") == null ?: $column->setFitContent($config->get("fitContent"));
         
         // set header escaping
-        $config->headerEscaping == null ?: $column->setHeaderEscaping($config->headerEscaping);
+        $config->get("headerEscaping") == null ?: $column->setHeaderEscaping($config->get("headerEscaping"));
         
         // set sort options
-        $config->sort == null ?: $column->setSort($config->sort);
+        $config->get("sort") == null ?: $column->setSort($config->get("sort"));
         
         // set translating on header
-        $config->translatableHeader == null ?: $column->setTranslatableHeader($config->translatableHeader);
+        $config->get("translatableHeader") == null ?: $column->setTranslatableHeader($config->get("translatableHeader"));
         
         $this->setupCallbacks($grid, $column, $config);
         $this->addFilters($column, $config);
@@ -362,29 +371,29 @@ class ColumnBuilder implements IColumnGridBuilder
     protected function setupCallbacks(DataGrid $grid, Column $column, GridColumnsConfig $config)
     {
         $t = $this;
-        if ($this->checkCallback(GridBuilder::COLUMN_RENDERER_CALLBACK, $config->name)) {
-            if ($this->checkCallback(GridBuilder::COLUMN_CONDITION_CALLBACK, $config->name)) {
+        if ($this->checkCallback(GridBuilder::COLUMN_RENDERER_CALLBACK, $config->get("name"))) {
+            if ($this->checkCallback(GridBuilder::COLUMN_CONDITION_CALLBACK, $config->get("name"))) {
                 $column->setRenderer(function ($item) use ($config,$t) {
-                    return $t->invokeCallback(GridBuilder::COLUMN_RENDERER_CALLBACK, $config->name, $item);
+                    return $t->invokeCallback(GridBuilder::COLUMN_RENDERER_CALLBACK, $config->get("name"), $item);
                 }, function ($item) use ($config,$t) {
-                    return (bool) $t->invokeCallback(GridBuilder::COLUMN_CONDITION_CALLBACK, $config->name, $item, $t->object);
+                    return (bool) $t->invokeCallback(GridBuilder::COLUMN_CONDITION_CALLBACK, $config->get("name"), $item, $t->object);
                 });
             } else {
                 $column->setRenderer(function ($item) use ($config,$t) {
-                    return $t->invokeCallback(GridBuilder::COLUMN_RENDERER_CALLBACK, $config->name, $item, $t->object);
+                    return $t->invokeCallback(GridBuilder::COLUMN_RENDERER_CALLBACK, $config->get("name"), $item, $t->object);
                 });
             }
         }
         
-        if ($this->checkCallback(GridBuilder::SORTABLE_CALLBACK, $config->name)) {
+        if ($this->checkCallback(GridBuilder::SORTABLE_CALLBACK, $config->get("name"))) {
             $column->setSortableCallback(function ($datasource, $sort) use ($config,$t) {
-                return $t->invokeCallback(GridBuilder::SORTABLE_CALLBACK, $config->name, $datasource, $sort, $t->object);
+                return $t->invokeCallback(GridBuilder::SORTABLE_CALLBACK, $config->get("name"), $datasource, $sort, $t->object);
             });
         }
         
-        if ($this->checkCallback(GridBuilder::COLUMN_CALLBACK, $config->name)) {
+        if ($this->checkCallback(GridBuilder::COLUMN_CALLBACK, $config->get("name"))) {
             $grid->addColumnCallback($config->name, function ($column, $item) use ($t,$config) {
-                $t->invokeCallback(GridBuilder::COLUMN_CALLBACK, $config->name, $column, $item, $t->object);
+                $t->invokeCallback(GridBuilder::COLUMN_CALLBACK, $config->get("name"), $column, $item, $t->object);
             });
         }
         

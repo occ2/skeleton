@@ -50,15 +50,15 @@ trait TCallbacks
     protected function checkCallback(string $callback, $column=null)
     {
         if ($column==null) {
-            if (isset($this->callbacks->{$callback})) {
-                Callback::check($this->callbacks->{$callback});
+            if (isset($this->callbacks[$callback])) {
+                Callback::check($this->callbacks[$callback]);
                 return true;
             } else {
                 return false;
             }
         } else {
-            if (isset($this->callbacks->{$callback}[$column])) {
-                Callback::check($this->callbacks->{$callback}[$column]);
+            if (isset($this->callbacks[$callback][$column])) {
+                Callback::check($this->callbacks[$callback][$column]);
                 return true;
             } else {
                 return false;
@@ -78,10 +78,10 @@ trait TCallbacks
             throw new GridCallbackException("ERROR: Invalid callback", GridCallbackException::INVALID_CALLBACK);
         }
         if ($column==null) {
-            $method =  $this->callbacks->$callback;
+            $method =  $this->callbacks[$callback];
             return $method($param1, $param2, $param3, $param4, $param5);
         } else {
-            $method = $this->callbacks->$callback[$column];
+            $method = $this->callbacks[$callback][$column];
             return $method($param1, $param2, $param3, $param4, $param5);
         }
     }

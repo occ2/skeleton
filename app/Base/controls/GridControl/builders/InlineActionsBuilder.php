@@ -112,7 +112,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
      */
     protected function setupInlineAdd(DataGrid $grid)
     {
-        $config = $this->configurator->getInlineAdd();
+        $config = $this->configurator->get("inlineAdd");
         $t = $this;
         if($config!=null){
             $inline = $grid->addInlineAdd();
@@ -134,10 +134,10 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
                 $inline->onSubmit[] = function(ArrayHash $values) use ($t) {
                     $this->invokeCallback(GridBuilder::INLINE_FORM_ADD_SUBMIT_CALLBACK, null,$values,$t->object);
                 };
-            } elseif (array_key_exists("inlineAddSubmit",$this->object->_symfonyEvents)) {
-                $inline->onSubmit[] = function(ArrayHash $values) use ($t,$grid) {
-                    $eventName = $t->object->_symfonyEvents["inlineAddSubmit"];
-                    $data = $t->object->_gridRowEventFactory->create(null,$values,$grid,$t->object,$eventName);
+            } elseif (isset($config->event)) {
+                $inline->onSubmit[] = function(ArrayHash $values) use ($t,$grid,$config) {
+                    $eventName = $config->event;
+                    $data = $t->object->getGridRowEventFactory()->create(null,$values,$grid,$t->object,$eventName);
                     $t->object->on($eventName, $data);
                     return;
                 };
@@ -148,8 +148,8 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             !isset($config->topPosition) ?: $inline->setPositionTop($config->topPosition);
             !isset($config->icon) ?: $inline->setIcon($config->icon);
             !isset($config->class) ? $inline->setClass("btn btn-xs btn-success") : $inline->setClass($config->class);
-            !isset($config->text) ?: $inline->setText($this->object->text($config->text));
-            !isset($config->title) ?: $inline->setTitle($this->object->text($config->title));
+            !isset($config->text) ?: $inline->setText($this->object->_($config->text));
+            !isset($config->title) ?: $inline->setTitle($this->object->_($config->title));
         }
         return;
     }
@@ -161,9 +161,8 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
      */
     protected function setupInlineEdit(DataGrid $grid)
     {
-        $config = $this->configurator->getInlineEdit();
+        $config = $this->configurator->get("inlineEdit");
         if($config!=null){
-            $config = ($config instanceof ArrayHash) ? $config : ArrayHash::from((array) $config);
             $t = $this;
             $inline = $grid->addInlineEdit(
                 isset($config->primaryWhereColumn) ? $config->primaryWhereColumn : null
@@ -195,10 +194,10 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
                 $inline->onSubmit[] = function($id, ArrayHash $values) use ($t) {
                     $this->invokeCallback(GridBuilder::INLINE_FORM_EDIT_SUBMIT_CALLBACK, null,$id,$values,$t->object);
                 };
-            } elseif (array_key_exists("inlineEditSubmit",$this->object->_symfonyEvents)) {
-                $inline->onSubmit[] = function($id, ArrayHash $values) use ($t,$grid) {
-                    $eventName = $t->object->_symfonyEvents["inlineEditSubmit"];
-                    $data = $t->object->_gridRowEventFactory->create($id,$values,$grid,$t->object,$eventName);
+            } elseif ($config->event) {
+                $inline->onSubmit[] = function($id, ArrayHash $values) use ($t,$grid,$config) {
+                    $eventName = $config->event;
+                    $data = $t->object->getGridRowEventFactory()->create($id,$values,$grid,$t->object,$eventName);
                     $t->object->on($eventName, $data);
                     return;
                 };
@@ -208,8 +207,8 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
             $this->setupCustomRedraw($inline,$grid);
             !isset($config->icon) ? $inline->setIcon("edit") : $inline->setIcon($config->icon);
             !isset($config->class) ? $inline->setClass("btn btn-xs ajax btn-dark") : $inline->setClass($config->class);
-            !isset($config->text) ?: $inline->setText($this->object->text($config->text));
-            !isset($config->title) ?: $inline->setTitle($this->object->text($config->title));
+            !isset($config->text) ?: $inline->setText($this->object->_($config->text));
+            !isset($config->title) ?: $inline->setTitle($this->object->_($config->title));
             !isset($config->showNonEditingColumns) ?: $inline->setShowNonEditingColumns($config->showNonEditingColumns);
         }
         return;
@@ -242,9 +241,9 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
      */
     protected function setupInlineForm(Container $container)
     {
-        $itemsConfig = $this->configurator->getInlineFormControl(true);
+        $itemsConfig = $this->configurator->get("inlineFormControl",true);
         $itemsValidators = [];
-        $vv = $this->configurator->getInlineFormValidator(true)==null ? [] : $this->configurator->getInlineFormValidator(true);
+        $vv = $this->configurator->get("inlineFormValidator",true)==null ? [] : $this->configurator->get("inlineFormValidator",true);
         foreach ($vv as $v){
             if(!isset($v->name)){
                 throw new GridBuilderException("ERROR: Invalid inline form validator name", GridBuilderException::INVALID_INLINE_FORM_VALIDATOR_NAME);
@@ -414,7 +413,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
      */
     protected function addItemCheckbox(Container $container, ArrayHash $config,ArrayHash $validator=null)
     {
-        $control = $container->addCheckbox(
+        $container->addCheckbox(
             $config->name,
             isset($config->caption) ? $config->caption : null
             );

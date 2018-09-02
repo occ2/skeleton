@@ -34,7 +34,6 @@ use app\Base\controls\GridControl\builders\GridBuilder;
 use app\Base\controls\GridControl\DataGrid;
 use Ublaboo\DataGrid\Export\Export;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\Strings;
 
 /**
  * ExportBuilder
@@ -94,7 +93,7 @@ class ExportBuilder implements IAdditionalGridBuilder
      */
     protected function addExports(DataGrid $grid)
     {
-        $configs = $this->configurator->getExport(true);
+        $configs = $this->configurator->get("export",true);
         foreach ($configs as $config) {
             $this->addExport($grid, $config);
         }
@@ -116,7 +115,7 @@ class ExportBuilder implements IAdditionalGridBuilder
         $filtered = isset($config->filtered) ? $config->filtered : false;
         if ($this->checkCallback(GridBuilder::EXPORT_CALLBACK, $config->name)) {
             return $this->addCallbackExport($grid, $config, $filtered);
-        } elseif(array_key_exists("export" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)){
+        } elseif(isset($config->event)){
             return $this->addExportEvent($grid, $config, $filtered);
         } else {
             return $this->addCSVExport($grid, $config, $filtered);
@@ -133,10 +132,10 @@ class ExportBuilder implements IAdditionalGridBuilder
     protected function addExportEvent(DataGrid $grid, ArrayHash $config, bool $filtered){
         $t = $this;
         $export = $grid->addExportCallback(
-            isset($config->label) ? $this->object->text($config->label) : "",
+            isset($config->label) ? $this->object->_($config->label) : "",
             function ($data_source, $grid) use ($t,$config) {
-                $eventName = $t->object->_symfonyEvents["export" . Strings::firstUpper($config->name)];
-                $data = $t->object->_gridEventFactory->create(
+                $eventName = $config->event;
+                $data = $t->object->getGridEventFactory()->create(
                     $grid,
                     $t->object,
                     null,
@@ -163,7 +162,7 @@ class ExportBuilder implements IAdditionalGridBuilder
     {
         $t = $this;
         $export = $grid->addExportCallback(
-            isset($config->label) ? $this->object->text($config->label) : "",
+            isset($config->label) ? $this->object->_($config->label) : "",
             function ($data_source, $grid) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::EXPORT_CALLBACK, $config->name, $data_source, $grid, $t->object);
             },
@@ -184,7 +183,7 @@ class ExportBuilder implements IAdditionalGridBuilder
     {
         if ($filtered) {
             $export = $grid->addExportCsvFiltered(
-                isset($config->label) ? $this->object->text($config->label) : "",
+                isset($config->label) ? $this->object->_($config->label) : "",
                 isset($config->filename) ? $config->filename : "export_filtered.csv",
                 isset($config->encoding) ? $config->encoding : null,
                 isset($config->delimiter) ? $config->delimiter : null,
@@ -192,7 +191,7 @@ class ExportBuilder implements IAdditionalGridBuilder
             );
         } else {
             $export = $grid->addExportCsv(
-                isset($config->label) ? $this->object->text($config->label) : "",
+                isset($config->label) ? $this->object->_($config->label) : "",
                 isset($config->filename) ? $config->filename : "export_all.csv",
                 isset($config->encoding) ? $config->encoding : null,
                 isset($config->delimiter) ? $config->delimiter : null,
@@ -215,7 +214,7 @@ class ExportBuilder implements IAdditionalGridBuilder
         !isset($config->icon) ?: $export->setIcon($config->icon);
         !isset($config->ajax) ?: $export->setAjax($config->ajax);
         !isset($config->href) ?: $export->setLink($config->href);
-        !isset($config->title) ?: $export->setTitle($this->object->text($config->title));
+        !isset($config->title) ?: $export->setTitle($this->object->_($config->title));
         return;
     }
 }

@@ -94,7 +94,7 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
      */
     protected function addToolbarButtons(DataGrid $grid)
     {
-        $buttons = $this->configurator->getToolbarButton(true);
+        $buttons = $this->configurator->get("toolbarButton",true);
         
         foreach ($buttons as $config) {
             $this->addButton($grid, $config);
@@ -133,16 +133,16 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
         if ($this->checkCallback(GridBuilder::TOOLBAR_BUTTON_CALLBACK, $config->name)) {
             $button = $grid->addToolbarButtonForBuilder(
                 $config->name,
-                $this->object->_toolbarHandler,
+                $this->object->getToolbarHandler(),
                 isset($config->text) ? $this->object->text($config->text) : "",
                 ["name"=>$config->name,"event"=>false,"params"=> serialize($params)]
             );
-        } elseif (array_key_exists("toolbarButton" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+        } elseif (isset($config->event)) {
             $button = $grid->addToolbarButtonForBuilder(
                 $config->name,
-                $this->object->_toolbarHandler,
-                isset($config->text) ? $this->object->text($config->text) : "",
-                ["name"=>$config->name,"event"=>$this->object->_symfonyEvents["toolbarButton" . Strings::firstUpper($config->name)],"params"=> serialize($params)]
+                $this->object->getToolbarHandler(),
+                isset($config->text) ? $this->object->_($config->text) : "",
+                ["name"=>$config->name,"event"=>$config->event,"params"=> serialize($params)]
             );
         } else {
             $button = $grid->addToolbarButtonForBuilder(
@@ -166,7 +166,7 @@ class ToolbarButtonsBuilder implements IAdditionalGridBuilder
     {
         !isset($config->icon) ?: $button->setIcon($config->icon);
         !isset($config->class) ?: $button->setClass($config->class);
-        !isset($config->title) ?: $button->setTitle($this->object->text($config->title));
+        !isset($config->title) ?: $button->setTitle($this->object->_($config->title));
         if (isset($config->attributes)) {
             $attrs = [];
             $c = explode(";", $config->attributes);

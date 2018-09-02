@@ -33,6 +33,7 @@
     newTab
     data-attribute
     ajax
+    event
 
 @multiAction
     name
@@ -48,7 +49,7 @@
     label
     class
     attributes
-
+    event
 @itemDetail array/bool - item detail settings
             template
             primaryColumn
@@ -65,7 +66,7 @@
             title
             text
             attributes
-
+            event
 @export
     name
     filtered
@@ -79,6 +80,7 @@
     title
     label
     href
+    event
 @inlineActions
 @inlineFormControl
     name
@@ -95,7 +97,7 @@
     class
     title
     text
-
+    event
 @inlineEdit
     showNonEditingColumns
     primaryWhereColumn
@@ -103,7 +105,7 @@
     class
     title
     text
-
+    event
 Column configs
 * @type string - type of column (text,number,datetime,link, status)
 @label string translatable column heading

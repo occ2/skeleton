@@ -106,7 +106,7 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
      */
     protected function addActions(DataGrid $grid)
     {
-        $configs = $this->configurator->getGroupAction(true);
+        $configs = $this->configurator->get("groupAction",true);
         foreach ($configs as $config) {
             $this->addAction($grid, $config);
         }
@@ -143,15 +143,15 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
     protected function addSimple(DataGrid $grid, ArrayHash $config): GroupAction
     {
         $t = $this;
-        $action = $grid->addGroupAction(isset($config->label) ? $this->object->text($config->label) : $config->name);
+        $action = $grid->addGroupAction(isset($config->label) ? $this->object->_($config->label) : $config->name);
         if ($this->checkCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name)) {
             $action->onSelect[] = function ($ids) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object);
             };
-        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+        } elseif (isset($config->event)) {
             $action->onSelect[] = function($ids) use ($t,$grid,$config) {
-                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $data = $t->object->_gridEventFactory->create(
+                $eventName = $config->event;
+                $data = $t->object->getGridEventFactory()->create(
                     $grid,
                     $t->object,
                     null,
@@ -180,17 +180,17 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         }
         
         $action = $grid->addGroupSelectAction(
-                isset($config->label) ? $this->object->text($config->label) : $config->name,
+                isset($config->label) ? $this->object->_($config->label) : $config->name,
                 $this->invokeCallback(GridBuilder::GROUP_ACTION_OPTIONS_CALLBACK, $config->name, $this->object)
         );
         if ($this->checkCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name)) {
             $action->onSelect[] = function ($ids, $option) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $option);
             };
-        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+        } elseif (isset($config->event)) {
             $action->onSelect[] = function($ids,$option) use ($t,$grid,$config) {
-                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $data = $t->object->_gridEventFactory->create(
+                $eventName = $config->event;
+                $data = $t->object->getGridEventFactory()->create(
                     $grid,
                     $t->object,
                     null,
@@ -219,17 +219,17 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
         }
         
         $action = $grid->addGroupMultiSelectAction(
-                isset($config->label) ? $this->object->text($config->label) : $config->name,
+                isset($config->label) ? $this->object->_($config->label) : $config->name,
                 $this->invokeCallback(GridBuilder::GROUP_ACTION_OPTIONS_CALLBACK, $config->name, $this->object)
         );
         if ($this->checkCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name)) {
             $action->onSelect[] = function ($ids, $options) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $options);
             };
-        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+        } elseif (isset($config->event)) {
             $action->onSelect[] = function($ids,$options) use ($t,$grid,$config) {
-                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $data = $t->object->_gridEventFactory->create(
+                $eventName = $config->event;
+                $data = $t->object->getGridEventFactory()->create(
                     $grid,
                     $t->object,
                     null,
@@ -253,16 +253,16 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
     {
         $t = $this;
         $action = $grid->addGroupTextAction(
-             isset($config->label) ? $this->object->text($config->label) : $config->name
+             isset($config->label) ? $this->object->_($config->label) : $config->name
          );
         if ($this->checkCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name)) {
             $action->onSelect[] = function ($ids, $value) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $value);
             };
-        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+        } elseif (isset($config->event)) {
             $action->onSelect[] = function($ids,$value) use ($t,$grid,$config) {
-                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $data = $t->object->_gridEventFactory->create(
+                $eventName = $config->event;
+                $data = $t->object->getGridEventFactory()->create(
                     $grid,
                     $t->object,
                     null,
@@ -286,16 +286,16 @@ class GroupActionsBuilder implements IAdditionalGridBuilder
     {
         $t = $this;
         $action = $grid->addGroupTextareaAction(
-             isset($config->label) ? $this->object->text($config->label) : $config->name
+             isset($config->label) ? $this->object->_($config->label) : $config->name
          );
         if ($this->checkCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name)) {
             $action->onSelect[] = function ($ids, $value) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::GROUP_ACTION_CALLBACK, $config->name, $ids, $t->object, $value);
             };
-        } elseif (array_key_exists("groupAction" . Strings::firstUpper($config->name), $this->object->_symfonyEvents)) {
+        } elseif (isset($config->event)) {
             $action->onSelect[] = function($ids,$value) use ($t,$grid,$config) {
-                $eventName = $t->object->_symfonyEvents["groupAction" . Strings::firstUpper($config->name)];
-                $data = $t->object->_gridEventFactory->create(
+                $eventName = $config->event;
+                $data = $t->object->getGridEventFactory()->create(
                     $grid,
                     $t->object,
                     null,

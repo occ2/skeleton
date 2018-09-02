@@ -65,7 +65,6 @@ abstract class Control extends NControl
         $this->c->ed = $eventDispatcher;
         $this->c->translator = $translator;
         $this->c->cacheFactory = $cacheFactory;
-        $this->c->configurator = [];
         parent::__construct();
         $this->startup();
     }

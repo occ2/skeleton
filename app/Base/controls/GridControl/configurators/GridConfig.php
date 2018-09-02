@@ -27,9 +27,8 @@ namespace app\Base\controls\GridControl\configurators;
 
 use app\Base\controls\GridControl\GridControl;
 use Nette\Reflection\ClassType;
-use Nette\Utils\Strings;
-use Nette\Utils\ArrayHash;
 use Nette\Caching\Cache;
+use app\Base\controls\Control\IConfigurator;
 
 /**
  * GridConfig
@@ -37,16 +36,8 @@ use Nette\Caching\Cache;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-class GridConfig
+class GridConfig implements IConfigurator
 {
-    const TEXTS=[
-        "title","comment","footer"
-    ];
-
-    const CONFIGS=[
-        "events"=>"setEvents"
-    ];
-
     const CACHE_PREFIX="grid";
 
     /**
@@ -72,7 +63,7 @@ class GridConfig
     {
         $this->parent = $parent;
         $classType = ClassType::from($parent);
-        $this->cache = $parent->_cacheFactory->create(self::CACHE_PREFIX);
+        $this->cache = $parent->getCacheFactory()->create(self::CACHE_PREFIX);
         $this->annotations = $this->cache->load($classType->getName());
         if($this->annotations===null){
             $this->annotations = $classType->getAnnotations();
@@ -84,29 +75,15 @@ class GridConfig
     }
 
     /**
-     * test if method begins on get and then read from annotation and send as ArrayHash
+     * get class annotation
      * @param string $name
-     * @param array $arguments
-     * @return mixed
-     * @throws \BadMethodCallException
+     * @param bool $multiple
+     * @return mixed | null
      */
-    public function __call($name, $arguments)
+    public function get(string $name, bool $multiple = false)
     {
-        if (!Strings::startsWith($name, "get")) {
-            throw new \BadMethodCallException;
-        }
-        $anchor = Strings::firstLower(str_replace("get", "", $name));
-        
-        if (array_key_exists($anchor, static::CONFIGS) && array_key_exists($anchor, $this->annotations)) {
-            return $this->parent->{static::CONFIGS[$anchor]}();
-        } elseif (in_array($anchor, static::TEXTS) && array_key_exists($anchor, $this->annotations)) {
-            return $this->annotations[$anchor][0];
-        } elseif (array_key_exists($anchor, $this->annotations)) {
-            if (isset($arguments[0]) && $arguments[0]==true) {
-                return $this->annotations[$anchor];
-            } else {
-                return is_array($this->annotations[$anchor][0]) ? ArrayHash::from($this->annotations[$anchor][0]) : $this->annotations[$anchor][0];
-            }
+        if (array_key_exists($name, $this->annotations)) {
+            return $multiple==true ? $this->annotations[$name] : $this->annotations[$name][0];
         } else {
             return null;
         }
