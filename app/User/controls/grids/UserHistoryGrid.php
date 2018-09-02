@@ -26,6 +26,7 @@
 namespace app\User\controls\grids;
 
 use app\Base\controls\GridControl\GridControl;
+use Contributte\Logging\ILogger;
 use Nette\Utils\Html;
 
 /**
@@ -50,7 +51,7 @@ final class UserHistoryGrid extends GridControl
     
     /**
      * @type number
-     * @label ID
+     * @label user.userHistoryGrid.column.id
      * @filter (type=range)
      * @hidden
      */
@@ -58,7 +59,7 @@ final class UserHistoryGrid extends GridControl
     
     /**
      * @type datetime
-     * @label user.userHistoryGrid.datetime
+     * @label user.userHistoryGrid.column.datetime
      * @filter (type=date)
      * @sortable
      */
@@ -66,14 +67,14 @@ final class UserHistoryGrid extends GridControl
     
     /**
      * @type text
-     * @label user.userHistoryGrid.type
+     * @label user.userHistoryGrid.column.type
      * @filter (type=select,translateOptions=true)
      */
     public $type;
     
     /**
      * @type text
-     * @label user.userHistoryGrid.message
+     * @label user.userHistoryGrid.column.message
      * @translate
      */
     public $message;
@@ -84,33 +85,35 @@ final class UserHistoryGrid extends GridControl
      */
     public function startup()
     {
-        // log type map
-        $classes = [
-                1=>"info",
-                2=>"success",
-                3=>"warning",
-                4=>"danger",
-                5=>"danger"
-            ];
-
-        // set custom renderer
-        $this->setColumnRendererCallback("type", function ($item, $control) use ($classes) {
-            $texts = [
-                1=>$control->text("base.logger.status.info"),
-                2=>$control->text("base.logger.status.success"),
-                3=>$control->text("base.logger.status.warning"),
-                4=>$control->text("base.logger.status.danger"),
-                5=>$control->text("base.logger.status.exception")
-            ];
-            return Html::el("div")
-                   ->addAttributes(["class"=>"badge badge-" . $classes[$item->type]])
-                   ->addText($texts[$item->type]);
-        });
-        $this->setRowCallback(function ($item, $tr, $control) use ($classes) {
-            $tr->addClass("alert alert-" . $classes[$item->type]);
-        });
-
         parent::startup();
+        $classes = [
+            ILogger::INFO=>"success",
+            ILogger::WARNING=>"warning",
+            ILogger::CRITICAL=>"danger",
+            ILogger::EXCEPTION=>"danger"
+        ];
+
+        $texts = [
+            ILogger::INFO=>$this->_("base.logger.status.info"),
+            ILogger::WARNING=>$this->_("base.logger.status.warning"),
+            ILogger::CRITICAL=>$this->_("base.logger.status.danger"),
+            ILogger::EXCEPTION=>$this->_("base.logger.status.exception")
+        ];
+        // set custom renderer
+        $this->setColumnRendererCallback(self::TYPE, function ($item, GridControl $control) use ($classes,$texts) {
+
+            return Html::el("div")
+                   ->addAttributes(["class"=>"badge badge-" . $classes[$control->getEntityProperty($item,self::TYPE)]])
+                   ->addText($texts[$control->getEntityProperty($item,self::TYPE)]);
+        });
+        
+        $this->setRowCallback(function($item, $tr, $control) use ($classes) {
+            $tr->addClass("alert alert-" . $classes[$control->getEntityProperty($item,self::TYPE)]);
+        });
+
+        $this->setLoadOptionsCallback(self::TYPE,function($control) use ($texts){
+            return $texts;
+        });
         return;
     }
 }

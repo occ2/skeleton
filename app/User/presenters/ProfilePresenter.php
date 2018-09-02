@@ -55,7 +55,17 @@ final class ProfilePresenter extends BasePresenter
 
     public $settingsGridFactory;
 
+    /**
+     * @inject
+     * @var \app\User\controls\factories\IUserHistoryGrid
+     */
     public $historyGridFactory;
+
+    /**
+     * @inject
+     * @var \app\User\models\facades\HistoryFacade
+     */
+    public $historyFacade;
 
     /**
      * @title user.navbar.profile
@@ -129,6 +139,8 @@ final class ProfilePresenter extends BasePresenter
 
     public function createComponentHistoryGrid()
     {
-        //return $this->historyGridFactory->create();
+        $grid = $this->historyGridFactory->create();
+        $grid->setDatasource($this->historyFacade->load($this->user->getId()));
+        return $grid;
     }
 }
