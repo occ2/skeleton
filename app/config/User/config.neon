@@ -32,6 +32,7 @@ services:
     userForm:   app\User\controls\factories\IUserForm
 
     # grids
+    historyGrid:    app\User\controls\factories\IUserHistoryGrid
 
     # processors
 

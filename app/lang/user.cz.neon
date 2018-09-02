@@ -129,6 +129,7 @@ addUserForm:
 userHistoryGrid:
     title:  "Historie událostí uživatele"
     column:
+        id: "ID"
         datetime:   "Datum a čas"
         type:   "Typ události"
         message:    "Záznam události"
