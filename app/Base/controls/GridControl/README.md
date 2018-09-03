@@ -18,6 +18,7 @@
 @happyComponents bool - use happy components in group actions?
 
 @sortable bool
+@onReSort string - event fired while resorting 
 @sortableHandler string 
 
 @action

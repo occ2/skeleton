@@ -309,6 +309,10 @@ class GridBuilder implements IGridBuilder
             $grid->setSortable($sortable);
             $handler = $this->configurator->get("sortableHandler");
             $grid->setSortableHandler($handler==null ? $this->object->getName() . ":" . $this->object->getSortableHandler() : $handler);
+            $sortableEvent = $this->configurator->get("onReSort");
+            if($sortableEvent!=null){
+                $this->object->setEvent("onReSort",$sortableEvent);
+            }
         }
         
         $happy = $this->configurator->get("happyComponents");

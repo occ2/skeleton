@@ -640,9 +640,9 @@ abstract class GridControl extends Control
     {
         if($event==false){
             return $this->invokeCallback(GridBuilder::TOOLBAR_BUTTON_CALLBACK, $name, $this, unserialize($params));
-        } elseif($this->getEvent($name,$event)!=null){
+        } elseif(!empty($event)){
             $data = $this->getGridEventFactory()->create($this[self::GRID_CONTROL],$this,null,$params,$event);
-            $this->on($this->getEvent($name,$event), $data);
+            $this->on($event, $data);
             return;
         } else {
             $this->toolbar($name, $params);
@@ -666,9 +666,9 @@ abstract class GridControl extends Control
         if ($this->checkCallback(GridBuilder::SORTING_CALLBACK)) {
             $this->invokeCallback(GridBuilder::SORTING_CALLBACK, null, $item_id, $prev_id, $next_id, $parent_id, $this);
             return;
-        } elseif($this->getEvent("sort", "sort")){
+        } elseif($this->getEvent("onReSort")!=null){
             $this->on(
-                $this->getEvent("sort", "sort"),
+                $this->getEvent("onReSort"),
                 $this->getGridEventFactory()->create(
                     $this[static::GRID_CONTROL],
                     $this,
@@ -679,7 +679,7 @@ abstract class GridControl extends Control
                         "nextId"=>$next_id,
                         "parentId"=>$parent_id
                     ],
-                    $this->getEvent("sort", "sort")
+                    $this->getEvent("onReSort")
                 )
             );
             return;
@@ -865,5 +865,16 @@ abstract class GridControl extends Control
     public function getSortableHandler()
     {
         return $this->c->sortableHandler;
+    }
+
+    public function setEvent(string $key,string $event)
+    {
+        $this->c->events[$key] = $event;
+        return $this;
+    }
+
+    public function getEvent(string $key) : ?string
+    {
+        return isset($this->c->events[$key]) ? $this->c->events[$key] : null;
     }
 }
