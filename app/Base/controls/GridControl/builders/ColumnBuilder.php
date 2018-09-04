@@ -239,8 +239,8 @@ class ColumnBuilder implements IColumnGridBuilder
         $column->setTemplate($this->object->getStatusTemplatePath());
         $config->get("options") == null ?: $column->setOptions($config->get("options"));
         
-        if ($config->get("option") !=null) {
-            foreach ($config->get("option") as $key=>$option) {
+        if ($config->get("option",true) !=null) {
+            foreach ($config->get("option",true) as $key=>$option) {
                 $this->setupColumnStatus($column, $option,$key);
             }
         }
