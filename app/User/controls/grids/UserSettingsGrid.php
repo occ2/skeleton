@@ -26,6 +26,8 @@
 namespace app\User\controls\grids;
 
 use app\Base\controls\GridControl\GridControl;
+use app\User\models\entities\Settings;
+use app\Base\controls\GridControl\events\GridEventData;
 
 /**
  * UserSettingsGrid
@@ -34,10 +36,11 @@ use app\Base\controls\GridControl\GridControl;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  * @columnsHidable
- * @title user.userConfigGrid.title
+ * @title user.userSettingsGrid.title
  * @defaultPerPage 50
- * @toolbarButton (name="reload", title="user.userConfigGrid.reload",icon="retweet",class="ajax btn btn-xs btn-primary")
- * @toolbarButton (name="reset", title="user.userConfigGrid.reset",icon="eraser",class="ajax btn btn-xs btn-danger")
+ * @toolbarButton (name="reload", event="User.SettingsGrid.reload.onClick", title="user.userSettingsGrid.action.reload",icon="retweet",class="ajax btn btn-xs btn-primary")
+ * @toolbarButton (name="reset", event="User.SettingsGrid.reset.onClick", title="user.userSettingsGrid.action.reset",icon="eraser",class="ajax btn btn-xs btn-danger")
+ * 
  */
 final class UserSettingsGrid extends GridControl
 {
@@ -46,7 +49,10 @@ final class UserSettingsGrid extends GridControl
           KEY="key",
           VALUE="value",
           TOOLBAR_BUTTON_RESET="reset",
-          TOOLBAR_BUTTON_RELOAD="reload";
+          TOOLBAR_BUTTON_RELOAD="reload",
+          EVENT_CLICK_RESET="User.SettingsGrid.reset.onClick",
+          EVENT_CLICK_RELOAD="User.SettingsGrid.reload.onClick",
+          EVENT_EDIT_VALUE="User.SettingsGrid.value.onSubmit";
 
     const YES_NO=[
         0=>"base.shared.no",
@@ -54,36 +60,56 @@ final class UserSettingsGrid extends GridControl
     ];
     
     /**
-     * @label user.userConfigGrid.id
+     * @label user.userSettingsGrid.column.id
      * @type number
      * @hidden true
      */
     public $id;
 
     /**
-     * @label user.userConfigGrid.type
+     * @label user.userSettingsGrid.column.type
      * @type text
      * @hidden true
      */
     public $type;
     
     /**
-     * @label user.userConfigGrid.comment
+     * @label user.userSettingsGrid.column.comment
      * @type text
      * @translate
      */
     public $comment;
 
     /**
-     * @label user.userConfigGrid.key
+     * @label user.userSettingsGrid.column.key
      * @type text
      * @hidden true
      */
     public $key;
 
     /**
-     * @label user.userConfigGrid.value
+     * @label user.userSettingsGrid.column.value
      * @type text
+     * @editableType text
      */
     public $value;
+    
+    public function startup()
+    {
+        parent::startup();
+        $t = $this;
+        $this->setColumnRendererCallback(self::VALUE, function ($item, GridControl $control){
+            if($control->getEntityProperty($item, Settings::TYPE)=="bool"){
+                $a = self::YES_NO;
+                return $control->_($a[$control->getEntityProperty($item, Settings::VALUE)]);
+            } else {
+                return $control->getEntityProperty($item, Settings::VALUE);
+            }
+        });
+        $this->setEditableCallback(self::VALUE,function($id,$value,$control) use ($t){
+            $data = new GridEventData($control[static::GRID_CONTROL], $control, null, [self::ID=>$id,self::VALUE=>$value] , self::EVENT_EDIT_VALUE);
+            $this->on(self::EVENT_EDIT_VALUE, $data);
+            return;
+        });
+    }
 }
