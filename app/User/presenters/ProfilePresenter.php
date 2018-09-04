@@ -27,6 +27,8 @@ namespace app\User\presenters;
 
 use app\User\controls\forms\ProfileForm;
 use app\User\controls\forms\PasswordForm;
+use app\User\controls\grids\UserHistoryGrid;
+use app\User\controls\grids\UserSettingsGrid;
 
 /**
  * ProfilePresenter
@@ -53,6 +55,10 @@ final class ProfilePresenter extends BasePresenter
      */
     public $passwordFormFactory;
 
+    /**
+     * @inject
+     * @var \app\User\controls\factories\IUserSettingsGrid
+     */
     public $settingsGridFactory;
 
     /**
@@ -66,6 +72,12 @@ final class ProfilePresenter extends BasePresenter
      * @var \app\User\models\facades\HistoryFacade
      */
     public $historyFacade;
+
+    /**
+     * @inject
+     * @var \app\User\models\facades\SettingsFacade
+     */
+    public $settingsFacade;
 
     /**
      * @title user.navbar.profile
@@ -132,15 +144,32 @@ final class ProfilePresenter extends BasePresenter
         return $form;
     }
 
+    /**
+     * user settings grid factory
+     * @return UserSettingsGrid
+     */
     public function createComponentSettingsGrid()
     {
-        //return $this->settingsGridFactory->create();
+        // create datagrid
+        $grid = $this->settingsGridFactory->create();
+        // setup datasource
+        $datasource = $this->settingsFacade->load($this->user->getId());
+        $grid->setDatasource($datasource);
+        //and return
+        return $grid;
     }
 
+    /**
+     * user history grid factory
+     * @return UserHistoryGrid
+     */
     public function createComponentHistoryGrid()
     {
+        // create datagrid
         $grid = $this->historyGridFactory->create();
+        // setup datasource of grid
         $grid->setDatasource($this->historyFacade->load($this->user->getId()));
+        // and return
         return $grid;
     }
 }
