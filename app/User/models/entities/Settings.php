@@ -51,10 +51,10 @@ class Settings implements IEntity
 
     const ID="id",
           USER="user",
-          KEY="key",
-          VALUE="value",
-          COMMENT="comment",
-          TYPE="type";
+          KEY="xkey",
+          VALUE="xvalue",
+          COMMENT="xcomment",
+          TYPE="xtype";
 
     /**
      * @ORM\ManyToOne(targetEntity="User",inversedBy="settings")
@@ -169,5 +169,81 @@ class Settings implements IEntity
     {
         $this->user = $user;
         return $this;
+    }
+
+    /**
+     * alias for getKey
+     * @return string
+     */
+    public function getXkey()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * alias for setKey
+     * @param string $key
+     * @return $this
+     */
+    public function setXkey(string $key)
+    {
+        return $this->setKey($key);
+    }
+
+    /**
+     * alias for getValue
+     * @return string
+     */
+    public function getXvalue()
+    {
+        return $this->getValue();
+    }
+
+    /**
+     * alias for setValue
+     * @param string $value
+     * @return $this
+     */
+    public function setXvalue(string $value)
+    {
+        return $this->setValue($value);
+    }
+
+    /**
+     * alias for getComment
+     * @return string
+     */
+    public function getXcomment()
+    {
+        return $this->getComment();
+    }
+
+    /**
+     * alias for setComment
+     * @param string $comment
+     * @return $this
+     */
+    public function setXcomment(string $comment)
+    {
+        return $this->setComment($comment);
+    }
+
+    /**
+     * alias for getType
+     * @return string
+     */
+    public function getXtype()
+    {
+        return $this->getType();
+    }
+
+    /**
+     * alias for getType
+     * @param string $type
+     * @return $this
+     */
+    public function setXtype(string $type)
+    {
+        return $this->setType($type);
     }
 }
