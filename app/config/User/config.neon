@@ -33,6 +33,8 @@ services:
 
     # grids
     historyGrid:    app\User\controls\factories\IUserHistoryGrid
+    settings:   app\User\controls\factories\IUserSettingsGrid
+    admin:  app\User\controls\factories\IUsersAdminGrid
 
     # processors
 
@@ -41,3 +43,5 @@ services:
     passwordEvents: app\User\events\subscribers\PasswordEvents
     registerEvents: app\User\events\subscribers\RegisterEvents
     profileEvents:  app\User\events\subscribers\ProfileEvents
+    settingsEvents: app\User\events\subscribers\SettingsEvents
+    adminEvents:    app\User\events\subscribers\AdminEvents

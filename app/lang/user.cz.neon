@@ -135,7 +135,7 @@ userHistoryGrid:
         message:    "Záznam události"
         question: "Smazat událost s ID: %s ?"
 
-usersGrid:
+usersAdminGrid:
     title:  "Správa uživatelů"
     column:
         id: "UID"
