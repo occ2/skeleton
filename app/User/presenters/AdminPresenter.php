@@ -30,11 +30,38 @@ namespace app\User\presenters;
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
+ * @todo SET ACL !!
  */
 final class AdminPresenter extends BasePresenter
 {
+    const ACTION_DEFAULT=":User:Admin:default",
+          ACTION_HISTORY=":User:Admin:history",
+          ACTION_SETTINGS=":User:Admin:settings",
+          ACTION_ROLES=":User:Admin:roles",
+          ACTION_ADD=":User:Admin:add",
+          ACTION_EDIT=":User:Admin:edit",
+          ACTION_RESET=":User:Admin:reset";
+
+    /**
+     * @inject
+     * @var \app\User\models\facades\AdminFacade
+     */
+    public $adminFacade;
+
+    /**
+     * @inject
+     * @var \app\User\controls\factories\IUsersAdminGrid
+     */
+    public $userAdminGridFactory;
+
+    /**
+     * @var int
+     */
     private $id;
 
+    /**
+     * @title user.navbar.administration
+     */
     public function actionDefault()
     {
 
@@ -74,9 +101,11 @@ final class AdminPresenter extends BasePresenter
 
     }
 
-    public function createComponentUsersGrid()
+    public function createComponentUsersAdminGrid()
     {
-
+        $grid = $this->userAdminGridFactory->create();
+        $grid->setDatasource($this->adminFacade->load());
+        return $grid;
     }
 
     public function createComponentHistoryGrid()

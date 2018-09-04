@@ -33,15 +33,16 @@ use app\Base\controls\GridControl\GridControl;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  * @columnsHidable
- * @title user.usersGrid.title
+ * @outerFilter true
+ * @title user.usersAdminGrid.title
  *
- * @toolbarButton (name="add", title="user.usersGrid.add", href="add",icon="user-plus",class="ajax btn btn-xs btn-primary")
- * @action (name="edit",href="edit",title="user.usersGrid.edit",icon="edit",class="btn-dark ajax")
- * @action (name="history",href="history",title="user.usersGrid.history",icon="history",class="btn-dark ajax")
- * @action (name="settings",href="settings",title="user.usersGrid.settings",icon="cogs",class="btn-dark ajax")
- * @action (name="roles",href="roles",title="user.usersGrid.roles",icon="users",class="btn-dark ajax")
- * @action (name="reset",href=":resetPassword!",title="user.usersGrid.reset",icon="unlock-alt",class="btn-dark ajax",confirmCol="realname",confirm="user.usersGrid.confirmReset")
- * @action (name="delete",href=":delete!",title="user.usersGrid.delete",icon="trash",class="btn-danger ajax",confirmCol="realname",confirm="user.usersGrid.confirmDelete")
+ * @toolbarButton (name="add", title="user.usersAdminGrid.action.add", href="add",icon="user-plus",class="ajax btn btn-xs btn-primary")
+ * @action (name="edit",href="edit",title="user.usersAdminGrid.action.edit",icon="edit",class="btn-dark ajax")
+ * @action (name="history",href="history",title="user.usersAdminGrid.action.history",icon="history",class="btn-dark ajax")
+ * @action (name="settings",href="settings",title="user.usersAdminGrid.action.settings",icon="cogs",class="btn-dark ajax")
+ * @action (name="roles",href="roles",title="user.usersAdminGrid.action.roles",icon="users",class="btn-dark ajax")
+ * @action (name="reset",title="user.usersAdminGrid.action.reset",icon="unlock-alt",class="btn-dark ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.reset")
+ * @action (name="delete",title="user.usersAdminGrid.action.delete",icon="trash",class="btn-danger ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.delete")
  */
 final class UsersAdminGrid extends GridControl
 {
@@ -59,10 +60,16 @@ final class UsersAdminGrid extends GridControl
           ACTION_SETTINGS="settings",
           ACTION_ROLES="roles",
           ACTION_RESET="reset",
-          ACTION_DELETE="delete";
+          ACTION_DELETE="delete",
+          EVENT_DELETE="User.UserAdminGrid.delete.onConfirm",
+          EVENT_RESET="User.UserAdminGrid.reset.onConfirm",
+          STATUSES=[
+              0=>"user.usersAdminGrid.column.status.inactive",
+              1=>"user.usersAdminGrid.column.status.active"
+          ];
     
     /**
-     * @label user.usersGrid.id
+     * @label user.usersAdminGrid.column.id
      * @type number
      * @filter (type=text)
      * @hidden true
@@ -70,35 +77,35 @@ final class UsersAdminGrid extends GridControl
     public $id;
     
     /**
-     * @label user.usersGrid.username
+     * @label user.usersAdminGrid.column.username
      * @type text
      * @filter (type=text)
      */
     public $username;
 
     /**
-     * @label user.usersGrid.realname
+     * @label user.usersAdminGrid.column.realname
      * @type text
      * @filter (type=text)
      */
     public $realname;
 
     /**
-     * @label user.usersGrid.email
+     * @label user.usersAdminGrid.column.email
      * @type text
      * @filter (type=text)
      */
     public $email;
 
     /**
-     * @label user.usersGrid.phone
+     * @label user.usersAdminGrid.column.phone
      * @type text
      * @filter (type=text)
      */
     public $phone;
 
     /**
-     * @label user.usersGrid.question
+     * @label user.usersAdminGrid.column.question
      * @type text
      * @filter (type=text)
      * @hidden true
@@ -106,18 +113,32 @@ final class UsersAdminGrid extends GridControl
     public $cQuestion;
 
     /**
-     * @label user.usersGrid.secret
+     * @label user.usersAdminGrid.column.secret
      * @type text
      * @hidden true
      */
     public $secret;
 
     /**
-     * @label user.usersGrid.status
+     * @label user.usersAdminGrid.column.status.title
      * @type status
      * @filter (type=select)
-     * @option (text='user.usersGrid.inactive',class='ajax btn btn-xs btn-danger', classInDropdown="ajax dropdown-item")
-     * @option (text='user.usersGrid.active',class='ajax btn btn-xs btn-success', classInDropdown="ajax dropdown-item")
+     * @option (text='user.usersAdminGrid.column.status.inactive',class='ajax btn btn-xs btn-danger', classInDropdown="ajax dropdown-item")
+     * @option (text='user.usersAdminGrid.column.status.active',class='ajax btn btn-xs btn-success', classInDropdown="ajax dropdown-item")
      */
     public $status;
+
+    public function startup()
+    {
+        parent::startup();
+        $this->setStatusChangeCallback(self::STATUS,function($id,$value,$control){
+
+        });
+        $this->setLoadOptionsCallback(self::STATUS,function($control){
+            return [
+                0=>$this->_(self::STATUSES[0]),
+                1=>$this->_(self::STATUSES[1]),
+            ];
+        });
+    }
 }

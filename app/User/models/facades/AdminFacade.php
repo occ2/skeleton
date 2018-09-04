@@ -42,13 +42,13 @@ use Nette\Utils\ArrayList;
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
+ * @todo ADD ACL Conditions !!!
  */
 final class AdminFacade extends BaseFacade
 {
     use TUserDefaults;
 
-    const ENTITY_CLASS=UserEntity::class,
-          EVENT_SAVE="User.AdminFacade.onSave",
+    const EVENT_SAVE="User.AdminFacade.onSave",
           EVENT_LOAD="User.AdminFacade.onLoad",
           EVENT_FIND="User.AdminFacade.onFind",
           EVENT_ADD="User.AdminFacade.onAdd",
