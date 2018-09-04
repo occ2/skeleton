@@ -299,7 +299,7 @@ class ColumnBuilder implements IColumnGridBuilder
                 return $t->invokeCallback(GridBuilder::EDITABLE_CALLBACK, $config->get("name"), $id, $value, $t->object);
             });
             if ($config->get("editableType")!==null) {
-                if ($config->get("editableType")!="select") {
+                if ($config->get("editableType")=="select") {
                     $column->setEditableInputTypeSelect(
                         $this->invokeCallback(GridBuilder::LOAD_OPTIONS_CALLBACK, $config->get("name")),
                         $config->get("editableAttributes")!==null ? $config->get("editableAttributes") : []

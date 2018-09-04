@@ -27,7 +27,7 @@ namespace app\Base\controls\GridControl\events;
 
 use app\Base\controls\GridControl\DataGrid;
 use Contributte\EventDispatcher\Events\AbstractEvent as BaseEvent;
-use Nette\Application\UI\Control;
+use app\Base\controls\Control\Control;
 
 /**
  * GridRowEventData

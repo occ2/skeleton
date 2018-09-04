@@ -457,7 +457,7 @@ abstract class GridControl extends Control
      */
     public function reload()
     {
-        $this->redrawControl(self::GRID_CONTROL);
+        $this[self::GRID_CONTROL]->reload();
         return;
     }
 
@@ -633,6 +633,7 @@ abstract class GridControl extends Control
     /**
      * handle toolbar btn callback
      * @param string $name
+     * @param mixed $event
      * @param mixed $params
      * @return mixed
      */
