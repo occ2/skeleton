@@ -161,7 +161,7 @@ usersGrid:
         delete:  "Opravdu chcete smazat uživatele %s ?"
         reset:   "Opravdu chcete provést reset hesla uživatele %s ?"
 
-userConfigGrid:
+userSettingsGrid:
     title:  "Osobní nastavení"
     column:
         id: "ID"
