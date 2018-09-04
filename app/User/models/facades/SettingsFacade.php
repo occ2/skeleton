@@ -120,6 +120,13 @@ final class SettingsFacade extends BaseFacade
         $this->testFound($entity, SettingsException::class);
 
         if($entity!=null){
+            if($entity->getType()=="bool"){
+                if($value>1){
+                    $value=1;
+                } elseif ($value<0){
+                    $value=0;
+                }
+            }
             // set new value
             $entity->setValue($value);
 
@@ -151,11 +158,30 @@ final class SettingsFacade extends BaseFacade
         $user = $this->em->find(UserEntity::class, $userId);
         $this->testFound($user, ProfileException::class);
         if($user!=null){
-            // clear user settings
-            $this->clear($user);
+            // iterate default config
+            foreach($this->config as $config){
+                // try to find config
+                $settings = $this->em
+                                 ->getRepository(SettingsEntity::class)
+                                 ->findOneBy([
+                                     SettingsEntity::USER=>$user,
+                                     SettingsEntity::KEY=>$config["key"]
+                                 ]);
 
-            // set default settings
-            $this->setDefault($user);
+                // if not found add new by default values
+                if($settings==null && $user!=null){
+                    $entity = new SettingsEntity;
+                    $entity->fill($config);
+                    $entity->setUser($user);
+                    $this->em->persist($entity);
+                } else {
+                // if found set value from config
+                   $settings->setValue((string) $config["value"]);
+                }
+            }
+
+            // save to DB
+            $this->em->flush();
         }
 
         // fire event
@@ -214,51 +240,6 @@ final class SettingsFacade extends BaseFacade
                 static::EVENT_RELOAD
             )
         );
-        return;
-    }
-
-    /**
-     * set default user settings
-     * @param UserEntity $user
-     * @return void
-     */
-    private function setDefault(UserEntity $user)
-    {
-        // iterate default settings
-        foreach ($this->config as $config){
-            // add new item and fill
-            $entity = new SettingsEntity;
-            $entity->setUser($user)
-                   ->setKey($config[SettingsEntity::KEY])
-                   ->setValue((string) $config[SettingsEntity::VALUE])
-                   ->setComment($config[SettingsEntity::COMMENT])
-                   ->setType($config[SettingsEntity::TYPE]);
-            $this->em->persist($entity);
-        }
-        
-        // save to DB
-        $this->em->flush();
-        return;
-    }
-
-    /**
-     * clear user settings
-     * @param UserEntity $user
-     * @return void
-     */
-    private function clear(UserEntity $user)
-    {
-        // get collection of user settings
-        $collection = $user->getSettings();
-
-        // iterate collection
-        foreach($collection as $item){
-            // remove item
-            $this->em->remove($item);
-        }
-
-        // save to DB
-        $this->em->flush();
         return;
     }
 }
