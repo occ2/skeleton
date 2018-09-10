@@ -48,6 +48,9 @@ registerForm:
     submit:
         label: "Uložit registraci"
     
+usersAdminForm:
+    title:  "Nový uživatel"
+
 resetPasswordForm:
     title:  "Reset hesla"
     comment:    "Aby bylo možné provést reset hesla musíte vyplnit Vaše uživatelské jméno a email, který máte registrovaný v profilu. V další fázi budete muset odpovědět na kontrolní otázku, kterou jste zadali při registraci."
@@ -151,8 +154,8 @@ usersAdminGrid:
             inactive:   "Neaktivní" 
     action:
         add:    "Nový uživatel"
-        edit:   "Editace"
-        delete: "Smazat"
+        edit:   "Editace uživatele"
+        delete: "Smazat uživatele"
         reset:  "Reset hesla"
         history:    "Historie uživatele"
         settings: "Uživatelská nastavení"
@@ -259,7 +262,7 @@ success:
         reload:    "Uživatelské nastavení zkontrolováno a doplněny chybějící položky"
     user:
         add:    "Úspěšná registrace administrátorem"
-        edit:   "Úspěšná změna  změna nastavení administrátorem"
+        edit:   "Úspěšná změna dat uživatele administrátorem"
         status:   "Úspěšná změna stavu administrátorem"
         delete: "Uživatel smazán administrátorem"
         reset:  "Úspěšný reset hesla administrátorem"

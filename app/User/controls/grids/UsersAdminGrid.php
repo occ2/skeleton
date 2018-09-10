@@ -41,8 +41,8 @@ use app\Base\controls\GridControl\GridControl;
  * @action (name="history",href="history",title="user.usersAdminGrid.action.history",icon="history",class="btn-dark ajax")
  * @action (name="settings",href="settings",title="user.usersAdminGrid.action.settings",icon="cogs",class="btn-dark ajax")
  * @action (name="roles",href="roles",title="user.usersAdminGrid.action.roles",icon="users",class="btn-dark ajax")
- * @action (name="reset",title="user.usersAdminGrid.action.reset",icon="unlock-alt",class="btn-dark ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.reset")
- * @action (name="delete",title="user.usersAdminGrid.action.delete",icon="trash",class="btn-danger ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.delete")
+ * @action (event="User.UserAdminGrid.reset.onConfirm", name="reset",title="user.usersAdminGrid.action.reset",icon="unlock-alt",class="btn-dark ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.reset")
+ * @action (event="User.UserAdminGrid.delete.onConfirm", name="delete",title="user.usersAdminGrid.action.delete",icon="trash",class="btn-danger ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.delete")
  */
 final class UsersAdminGrid extends GridControl
 {

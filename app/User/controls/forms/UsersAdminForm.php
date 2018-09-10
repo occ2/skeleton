@@ -33,21 +33,22 @@ use app\Base\controls\FormControl\FormControl;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  *
- * @title user.registerForm.title
+ * @title user.usersAdminForm.title
  * @styles (headerBackground="light",headerText="dark",size="w-100")
  * @rError (container='div class="row"')
  * @rControl (container='div class="col-lg-12 col-md-12 col-sm-12"')
  * @rLabel (requiredsuffix="",container='div class="col-lg-0 col-md-0 col-sm-0"')
  * @ajax
- * @onSubmit User.AdminEvents.onSuccess
+ * @onSubmit User.AdminEvents.onFormSuccess
  */
-final class UserForm extends FormControl
+final class UsersAdminForm extends FormControl
 {
     const ID="id",
           REALNAME="realname",
           USERNAME="username",
           EMAIL="email",
-          PHONE="phone";
+          PHONE="phone",
+          ON_SUCCESS="User.AdminEvents.onFormSuccess";
     
     /**
      * @type hidden
@@ -55,50 +56,50 @@ final class UserForm extends FormControl
     public $id;
 
     /**
-     * @leftAddon user.registerForm.name
+     * @leftAddon user.registerForm.name.label
      * @rightIcon id-badge
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredName')
-     * @description user.registerForm.nameDescription
+     * @validator (type=':filled',message='user.error.name.required')
+     * @description user.registerForm.name.description
      */
     public $realname;
     
     /**
-     * @leftAddon user.registerForm.username
+     * @leftAddon user.registerForm.username.label
      * @rightIcon user
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredUsername')
-     * @validator (type=':minLength',message='user.error.minLengthUsername',value=4)
-     * @description user.registerForm.usernameDescription
+     * @validator (type=':filled',message='user.error.username.required')
+     * @validator (type=':minLength',message='user.error.username.minLength',value=4)
+     * @description user.registerForm.username.description
      */
     public $username;
     
     /**
-     * @leftAddon user.registerForm.email
+     * @leftAddon user.registerForm.email.label
      * @rightIcon at
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredEmail')
-     * @validator (type=':email',message='user.error.invalidEmail')
-     * @description user.registerForm.emailDescription
+     * @validator (type=':filled',message='user.error.email.required')
+     * @validator (type=':email',message='user.error.email.invalid')
+     * @description user.registerForm.email.description
      */
     public $email;
     
     /**
-     * @leftAddon user.registerForm.phone
+     * @leftAddon user.registerForm.phone.label
      * @rightIcon phone
      * @type text
      * @cols 20
-     * @validator (type=':filled',message='user.error.requiredPhone')
-     * @validator (type=':pattern',message='user.error.invalidPhone',value='\+(?:[0-9]?){6,14}[0-9]')
-     * @description user.registerForm.phoneDescription
+     * @validator (type=':filled',message='user.error.phone.required')
+     * @validator (type=':pattern',message='user.error.phone.invalid',value='\+(?:[0-9]?){6,14}[0-9]')
+     * @description user.registerForm.phone.description
      */
     public $phone;
     
     /**
-     * @label user.registerForm.submit
+     * @label user.registerForm.submit.label
      * @type submit
      */
     public $submit;

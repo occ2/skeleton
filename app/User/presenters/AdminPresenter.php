@@ -40,7 +40,9 @@ final class AdminPresenter extends BasePresenter
           ACTION_ROLES=":User:Admin:roles",
           ACTION_ADD=":User:Admin:add",
           ACTION_EDIT=":User:Admin:edit",
-          ACTION_RESET=":User:Admin:reset";
+          ACTION_RESET=":User:Admin:reset",
+          USERS_GRID="usersAdminGrid",
+          USERS_FORM="usersAdminForm";
 
     /**
      * @inject
@@ -52,19 +54,29 @@ final class AdminPresenter extends BasePresenter
      * @inject
      * @var \app\User\controls\factories\IUsersAdminGrid
      */
-    public $userAdminGridFactory;
+    public $usersAdminGridFactory;
+
+    /**
+     * @inject
+     * @var \app\User\controls\factories\IUsersAdminForm
+     */
+    public $usersAdminFormFactory;
 
     /**
      * @var int
      */
-    private $id;
+    private $id=null;
 
     /**
      * @title user.navbar.administration
+     * @acl (resource="users",privilege="read")
+     * @breadcrumb (key="home",active="true")
+     * @breadcrumb (key="user.admin.default", name="user.navbar.administration", link=":User:Admin:default", active=false)
      */
     public function actionDefault()
     {
-
+        $this[self::USERS_GRID]->setDatasource($this->adminFacade->load());;
+        return;
     }
 
     public function actionHistory($id)
@@ -82,30 +94,56 @@ final class AdminPresenter extends BasePresenter
         $this->id = $id;
     }
 
+    /**
+     * @title user.usersAdminForm.title
+     * @acl (resource="users",privilege="write")
+     * @breadcrumb (key="home",active="true")
+     * @breadcrumb (key="user.admin.default", name="user.navbar.administration", link=":User:Admin:default", active=true)
+     * @breadcrumb (key="user.admin.add", name="user.usersAdminForm.title", link=":User:Admin:add")
+     * @return void
+     */
     public function actionAdd()
     {
+        $this->id=null;
+        return;
     }
 
+    /**
+     * @title user.usersAdminGrid.action.edit
+     * @param int $id
+     * @acl (resource="users",privilege="write")
+     * @breadcrumb (key="home",active="true")
+     * @breadcrumb (key="user.admin.default", name="user.navbar.administration", link=":User:Admin:default", active=true)
+     * @breadcrumb (key="user.admin.edit", name="user.usersAdminGrid.action.edit", link=":User:Admin:edit")
+     * @return void
+     */
     public function actionEdit($id)
     {
         $this->id = $id;
+        if($this->id!=null){
+            $user = $this->adminFacade->get($this->id, true);
+            $this->appendToTitle($user->realname);
+            $this[self::USERS_FORM]->setDefaults($user);
+            $this[self::USERS_FORM]->appendToTitle($user->realname);
+        }
+        return;
     }
 
     public function actionReset($id)
     {
         $this->id = $id;
+        // todo
+        return;
     }
 
-    public function createComponentUsersForm()
+    public function createComponentUsersAdminForm()
     {
-
+        return $this->usersAdminFormFactory->create();
     }
 
     public function createComponentUsersAdminGrid()
     {
-        $grid = $this->userAdminGridFactory->create();
-        $grid->setDatasource($this->adminFacade->load());
-        return $grid;
+        return $this->usersAdminGridFactory->create();
     }
 
     public function createComponentHistoryGrid()

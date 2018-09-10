@@ -29,7 +29,7 @@ services:
     registerForm:   app\User\controls\factories\IRegisterForm
     changePasswordForm: app\User\controls\factories\IPasswordForm
     profileForm:   app\User\controls\factories\IProfileForm
-    userForm:   app\User\controls\factories\IUserForm
+    usersAdminForm:   app\User\controls\factories\IUsersAdminForm
 
     # grids
     historyGrid:    app\User\controls\factories\IUserHistoryGrid

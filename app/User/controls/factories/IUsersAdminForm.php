@@ -30,10 +30,10 @@ namespace app\User\controls\factories;
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
  */
-interface IUserForm
+interface IUsersAdminForm
 {
     /**
-     * @return \app\User\controls\forms\UserForm
+     * @return \app\User\controls\forms\UsersAdminForm
      */
     public function create();
 }

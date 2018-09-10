@@ -1,5 +1,4 @@
 <?php
-namespace app\Base\traits;
 /*
  * The MIT License
  *
@@ -23,6 +22,8 @@ namespace app\Base\traits;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+namespace app\Base\traits;
 
 use Nette\Application\UI\Presenter;
 

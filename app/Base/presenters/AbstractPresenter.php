@@ -105,6 +105,11 @@ abstract class AbstractPresenter extends NPresenter
     protected $title;
 
     /**
+     * @var string
+     */
+    protected $appendTitle = null;
+
+    /**
      * @var array
      */
     protected $actionsConfig=[];
@@ -168,6 +173,7 @@ abstract class AbstractPresenter extends NPresenter
         $this->user->setAuthenticator($this->context->getService(static::AUTHENTICATOR));
         $this->user->setAuthorizator($this->context->getService(static::AUTHORIZATOR));
         $this->annotationsAcl();
+        $this->annotationsTitle();
         parent::startup();
         return;
     }
@@ -186,7 +192,9 @@ abstract class AbstractPresenter extends NPresenter
     public function createComponentBreadcrumbs()
     {
         $breadcrumbs = $this->breadcrumbsFactory->create();
-        $breadcrumbs->addItem("home","base.breadcrumbs.home", $this->link(static::HOMEPAGE_LINK),false);
+        $this->addComponent($breadcrumbs, static::BREADCRUMBS);
+        $breadcrumbs->addItem("home","base.breadcrumbs.home", static::HOMEPAGE_LINK,false);
+        $breadcrumbs->setConfig($this->actionsConfig);
         return $breadcrumbs;
     }
 
@@ -208,8 +216,11 @@ abstract class AbstractPresenter extends NPresenter
     public function beforeRender()
     {
         parent::beforeRender();
-        $this->annotationsTitle();
-        $this->template->title = static::$titlePrefix . $this->translator->translate($this->title);
+        if($this->appendTitle==null){
+            $this->template->title = static::$titlePrefix . $this->translator->translate($this->title);
+        } else {
+            $this->template->title = static::$titlePrefix . $this->translator->translate($this->title) . " " . $this->appendTitle;
+        }
         $this->template->locale = $this->locale;
         if ($this->isAjax()) {
             $this->reload();
@@ -263,7 +274,6 @@ abstract class AbstractPresenter extends NPresenter
 
     /**
      * @return void
-     * TODO udělat kešování anotací
      */
     protected function getActionsConfig()
     {
@@ -333,12 +343,12 @@ abstract class AbstractPresenter extends NPresenter
      */
     protected function annotationsAcl()
     {
-        if(isset($this->actionsConfig[$this->getAction()]["ACL"])){
-            $this->acl($this->actionsConfig[$this->getAction()]["ACL"][0]);
+        if(isset($this->actionsConfig[$this->getAction()]["acl"])){
+            $this->acl($this->actionsConfig[$this->getAction()]["acl"][0]);
         }
         $signals = $this->getSignal();
-        if($signals!=null && count($signals)>1 && isset($this->handlersConfig[$signals[1]]["ACL"])){
-            $this->acl($this->handlersConfig[$signals[1]]["ACL"][0]);
+        if($signals!=null && count($signals)>1 && isset($this->handlersConfig[$signals[1]]["acl"])){
+            $this->acl($this->handlersConfig[$signals[1]]["acl"][0]);
         }
         return;
     }
@@ -405,6 +415,17 @@ abstract class AbstractPresenter extends NPresenter
             $this->flashMessage($message, self::STATUS_DANGER);
             $this->redirect($redirect);            
         }
+        return;
+    }
+
+    /**
+     * append some text to action title
+     * @param string $text
+     * @return void
+     */
+    public function appendToTitle(string $text)
+    {
+        $this->appendTitle = $text;
         return;
     }
 }

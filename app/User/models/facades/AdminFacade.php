@@ -50,6 +50,7 @@ final class AdminFacade extends BaseFacade
 
     const EVENT_SAVE="User.AdminFacade.onSave",
           EVENT_LOAD="User.AdminFacade.onLoad",
+          EVENT_GET="User.AdminFacade.onGet",
           EVENT_FIND="User.AdminFacade.onFind",
           EVENT_ADD="User.AdminFacade.onAdd",
           EVENT_REMOVE="User.AdminFacade.onRemove",
@@ -63,7 +64,9 @@ final class AdminFacade extends BaseFacade
         "randomSecretLength"=>8,
         "passwordExpiration"=>"+90 Days",
         "defaultStatus"=>1,
-        "defaultLang"=>"cz"
+        "defaultLang"=>"cz",
+        "defaultQuestion"=>"default",
+        "defaultAnswer"=>"default"
     ];
 
     /**
@@ -88,6 +91,29 @@ final class AdminFacade extends BaseFacade
             )
         );
         return $query;
+    }
+
+    public function get(int $userId,$toHash=false)
+    {
+        // get user entity
+        $user = $this->em->find(UserEntity::class, $userId);
+        // fire event
+                // fire event
+        $this->on(
+            static::EVENT_GET,
+            new AdminEvent(
+                [
+                    AdminEvent::ENTITY=>$user
+                ],
+                static::EVENT_GET
+            )
+        );
+        // return entity
+        if($toHash==false){
+            return $user;
+        } else {
+            return $user->toArrayHash();
+        }
     }
 
     /**
@@ -133,6 +159,7 @@ final class AdminFacade extends BaseFacade
      */
     public function add(array $data,array $exclude=[])
     {
+        unset($data[UserEntity::ID]);
         // test user has unique username
         $_user = $this->em
                       ->getRepository(UserEntity::class)
@@ -147,11 +174,13 @@ final class AdminFacade extends BaseFacade
 
         // generate password
         $password = Random::generate($this->config["randomPasswordLength"]);
-        $data[UserEntity::PASSWORD] = $password;
 
         // create new entity and fill with data
         $u = new UserEntity;
-        $u->fill($this->exclude($data, $exclude));       
+        $u->fill($this->exclude($data, $exclude));
+        $u->setPassword($password, false)
+          ->setCQuestion($this->config["defaultQuestion"])
+          ->setCAnswer($this->config["defaultAnswer"]);
         $secret = $this->setDefaults($u);
         $this->em->persist($u);
 
