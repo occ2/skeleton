@@ -181,7 +181,7 @@ final class AdminFacade extends BaseFacade
         $u->setPassword($password, false)
           ->setCQuestion($this->config["defaultQuestion"])
           ->setCAnswer($this->config["defaultAnswer"]);
-        $secret = $this->setDefaults($u);
+        $secret = $this->setDefaults($u,true);
         $this->em->persist($u);
 
         // save into DB
