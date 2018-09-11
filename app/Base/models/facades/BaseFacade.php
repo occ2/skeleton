@@ -143,8 +143,8 @@ abstract class BaseFacade extends AbstractFacade
      */
     protected function acl($method,$data)
     {
-        if(isset($this->annotationConfig[$method]["ACL"]) && !empty($this->annotationConfig[$method]["ACL"])){
-            $config = $this->annotationConfig[$method]["ACL"][0];
+        if(isset($this->annotationConfig[$method]["acl"]) && !empty($this->annotationConfig[$method]["acl"])){
+            $config = $this->annotationConfig[$method]["acl"][0];
             if(isset($config["loggedIn"])){
                 $this->loggedIn($config);
                 return;
