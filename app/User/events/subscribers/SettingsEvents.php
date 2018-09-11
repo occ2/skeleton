@@ -72,10 +72,7 @@ final class SettingsEvents implements EventSubscriber
         return [
             UserSettingsGrid::EVENT_CLICK_RELOAD=>"onClickReload",
             UserSettingsGrid::EVENT_CLICK_RESET=>"onClickReset",
-            UserSettingsGrid::EVENT_EDIT_VALUE=>"onEditableValueSubmit",
-            SettingsFacade::EVENT_RELOAD=>"onSuccessReload",
-            SettingsFacade::EVENT_RESET=>"onSuccessReset",
-            SettingsFacade::EVENT_SAVE=>"onSuccessSave"
+            UserSettingsGrid::EVENT_EDIT_VALUE=>"onEditableValueSubmit"
         ];
     }
 
@@ -102,6 +99,14 @@ final class SettingsEvents implements EventSubscriber
         // try to reload user settings
         try {
             $this->settingsFacade->reload($this->user->getId());
+            $this->control->flashMessage(
+                self::MESSAGE_SUCCESS_RELOAD,
+                ProfilePresenter::STATUS_SUCCESS,
+                null,
+                ProfilePresenter::ICON_SUCCESS,
+                100
+            );
+            $this->control->reload();
         } catch (ProfileException $exc) {
             // if failed show message
             $this->control->flashMessage(
@@ -126,6 +131,14 @@ final class SettingsEvents implements EventSubscriber
         // try to reset user settings to default
         try {
             $this->settingsFacade->reset($this->user->getId());
+            $this->control->flashMessage(
+                self::MESSAGE_SUCCESS_RESET,
+                ProfilePresenter::STATUS_SUCCESS,
+                null,
+                ProfilePresenter::ICON_SUCCESS,
+                100
+            );
+            $this->control->reload();
         } catch (ProfileException $exc) {
             // if failed show message
             $this->control->flashMessage(
@@ -156,6 +169,14 @@ final class SettingsEvents implements EventSubscriber
                 $value=0;
             }
             $this->settingsFacade->save($data[UserSettingsGrid::ID], $value);
+            $this->control->flashMessage(
+                self::MESSAGE_SUCCESS_SAVE,
+                ProfilePresenter::STATUS_SUCCESS,
+                null,
+                ProfilePresenter::ICON_SUCCESS,
+                100
+            );
+        $this->control->reload();
         } catch (SettingsException $exc) {
             $this->control->flashMessage(
                 $exc->getMessage(),
@@ -166,56 +187,5 @@ final class SettingsEvents implements EventSubscriber
             );
             $this->control->reload();
         }
-    }
-
-    /**
-     * show success reload message and redraw datagrid
-     * @param SettingsEvent $event
-     * @return void
-     */
-    public function onSuccessReload(SettingsEvent $event)
-    {
-        $this->control->flashMessage(
-            self::MESSAGE_SUCCESS_RELOAD,
-            ProfilePresenter::STATUS_SUCCESS,
-            null,
-            ProfilePresenter::ICON_SUCCESS,
-            100
-        );
-        $this->control->reload();
-    }
-
-    /**
-     * show success reset message and redraw datagrid
-     * @param SettingsEvent $event
-     * @return void
-     */
-    public function onSuccessReset(SettingsEvent $event)
-    {
-        $this->control->flashMessage(
-            self::MESSAGE_SUCCESS_RESET,
-            ProfilePresenter::STATUS_SUCCESS,
-            null,
-            ProfilePresenter::ICON_SUCCESS,
-            100
-        );
-        $this->control->reload();
-    }
-
-    /**
-     * show success save message and redraw datagrid
-     * @param SettingsEvent $event
-     * @return void
-     */
-    public function onSuccessSave(SettingsEvent $event)
-    {
-        $this->control->flashMessage(
-            self::MESSAGE_SUCCESS_SAVE,
-            ProfilePresenter::STATUS_SUCCESS,
-            null,
-            ProfilePresenter::ICON_SUCCESS,
-            100
-        );
-        $this->control->reload();
     }
 }
