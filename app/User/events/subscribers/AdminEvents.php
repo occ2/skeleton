@@ -34,22 +34,32 @@ use app\User\events\data\AdminEvent;
 use app\User\models\facades\AdminFacade;
 use app\User\models\facades\SettingsFacade;
 use app\User\models\facades\RolesFacade;
+use app\User\models\facades\HistoryFacade;
 use app\User\models\exceptions\AdminException;
 use app\Base\factories\MailFactory;
 use app\User\presenters\AdminPresenter;
+use app\Base\traits\TMail;
+use app\Base\traits\TTranslator;
 use Nette\Application\UI\Form;
 use Nette\Utils\ArrayHash;
+use Kdyby\Translation\ITranslator;
 
 /**
  * AdminEvents
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
- * @version 1..0
+ * @version 1.1.0
  */
 final class AdminEvents implements EventSubscriber
 {
+    use TMail;
+    use TTranslator;
+
     const MESSAGE_SUCCESS_ADD="user.success.user.add";
     const MESSAGE_SUCCESS_EDIT="user.success.user.edit";
+    const MESSAGE_SUCCESS_RESET="user.success.user.reset";
+    const EMAIL_ADD_SUBJECT="user.email.add.subject";
+    const EMAIL_ADD_BODY="user.email.add.body";
 
     /**
      * @var AdminFacade
@@ -67,9 +77,9 @@ final class AdminEvents implements EventSubscriber
     private $rolesFacade;
 
     /**
-     * @var MailFactory
+     * @var HistoryFacade
      */
-    private $mailFactory;
+    private $historyFacade;
 
     /**
      * @param AdminFacade $adminFacade
@@ -78,12 +88,14 @@ final class AdminEvents implements EventSubscriber
      * @param MailFactory $mailFactory
      * @return void
      */
-    public function __construct(AdminFacade $adminFacade, SettingsFacade $settingsFacade, RolesFacade $rolesFacade, MailFactory $mailFactory)
+    public function __construct(AdminFacade $adminFacade, SettingsFacade $settingsFacade, RolesFacade $rolesFacade, HistoryFacade $historyFacade, MailFactory $mailFactory, ITranslator $translator)
     {
         $this->adminFacade = $adminFacade;
         $this->settingsFacade = $settingsFacade;
         $this->rolesFacade = $rolesFacade;
+        $this->historyFacade = $historyFacade;
         $this->mailFactory = $mailFactory;
+        $this->translator = $translator;
         return;
     }
 
@@ -197,12 +209,48 @@ final class AdminEvents implements EventSubscriber
     // todo
     public function onConfirmReset(GridRowEventData $event)
     {
-        bdump($event);
+        $id = $event->getId();
+        $control = $event->getControl();
+        // try to reset password
+        try {
+            $this->adminFacade->resetPassword($id);
+            $control->flashMessage(
+                self::MESSAGE_SUCCESS_RESET,
+                AdminPresenter::STATUS_INFO,
+                null,
+                AdminPresenter::ICON_INFO,
+                100);
+            $control->reload();
+        } catch (AdminException $exc) {
+            
+        }
     }
 
-    // todo - set default settings, set default roles
+    /**
+     * add user default roles, settings, history and email user new password
+     * @param AdminEvent $event
+     * @return void
+     */
     public function onAddUser(AdminEvent $event)
     {
-
+        $user = $event->{AdminEvent::ENTITY};
+        $password = $event->{AdminEvent::PASSWORD};
+        $this->rolesFacade->setDefault($user);
+        $this->settingsFacade->reset($user->getId());
+        $this->historyFacade->save($user, "user.success.user.add");
+        $this->mailUser(
+            $user->getEmail(),
+            $user->getRealname(),
+            $this->_(self::EMAIL_ADD_SUBJECT),
+            $this->_(self::EMAIL_ADD_BODY,
+                [
+                    "realname"=>$user->getRealname(),
+                    "username"=>$user->getUsername(),
+                    "password"=>$password,
+                    "email"=>$user->getEmail()
+                ]
+            )
+        );
+        return;
     }
 }
