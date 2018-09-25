@@ -63,6 +63,7 @@ final class UsersAdminGrid extends GridControl
           ACTION_DELETE="delete",
           EVENT_DELETE="User.UserAdminGrid.delete.onConfirm",
           EVENT_RESET="User.UserAdminGrid.reset.onConfirm",
+          EVENT_CHANGE_STATUS="User.UserAdminGrid.changeStatus.onSelect",
           STATUSES=[
               0=>"user.usersAdminGrid.column.status.inactive",
               1=>"user.usersAdminGrid.column.status.active"
@@ -122,18 +123,20 @@ final class UsersAdminGrid extends GridControl
     /**
      * @label user.usersAdminGrid.column.status.title
      * @type status
+     * @event User.UserAdminGrid.changeStatus.onSelect
      * @filter (type=select)
      * @option (text='user.usersAdminGrid.column.status.inactive',class='ajax btn btn-xs btn-danger', classInDropdown="ajax dropdown-item")
      * @option (text='user.usersAdminGrid.column.status.active',class='ajax btn btn-xs btn-success', classInDropdown="ajax dropdown-item")
      */
     public $status;
 
+    /**
+     * initial setup of datagrid
+     * @return void
+     */
     public function startup()
     {
         parent::startup();
-        $this->setStatusChangeCallback(self::STATUS,function($id,$value,$control){
-
-        });
         $this->setLoadOptionsCallback(self::STATUS,function($control){
             return [
                 0=>$this->_(self::STATUSES[0]),
