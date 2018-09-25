@@ -888,7 +888,7 @@ abstract class GridControl extends Control
         return isset($this->c->events[$key]) ? $this->c->events[$key] : null;
     }
 
-    public function appendTitle(string $text)
+    public function appendToTitle(string $text)
     {
         $this->c->appendTitle = $text;
         return $this;
