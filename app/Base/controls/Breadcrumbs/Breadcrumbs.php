@@ -46,6 +46,8 @@ class Breadcrumbs extends Control
 
     protected $config=[];
 
+    protected $appendedTexts=[];
+
     /**
      * render control
      * @return void
@@ -58,6 +60,7 @@ class Breadcrumbs extends Control
             }
         }
         $this->template->data = $this->data;
+        $this->template->appendedTexts = $this->appendedTexts;
         if($this->template instanceof ITemplate){
             $this->template->setFile(self::TEMPLATE);
             $this->template->render();
@@ -103,6 +106,26 @@ class Breadcrumbs extends Control
         $item->active = $active;
         $item->ajax = $ajax;
         $this->data[$key] = $item;
+        return $this;
+    }
+
+    /**
+     * get breadcrumb item
+     * @param string $key
+     * @return ArrayHash|null
+     */
+    public function getItem(string $key): ?ArrayHash
+    {
+        if(isset($this->data[$key])){
+            return $this->data[$key];
+        } else {
+            return null;
+        }
+    }
+
+    public function appendToItem(string $key,string $text)
+    {
+        $this->appendedTexts[$key] = $text;
         return $this;
     }
 
