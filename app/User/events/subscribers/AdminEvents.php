@@ -59,6 +59,7 @@ final class AdminEvents implements EventSubscriber
     const MESSAGE_SUCCESS_EDIT="user.success.user.edit";
     const MESSAGE_SUCCESS_RESET="user.success.user.reset";
     const MESSAGE_SUCCESS_DELETE="user.success.user.delete";
+    const MESSAGE_SUCCESS_CHANGE_STATUS="user.success.user.status";
     const EMAIL_ADD_SUBJECT="user.email.add.subject";
     const EMAIL_ADD_BODY="user.email.add.body";
     const EMAIL_RESET_SUBJECT="user.email.reset.subject";
@@ -111,8 +112,10 @@ final class AdminEvents implements EventSubscriber
             UsersAdminForm::ON_SUCCESS=>"onFormSuccess",
             UsersAdminGrid::EVENT_DELETE=>"onConfirmDelete",
             UsersAdminGrid::EVENT_RESET=>"onConfirmReset",
+            UsersAdminGrid::EVENT_CHANGE_STATUS=>"onSelectChangeStatus",
             AdminFacade::EVENT_ADD=>"onAddUser",
-            AdminFacade::EVENT_RESET_PASSWORD=>"onResetPassword"
+            AdminFacade::EVENT_RESET_PASSWORD=>"onResetPassword",
+            AdminFacade::EVENT_CHANGE_STATUS=>"onChangeStatus"
         ];
     }
 
@@ -267,10 +270,37 @@ final class AdminEvents implements EventSubscriber
         }
     }
 
-    // todo
-    public function onChangeStatus(GridRowEventData $event)
+    /**
+     * try to change user status after select
+     * @param GridRowEventData $event
+     * @return void
+     */
+    public function onSelectChangeStatus(GridRowEventData $event)
     {
-
+        $id = $event->getId();
+        $value = $event->getData();
+        $control = $event->getControl();
+        try {
+            $this->adminFacade->changeStatus($id,(bool) $value);
+            $control->flashMessage(
+                self::MESSAGE_SUCCESS_CHANGE_STATUS,
+                AdminPresenter::STATUS_SUCCESS,
+                null,
+                AdminPresenter::ICON_SUCCESS,
+                100
+            );
+            $control->reload();
+            return;
+        } catch (AdminException $exc) {
+            $control->getPresenter()->flashMessage(
+                $exc->getMessage(),
+                AdminPresenter::STATUS_DANGER,
+                null,
+                AdminPresenter::ICON_DANGER,
+                100
+            );
+            $control->getPresenter()->redirect(AdminPresenter::ACTION_DEFAULT);
+        }
     }
 
     /**
@@ -301,6 +331,11 @@ final class AdminEvents implements EventSubscriber
         return;
     }
 
+    /**
+     * email user new password after admin password reset
+     * @param AdminEvent $event
+     * @return void
+     */
     public function onResetPassword(AdminEvent $event)
     {
         $user = $event->{AdminEvent::ENTITY};
@@ -315,5 +350,15 @@ final class AdminEvents implements EventSubscriber
             ])
         );
         return;
+    }
+
+    /**
+     *
+     * @param AdminEvent $event
+     * @todo inform user about change status (depend on user settings)
+     */
+    public function onChangeStatus(AdminEvent $event)
+    {
+
     }
 }
