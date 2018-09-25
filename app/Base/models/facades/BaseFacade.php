@@ -128,10 +128,7 @@ abstract class BaseFacade extends AbstractFacade
             if($this->user instanceof \Nette\Security\User){
                 $this->acl($method, $arguments);
             }
-            $callable = [$this,$method];
-            if(is_callable($callable)){
-                return call_user_func_array($callable,$arguments);
-            }
+            return call_user_func_array([$this,$method],$arguments);
         }
     }
     
