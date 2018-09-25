@@ -9,7 +9,7 @@
     {else}
         <div n:attr='id => $name' class="card {ifset $styles->size}{$styles->size}{else}w-100{/ifset}">
             <div class="card-header {ifset $styles->headerBackground}{$styles->headerBackground}{else}light{/ifset}{ifset $styles->headerText}{$styles->headerText}{else}dark{/ifset}">
-                <h3 class="card-title">{ifset $title}{$title|translate}{/ifset}</h3>
+                <h3 class="card-title">{ifset $title}{$title}{/ifset}</h3>
             </div>    
             <div class="card-body">
                 {snippetArea flashes}
