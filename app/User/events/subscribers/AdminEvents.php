@@ -58,8 +58,11 @@ final class AdminEvents implements EventSubscriber
     const MESSAGE_SUCCESS_ADD="user.success.user.add";
     const MESSAGE_SUCCESS_EDIT="user.success.user.edit";
     const MESSAGE_SUCCESS_RESET="user.success.user.reset";
+    const MESSAGE_SUCCESS_DELETE="user.success.user.delete";
     const EMAIL_ADD_SUBJECT="user.email.add.subject";
     const EMAIL_ADD_BODY="user.email.add.body";
+    const EMAIL_RESET_SUBJECT="user.email.reset.subject";
+    const EMAIL_RESET_BODY="user.email.reset.body";
 
     /**
      * @var AdminFacade
@@ -108,7 +111,8 @@ final class AdminEvents implements EventSubscriber
             UsersAdminForm::ON_SUCCESS=>"onFormSuccess",
             UsersAdminGrid::EVENT_DELETE=>"onConfirmDelete",
             UsersAdminGrid::EVENT_RESET=>"onConfirmReset",
-            AdminFacade::EVENT_ADD=>"onAddUser"
+            AdminFacade::EVENT_ADD=>"onAddUser",
+            AdminFacade::EVENT_RESET_PASSWORD=>"onResetPassword"
         ];
     }
 
@@ -200,30 +204,73 @@ final class AdminEvents implements EventSubscriber
         }
     }
 
-    // todo
+    /**
+     * try to delete user
+     * @param GridRowEventData $event
+     * @return void
+     */
     public function onConfirmDelete(GridRowEventData $event)
     {
-        bdump($event);
+        $presenter = $event->getControl()->getPresenter();
+        $id = $event->getId();
+        try {
+            $this->adminFacade->remove($id);
+            $presenter->flashMessage(
+                self::MESSAGE_SUCCESS_DELETE,
+                AdminPresenter::STATUS_SUCCESS,
+                null,
+                AdminPresenter::ICON_SUCCESS,
+                75
+            );
+            $presenter->redirect(AdminPresenter::ACTION_DEFAULT);
+            return;
+        } catch (AdminException $exc) {
+            $presenter->flashMessage(
+                $exc->getMessage(),
+                AdminPresenter::STATUS_DANGER,
+                null,
+                AdminPresenter::ICON_DANGER,
+                100
+            );
+            $presenter->redirect(AdminPresenter::ACTION_DEFAULT);
+        }
     }
 
-    // todo
+    /**
+     * try to reset users password
+     * @param GridRowEventData $event
+     * @return void
+     */
     public function onConfirmReset(GridRowEventData $event)
     {
+        $presenter = $event->getControl()->getPresenter();
         $id = $event->getId();
-        $control = $event->getControl();
-        // try to reset password
         try {
             $this->adminFacade->resetPassword($id);
-            $control->flashMessage(
+            $presenter->flashMessage(
                 self::MESSAGE_SUCCESS_RESET,
                 AdminPresenter::STATUS_INFO,
                 null,
                 AdminPresenter::ICON_INFO,
                 100);
-            $control->reload();
+            $presenter->redirect(AdminPresenter::ACTION_DEFAULT);
+            return;
         } catch (AdminException $exc) {
-            
+            $presenter->flashMessage(
+                $exc->getMessage(),
+                AdminPresenter::STATUS_DANGER,
+                null,
+                AdminPresenter::ICON_DANGER,
+                100
+            );
+            $presenter->redirect(AdminPresenter::ACTION_DEFAULT);
         }
+    }
+
+    // todo
+    public function onChangeStatus(GridRowEventData $event)
+    {
+
     }
 
     /**
@@ -250,6 +297,22 @@ final class AdminEvents implements EventSubscriber
                     "email"=>$user->getEmail()
                 ]
             )
+        );
+        return;
+    }
+
+    public function onResetPassword(AdminEvent $event)
+    {
+        $user = $event->{AdminEvent::ENTITY};
+        $password = $event->{AdminEvent::PASSWORD};
+        $this->mailUser(
+            $user->getEmail(),
+            $user->getRealname(),
+            $this->_(self::EMAIL_RESET_SUBJECT),
+            $this->_(self::EMAIL_RESET_BODY,[
+                "username"=>$user->getUsername(),
+                "password"=>$password
+            ])
         );
         return;
     }
