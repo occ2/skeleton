@@ -136,6 +136,7 @@ Column configs
 @dataAttributes array - set data attributes
 @editableType
 @editableAttributes
+@event name of event fired after column change status
 @filter array - set column filter
         type - type of filter (text,select,multiselect,range,date,daterange)
         value - set filter value
