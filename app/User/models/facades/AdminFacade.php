@@ -317,7 +317,7 @@ final class AdminFacade extends BaseFacade
         $datetime = $this->datetimeFactory->create();
 
         // set new password and expire it
-        $user->setPassword($newPassword)
+        $user->setPassword($newPassword,false)
              ->setPasswordExpiration($datetime);
 
         // save it
