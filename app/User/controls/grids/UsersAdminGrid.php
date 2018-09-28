@@ -26,6 +26,7 @@
 namespace app\User\controls\grids;
 
 use app\Base\controls\GridControl\GridControl;
+use app\User\models\facades\AuthorizationFacade;
 
 /**
  * UsersGrid
@@ -64,6 +65,7 @@ final class UsersAdminGrid extends GridControl
           EVENT_DELETE="User.UserAdminGrid.delete.onConfirm",
           EVENT_RESET="User.UserAdminGrid.reset.onConfirm",
           EVENT_CHANGE_STATUS="User.UserAdminGrid.changeStatus.onSelect",
+          ACL_RESOURCE="users",
           STATUSES=[
               0=>"user.usersAdminGrid.column.status.inactive",
               1=>"user.usersAdminGrid.column.status.active"
@@ -137,11 +139,55 @@ final class UsersAdminGrid extends GridControl
     public function startup()
     {
         parent::startup();
-        $this->setLoadOptionsCallback(self::STATUS,function($control){
+        $t = $this;
+        // load statuses
+        $this->setLoadOptionsCallback(self::STATUS,function($control) use ($t){
             return [
-                0=>$this->_(self::STATUSES[0]),
-                1=>$this->_(self::STATUSES[1]),
+                0=>$t->_(self::STATUSES[0]),
+                1=>$t->_(self::STATUSES[1]),
             ];
+        });
+        // check if add user action allowed
+        $this->setAllowToolbarButtonCallback(self::TOOLBAR_BUTTON_ADD,function($control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_WRITE);
+        });
+        // check if delete user action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_DELETE,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_DELETE);            
+        });
+        // check if edit user action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_EDIT,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_WRITE);            
+        });
+        // check if history action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_HISTORY,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_READ);
+        });
+        // check if reset action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_RESET,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_WRITE);
+        });
+        // check if show roles action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_ROLES,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_READ);
+        });
+        // check if show setting action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_SETTINGS,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_READ);
         });
     }
 }
