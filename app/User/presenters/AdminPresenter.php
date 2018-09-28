@@ -50,13 +50,20 @@ final class AdminPresenter extends BasePresenter
           ACTION_RESET=":User:Admin:reset",
           USERS_GRID="usersAdminGrid",
           USERS_FORM="usersAdminForm",
-          ROLES_GRID="userRolesGrid";
+          ROLES_GRID="userRolesGrid",
+          HISTORY_GRID="userHistoryGrid";
 
     /**
      * @inject
      * @var \app\User\models\facades\AdminFacade
      */
     public $adminFacade;
+
+    /**
+     * @inject
+     * @var \app\User\models\facades\HistoryFacade
+     */
+    public $historyFacade;
 
     /**
      * @inject
@@ -112,14 +119,44 @@ final class AdminPresenter extends BasePresenter
         return;
     }
 
+    /**
+     * @title user.usersAdminGrid.action.history
+     * @param int $id
+     * @acl (resource="users",privilege="read")
+     * @breadcrumb (key="home",active="true")
+     * @breadcrumb (key="user.admin.default", name="user.navbar.administration", link=":User:Admin:default", active=true)
+     * @breadcrumb (key="user.admin.history", name="user.usersAdminGrid.action.history", link=":User:Admin:history")
+     * @return void
+     */
     public function actionHistory($id)
     {
         $this->id = $id;
+        try {
+            $user = $this->adminFacade->get($id);
+            if($user==null){
+                throw new ProfileException(ProfileException::MESSAGE_NOT_FOUND,ProfileException::NOT_FOUND);
+            }
+            $history = $this->historyFacade->load($user);
+            $appendTitle = " - " . $user->getRealname();
+            $this->appendToTitle($appendTitle);
+            $this[self::HISTORY_GRID]->setDatasource($history);
+            $this[self::HISTORY_GRID]->appendToTitle($appendTitle);
+            $this[self::BREADCRUMBS]->appendToItem("user.admin.history",$appendTitle);
+            return;
+        } catch (ProfileException $exc) {
+            $this->flashMessage(
+                $exc->getMessage(),
+                self::STATUS_DANGER,
+                null,
+                self::ICON_DANGER,
+                100);
+        }
     }
 
     public function actionSettings($id)
     {
         $this->id = $id;
+
     }
 
     /**
