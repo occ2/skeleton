@@ -100,7 +100,14 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
      */
     public function build()
     {
-        $this->setupInlineAdd($this->grid);
+        if($this->checkCallback(GridBuilder::ALLOW_INLINE_ADD_CALLBACK)==true){
+            if($this->invokeCallback(GridBuilder::ALLOW_INLINE_ADD_CALLBACK)==true){
+                $this->setupInlineAdd($this->grid);
+            }
+        } else{
+            $this->setupInlineAdd($this->grid);
+        }
+       
         $this->setupInlineEdit($this->grid);
         return;
     }

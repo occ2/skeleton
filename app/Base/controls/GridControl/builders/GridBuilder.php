@@ -80,8 +80,8 @@ class GridBuilder implements IGridBuilder
           INLINE_FORM_FILL_CALLBACK="inlineFormFill", // function($container,$item,$control):void{}
           INLINE_FORM_ADD_SUBMIT_CALLBACK="inlineAddSubmit", // function($values,$control):void{}
           INLINE_FORM_EDIT_SUBMIT_CALLBACK="inlineEditSubmit", // function($id,$values,$control):void{}
-          INLINE_CUSTOM_REDRAW_CALLBACK="inlineCustomRedraw" // function ($grid,$control):void{}
-            ;
+          INLINE_CUSTOM_REDRAW_CALLBACK="inlineCustomRedraw", // function ($grid,$control):void{}
+          ALLOW_INLINE_ADD_CALLBACK="allowInlineAdd"; //function ($control):bool{}
     
     const COLUMN_TYPES=[
         "text"=>"addColumnText",

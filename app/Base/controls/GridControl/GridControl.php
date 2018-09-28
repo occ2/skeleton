@@ -104,7 +104,8 @@ abstract class GridControl extends Control
         "inlineAddSubmit",
         "inlineEditSubmit",
         "inlineCustomRedraw",
-        "allowToolbarButton"
+        "allowToolbarButton",
+        "allowInlineAdd"
     ];
     //const EVENT_PREFIX=static::class;
     const GRID_CONTROL="grid";
