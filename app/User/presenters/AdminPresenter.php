@@ -25,12 +25,19 @@
 
 namespace app\User\presenters;
 
+use app\User\controls\forms\UsersAdminForm;
+use app\User\controls\grids\UsersAdminGrid;
+use app\User\controls\grids\UserRolesGrid;
+use app\User\controls\grids\UserHistoryGrid;
+use app\User\controls\grids\UserSettingsGrid;
+use app\User\models\exceptions\ProfileException;
+use app\User\models\entities\User as UserEntity;
+
 /**
  * AdminPresenter
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
- * @todo SET ACL !!
  */
 final class AdminPresenter extends BasePresenter
 {
@@ -42,13 +49,20 @@ final class AdminPresenter extends BasePresenter
           ACTION_EDIT=":User:Admin:edit",
           ACTION_RESET=":User:Admin:reset",
           USERS_GRID="usersAdminGrid",
-          USERS_FORM="usersAdminForm";
+          USERS_FORM="usersAdminForm",
+          ROLES_GRID="userRolesGrid";
 
     /**
      * @inject
      * @var \app\User\models\facades\AdminFacade
      */
     public $adminFacade;
+
+    /**
+     * @inject
+     * @var \app\User\models\facades\RolesFacade
+     */
+    public $rolesFacade;
 
     /**
      * @inject
@@ -62,10 +76,29 @@ final class AdminPresenter extends BasePresenter
      */
     public $usersAdminFormFactory;
 
+
+    /**
+     * @inject
+     * @var \app\User\controls\factories\IUserRolesGrid
+     */
+    public $userRolesGridFactory;
+
+    /**
+     * @inject
+     * @var \app\User\controls\factories\IUserSettingsGrid
+     */
+    public $userSettingsGridFactory;
+
+    /**
+     * @inject
+     * @var \app\User\controls\factories\IUserHistoryGrid
+     */
+    public $userHistoryGridFactory;
+
     /**
      * @var int
      */
-    private $id=null;
+    public $id=null;
 
     /**
      * @title user.navbar.administration
@@ -89,9 +122,38 @@ final class AdminPresenter extends BasePresenter
         $this->id = $id;
     }
 
+    /**
+     * @title user.usersAdminGrid.action.roles
+     * @param int $id
+     * @acl (resource="users",privilege="read")
+     * @breadcrumb (key="home",active="true")
+     * @breadcrumb (key="user.admin.default", name="user.navbar.administration", link=":User:Admin:default", active=true)
+     * @breadcrumb (key="user.admin.roles", name="user.usersAdminGrid.action.roles", link=":User:Admin:roles")
+     * @return void
+     */
     public function actionRoles($id)
     {
         $this->id = $id;
+        try {
+            $user = $this->adminFacade->get($id);
+            if($user==null){
+                throw new ProfileException(ProfileException::MESSAGE_NOT_FOUND,ProfileException::NOT_FOUND);
+            }
+            $roles = $this->rolesFacade->load($user);
+            $appendTitle = " - " . $user->getRealname();
+            $this->appendToTitle($appendTitle);
+            $this[self::ROLES_GRID]->setDatasource($roles);
+            $this[self::ROLES_GRID]->appendToTitle($appendTitle);
+            $this[self::BREADCRUMBS]->appendToItem("user.admin.roles",$appendTitle);
+            return;
+        } catch (ProfileException $exc) {
+            $this->flashMessage(
+                $exc->getMessage(),
+                self::STATUS_DANGER,
+                null,
+                self::ICON_DANGER,
+                100);
+        }
     }
 
     /**
@@ -120,49 +182,67 @@ final class AdminPresenter extends BasePresenter
     public function actionEdit($id)
     {
         $this->id = $id;
-        if($this->id!=null){
-            $user = $this->adminFacade->get($this->id, true);
-            $this->appendToTitle($user->realname);
-            $this[self::USERS_FORM]->setDefaults($user);
-            $this[self::USERS_FORM]->appendToTitle($user->realname);
+        $user = $this->adminFacade->get($this->id);
+        if($user instanceof UserEntity) {
+            
+            $this->appendToTitle($user->getRealname());
+            $this[self::USERS_FORM]->setDefaults($user->toArrayHash());
+            $this[self::USERS_FORM]->setTitle("user.usersAdminGrid.action.edit");
+            $this[self::USERS_FORM]->appendToTitle($user->getRealname());
+            $this[self::BREADCRUMBS]->appendToItem("user.admin.edit",$user->getRealname());
+        } else {
+            $this->flashMessage(
+                ProfileException::MESSAGE_NOT_FOUND,
+                self::STATUS_DANGER,
+                null,
+                self::ICON_DANGER,
+                100);
         }
         return;
     }
 
-    public function actionReset($id)
-    {
-        $this->id = $id;
-        // todo
-        return;
-    }
-
+    /**
+     * users admin form factory
+     * @return UsersAdminForm
+     */
     public function createComponentUsersAdminForm()
     {
         return $this->usersAdminFormFactory->create();
     }
 
+    /**
+     * user admins grid factory
+     * @return UserAdminsGrid
+     */
     public function createComponentUsersAdminGrid()
     {
         return $this->usersAdminGridFactory->create();
     }
 
-    public function createComponentHistoryGrid()
+    /**
+     * user history grid factory
+     * @return UserHistoryGrid
+     */
+    public function createComponentUserHistoryGrid()
     {
-
+        return $this->userHistoryGridFactory->create();
     }
 
-    public function createComponentSettingsGrid()
+    /**
+     * user settings grid
+     * @return UserSettingsGrid
+     */
+    public function createComponentUserSettingsGrid()
     {
-
+        return $this->userSettingsGridFactory->create();
     }
 
-    public function createComponentRolesGrid()
+    /**
+     * user roles grid factory
+     * @return UserRolesGrid
+     */
+    public function createComponentUserRolesGrid()
     {
-
-    }
-
-    public function createComponentResetDialog()
-    {
-
+        return $this->userRolesGridFactory->create();
     }
 }

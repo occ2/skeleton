@@ -154,7 +154,7 @@ usersAdminGrid:
             inactive:   "Neaktivní" 
     action:
         add:    "Nový uživatel"
-        edit:   "Editace uživatele"
+        edit:   "Editace uživatele "
         delete: "Smazat uživatele"
         reset:  "Reset hesla"
         history:    "Historie uživatele"

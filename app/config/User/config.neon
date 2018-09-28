@@ -6,7 +6,9 @@ parameters:
     module:
         user:   User
     defaultRoles:
-        -   authenticated
+        guest:
+        authenticated:
+        administrator:
 services:    
     # ORM facades
     userAuthenticator:   app\User\models\facades\AuthenticatorFacade(@Contributte\Utils\DatetimeFactory,@cacheFactory.factory,@Doctrine\ORM\EntityManager,@Contributte\EventDispatcher\EventDispatcher,null,%users%)
@@ -33,8 +35,9 @@ services:
 
     # grids
     historyGrid:    app\User\controls\factories\IUserHistoryGrid
-    settings:   app\User\controls\factories\IUserSettingsGrid
-    admin:  app\User\controls\factories\IUsersAdminGrid
+    settingsGrid:   app\User\controls\factories\IUserSettingsGrid
+    rolesGrid:   app\User\controls\factories\IUserRolesGrid
+    adminGrid:  app\User\controls\factories\IUsersAdminGrid
 
     # processors
 
@@ -45,3 +48,4 @@ services:
     profileEvents:  app\User\events\subscribers\ProfileEvents
     settingsEvents: app\User\events\subscribers\SettingsEvents
     adminEvents:    app\User\events\subscribers\AdminEvents
+    rolesEvents:    app\User\events\subscribers\RolesEvents
