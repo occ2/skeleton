@@ -51,7 +51,8 @@ final class AdminPresenter extends BasePresenter
           USERS_GRID="usersAdminGrid",
           USERS_FORM="usersAdminForm",
           ROLES_GRID="userRolesGrid",
-          HISTORY_GRID="userHistoryGrid";
+          HISTORY_GRID="userHistoryGrid",
+          SETTINGS_GRID="userSettingsGrid";
 
     /**
      * @inject
@@ -70,6 +71,12 @@ final class AdminPresenter extends BasePresenter
      * @var \app\User\models\facades\RolesFacade
      */
     public $rolesFacade;
+
+    /**
+     * @inject
+     * @var \app\User\models\facades\SettingsFacade
+     */
+    public $settingsFacade;
 
     /**
      * @inject
@@ -153,10 +160,37 @@ final class AdminPresenter extends BasePresenter
         }
     }
 
+    /**
+     * @title user.usersAdminGrid.action.settings
+     * @param int $id
+     * @acl (resource="users",privilege="read")
+     * @breadcrumb (key="home",active="true")
+     * @breadcrumb (key="user.admin.default", name="user.navbar.administration", link=":User:Admin:default", active=true)
+     * @breadcrumb (key="user.admin.settings", name="user.usersAdminGrid.action.settings", link=":User:Admin:settings")
+     * @return void
+     */
     public function actionSettings($id)
     {
         $this->id = $id;
-
+        try {
+            $user = $this->adminFacade->get($id);
+            if($user==null){
+                throw new ProfileException(ProfileException::MESSAGE_NOT_FOUND,ProfileException::NOT_FOUND);
+            }
+            $appendTitle = " - " . $user->getRealname();
+            $this->appendToTitle($appendTitle);
+            $settings = $this->settingsFacade->load($user);
+            $this[self::SETTINGS_GRID]->setDatasource($settings);
+            $this[self::SETTINGS_GRID]->appendToTitle($appendTitle);
+            $this[self::BREADCRUMBS]->appendToItem("user.admin.settings",$appendTitle);
+        } catch (ProfileException $exc) {
+            $this->flashMessage(
+                $exc->getMessage(),
+                self::STATUS_DANGER,
+                null,
+                self::ICON_DANGER,
+                100);
+        }
     }
 
     /**
