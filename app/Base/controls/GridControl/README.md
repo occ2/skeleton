@@ -136,6 +136,7 @@ Column configs
 @dataAttributes array - set data attributes
 @editableType
 @editableAttributes
+@event name of event fired after column change status
 @filter array - set column filter
         type - type of filter (text,select,multiselect,range,date,daterange)
         value - set filter value
@@ -188,7 +189,7 @@ setRowCallback(function($item,$tr,$control):void{})
 setExportCallback($exportName,function($datasource,$grid,$control):void{})
 setEditableCallback($columnName,function($id,$value,$control):void{})
 setEditableValueCallback($columnName,function($row,$control):string{})
-
+setAllowInlineAddCallback(function($control):bool{})
 setInlineFormCallback(function($container,$control):void{})
 setInlineLoadOptionsCallback($columnName,function($control):array{})
 setInlineFormFillCallback(function($container,$item,$control):void{})

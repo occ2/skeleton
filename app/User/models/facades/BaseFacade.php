@@ -43,7 +43,7 @@ abstract class BaseFacade extends Facade
 {
     const EVENT_USER_NOT_FOUND="authenticator.onUserNotFound",
           EVENT_INVALID_CREDENTIAL="authenticator.onInvalidCredential",
-          EVENT_FIND="";
+          EVENT_FIND="User.AdminFacade.onFind";
 
     /**
      * load user by username

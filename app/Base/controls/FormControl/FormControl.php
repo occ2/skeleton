@@ -552,7 +552,11 @@ abstract class FormControl extends Control
     public function render()
     {
         $this->template->styles = $this->getStyles();
-        $this->template->title = $this->getTitle();
+        if(isset($this->c->appendTitle) && $this->c->appendTitle!=null){
+            $this->template->title = $this->_($this->getTitle()) . " " . $this->c->appendTitle;
+        } else {
+            $this->template->title = $this->_($this->getTitle());
+        }
         $this->template->comment = $this->getComment();
         $this->template->footer = $this->getFooter();
         $this->template->links = $this->getLinks();
@@ -816,5 +820,11 @@ abstract class FormControl extends Control
     public function getFormBuilder()
     {
         return isset($this->c->formBuilder) ? $this->c->formBuilder : null;
+    }
+
+    public function appendToTitle(string $text)
+    {
+        $this->c->appendTitle=$text;
+        return $this;
     }
 }

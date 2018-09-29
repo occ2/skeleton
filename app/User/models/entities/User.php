@@ -342,9 +342,9 @@ class User implements IEntity
      * @return $this
      * @throws ValidationException
      */
-    public function setPassword(string $password)
+    public function setPassword(string $password,$validate=true)
     {
-        if(!Validators::is($password,"pattern:.*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*")){
+        if($validate==true && !Validators::is($password,"pattern:.*(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).*")){
             throw new ValidationException("user.error.validation.password",ValidationException::NOT_PASSWORD);
         }
         $this->passwordHash = Passwords::hash($password);

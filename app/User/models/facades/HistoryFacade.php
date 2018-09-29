@@ -78,16 +78,16 @@ final class HistoryFacade extends BaseFacade
 
     /**
      * load users history
-     * @param int $userId
+     * @param int | UserEntity $userId
      * @return ?Collection
      */
-    public function load(int $userId): ?Collection
+    public function load($user): ?Collection
     {
-        $user = $this->em->find(UserEntity::class, $userId);
         if($user instanceof UserEntity){
             return $user->getHistory();
-        } else {
-            return null;
+        } else{
+            $user = $this->em->find(UserEntity::class, $user);
+            return $user==null ? null : $user->getHistory();
         }
     }
 }

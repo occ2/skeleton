@@ -100,7 +100,14 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
      */
     public function build()
     {
-        $this->setupInlineAdd($this->grid);
+        if($this->checkCallback(GridBuilder::ALLOW_INLINE_ADD_CALLBACK)==true){
+            if($this->invokeCallback(GridBuilder::ALLOW_INLINE_ADD_CALLBACK)==true){
+                $this->setupInlineAdd($this->grid);
+            }
+        } else{
+            $this->setupInlineAdd($this->grid);
+        }
+       
         $this->setupInlineEdit($this->grid);
         return;
     }
@@ -130,7 +137,7 @@ class InlineActionsBuilder implements IAdditionalGridBuilder
                     $t->setupInlineForm($form);
                 };
             }
-            if(!$this->checkCallback(GridBuilder::INLINE_FORM_ADD_SUBMIT_CALLBACK)){
+            if($this->checkCallback(GridBuilder::INLINE_FORM_ADD_SUBMIT_CALLBACK)){
                 $inline->onSubmit[] = function(ArrayHash $values) use ($t) {
                     $this->invokeCallback(GridBuilder::INLINE_FORM_ADD_SUBMIT_CALLBACK, null,$values,$t->object);
                 };

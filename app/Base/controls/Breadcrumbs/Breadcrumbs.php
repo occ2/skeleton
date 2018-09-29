@@ -44,13 +44,23 @@ class Breadcrumbs extends Control
      */
     protected $data=[];
 
+    protected $config=[];
+
+    protected $appendedTexts=[];
+
     /**
      * render control
      * @return void
      */
     public function render()
     {
+        if(!empty($this->config)){
+            foreach ($this->config as $config){
+                $this->setupConfig($config);
+            }
+        }
         $this->template->data = $this->data;
+        $this->template->appendedTexts = $this->appendedTexts;
         if($this->template instanceof ITemplate){
             $this->template->setFile(self::TEMPLATE);
             $this->template->render();
@@ -92,10 +102,30 @@ class Breadcrumbs extends Control
     {
         $item = new ArrayHash;
         $item->name = $name;
-        $item->href= $href;
+        $item->href= $href=="#" ? "#" : $this->getPresenter()->link($href);
         $item->active = $active;
         $item->ajax = $ajax;
         $this->data[$key] = $item;
+        return $this;
+    }
+
+    /**
+     * get breadcrumb item
+     * @param string $key
+     * @return ArrayHash|null
+     */
+    public function getItem(string $key): ?ArrayHash
+    {
+        if(isset($this->data[$key])){
+            return $this->data[$key];
+        } else {
+            return null;
+        }
+    }
+
+    public function appendToItem(string $key,string $text)
+    {
+        $this->appendedTexts[$key] = $text;
         return $this;
     }
 
@@ -108,5 +138,25 @@ class Breadcrumbs extends Control
     {
         unset($this->data[$key]);
         return $this;
+    }
+
+    public function setConfig(array $config)
+    {
+        if(array_key_exists($this->getPresenter()->getAction(), $config) && isset($config[$this->getPresenter()->getAction()]["breadcrumb"])){
+            $this->config = $config[$this->getPresenter()->getAction()]["breadcrumb"];
+        }
+        return $this;
+    }
+
+    protected function setupConfig(ArrayHash $config){
+        if(isset($config->key)){
+            if(isset($config->name)){
+                $link = isset($config->link) ? $config->link : "#";
+                $active = isset($config->active) ? $config->active : false;
+                $this->addItem($config->key, $config->name, $link, $active);
+            } elseif (isset($config->active)) {
+                $this->active($config->key);
+            }
+        }
     }
 }

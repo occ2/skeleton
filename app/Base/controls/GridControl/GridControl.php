@@ -104,7 +104,8 @@ abstract class GridControl extends Control
         "inlineAddSubmit",
         "inlineEditSubmit",
         "inlineCustomRedraw",
-        "allowToolbarButton"
+        "allowToolbarButton",
+        "allowInlineAdd"
     ];
     //const EVENT_PREFIX=static::class;
     const GRID_CONTROL="grid";
@@ -374,6 +375,15 @@ abstract class GridControl extends Control
         }
     }
 
+    public function getAppendTitle()
+    {
+        if (isset($this->c->appendTitle) && !empty($this->c->appendTitle)) {
+            return $this->c->appendTitle;
+        } else {
+            return "";
+        }
+    }
+
     /**
      * get control comment (if set)
      * @return string
@@ -497,7 +507,7 @@ abstract class GridControl extends Control
         $this[self::GRID_CONTROL]->setDataSource($this->getDatasource());
         if($this->template instanceof ITemplate){
             $this->template->styles = $this->getStyles();
-            $this->template->title = $this->getTitle();
+            $this->template->title = $this->_($this->getTitle()) . $this->getAppendTitle();
             $this->template->comment = $this->getComment();
             $this->template->footer = $this->getFooter();
             $this->template->simple = $this->getSimple();
@@ -877,5 +887,11 @@ abstract class GridControl extends Control
     public function getEvent(string $key) : ?string
     {
         return isset($this->c->events[$key]) ? $this->c->events[$key] : null;
+    }
+
+    public function appendToTitle(string $text)
+    {
+        $this->c->appendTitle = $text;
+        return $this;
     }
 }

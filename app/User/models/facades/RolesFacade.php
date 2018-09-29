@@ -68,14 +68,18 @@ final class RolesFacade extends BaseFacade
 
     /**
      * load roles
-     * @param int $userId
+     * @param int $user | UserEntity
+     * @acl (resource=users, privilege=read)
      * @return Collection | null
      */
-    public function load(int $userId): ?Collection
+    protected function load($user): ?Collection
     {
         // find user
-        $user = $this->em->find(UserEntity::class,$userId);
-        $this->testFound($user, ProfileException::class);
+        if(!$user instanceof UserEntity){
+            $userId = $user;
+            $user = $this->em->find(UserEntity::class,$userId);
+            $this->testFound($user, ProfileException::class);
+        }
 
         // get user roles
         $roles = $user!=null ? $user->getRoles() : null;
@@ -97,9 +101,10 @@ final class RolesFacade extends BaseFacade
     /**
      * find one role
      * @param int $id
+     * @acl (resource=users, privilege=read)
      * @return RoleEntity | null
      */
-    public function find(int $id): ?RoleEntity
+    protected function find(int $id): ?RoleEntity
     {
         // find entity
         $role = $this->em->find(RoleEntity::class, $id);
@@ -122,9 +127,10 @@ final class RolesFacade extends BaseFacade
      * add new user role
      * @param string $role
      * @param int $userId
+     * @acl (resource=users, privilege=write)
      * @return void
      */
-    public function add(string $role,int $userId)
+    protected function add(string $role,int $userId)
     {
         // find user
         $user = $this->em->find(UserEntity::class, $userId);
@@ -145,7 +151,7 @@ final class RolesFacade extends BaseFacade
                 static::EVENT_ADD,
                 new RolesEvent(
                     [
-                        RolesEvent::ENTITY=>$role
+                        RolesEvent::ENTITY=>$entity
                     ],
                     static::EVENT_ADD
                 )
@@ -157,9 +163,10 @@ final class RolesFacade extends BaseFacade
     /**
      * remove entity
      * @param int $id
+     * @acl (resource=users, privilege=write)
      * @return void
      */
-    public function remove(int $id)
+    protected function remove(int $id)
     {
         // find entity to delete
         $role = $this->find($id);
@@ -168,9 +175,6 @@ final class RolesFacade extends BaseFacade
         if($role!=null){
             // delete entity
             $this->em->remove($role);
-
-            // save to DB
-            $this->em->flush();
 
             // fire event
             $this->on(
@@ -182,6 +186,9 @@ final class RolesFacade extends BaseFacade
                     static::EVENT_REMOVE
                 )
             );
+
+            // save to DB
+            $this->em->flush();
         }
         return;
     }
@@ -194,7 +201,7 @@ final class RolesFacade extends BaseFacade
     public function setDefault(UserEntity $user)
     {
         $arr = [];
-        // iterate defautl roles
+        // iterate default roles
         foreach ($this->defaultRoles as $role){
             // crete new role 
             $entity = new RoleEntity;
@@ -254,7 +261,8 @@ final class RolesFacade extends BaseFacade
      * @throws RolesException
      */
     private function testRole(string $role){
-        if(!in_array($role, $this->config)){
+        $roles = (array) Helpers::merge($this->defaultRoles,$this->config["roles"]);
+        if(!array_key_exists($role,$roles)){
             throw new RolesException(RolesException::MESSAGE_INVALID_ROLE, RolesException::INVALID_ROLE);
         }
         return;

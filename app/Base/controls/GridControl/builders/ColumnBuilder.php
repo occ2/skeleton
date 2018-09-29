@@ -33,6 +33,7 @@ use app\Base\controls\GridControl\configurators\GridColumnsConfig;
 use app\Base\controls\GridControl\builders\GridBuilder;
 use app\Base\controls\GridControl\builders\FilterBuilder;
 use app\Base\controls\GridControl\DataGrid;
+use app\Base\controls\GridControl\events\GridRowEventData;
 use Ublaboo\DataGrid\Column\Column;
 use Ublaboo\DataGrid\Column\ColumnStatus;
 use Ublaboo\DataGrid\Column\ColumnDateTime;
@@ -248,6 +249,19 @@ class ColumnBuilder implements IColumnGridBuilder
         if ($this->checkCallback(GridBuilder::STATUS_CHANGE_CALLBACK, $config->get("name"))) {
             $column->onChange[] = function ($id, $new_value) use ($t,$config) {
                 return $t->invokeCallback(GridBuilder::STATUS_CHANGE_CALLBACK, $config->get("name"), $id, $new_value, $t->object);
+            };
+        } elseif ($config->get("event")!=null){
+            $column->onChange[] = function ($id, $new_value) use ($t,$config,$grid) {
+                $t->object->on(
+                    $config->get("event"),
+                    $t->object->getGridRowEventFactory()->create(
+                        $id,
+                        $new_value,
+                        $grid,
+                        $t->object,
+                        $config->get("event")
+                    )
+                );
             };
         }
         

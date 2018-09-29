@@ -128,10 +128,7 @@ abstract class BaseFacade extends AbstractFacade
             if($this->user instanceof \Nette\Security\User){
                 $this->acl($method, $arguments);
             }
-            $callable = [$this,$method];
-            if(is_callable($callable)){
-                return call_user_func_array($callable,$arguments);
-            }
+            return call_user_func_array([$this,$method],$arguments);
         }
     }
     
@@ -143,8 +140,8 @@ abstract class BaseFacade extends AbstractFacade
      */
     protected function acl($method,$data)
     {
-        if(isset($this->annotationConfig[$method]["ACL"]) && !empty($this->annotationConfig[$method]["ACL"])){
-            $config = $this->annotationConfig[$method]["ACL"][0];
+        if(isset($this->annotationConfig[$method]["acl"]) && !empty($this->annotationConfig[$method]["acl"])){
+            $config = $this->annotationConfig[$method]["acl"][0];
             if(isset($config["loggedIn"])){
                 $this->loggedIn($config);
                 return;

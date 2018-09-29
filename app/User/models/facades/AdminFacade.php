@@ -42,7 +42,6 @@ use Nette\Utils\ArrayList;
  *
  * @author Milan Onderka <milan_onderka@occ2.cz>
  * @version 1.1.0
- * @todo ADD ACL Conditions !!!
  */
 final class AdminFacade extends BaseFacade
 {
@@ -50,10 +49,12 @@ final class AdminFacade extends BaseFacade
 
     const EVENT_SAVE="User.AdminFacade.onSave",
           EVENT_LOAD="User.AdminFacade.onLoad",
+          EVENT_GET="User.AdminFacade.onGet",
           EVENT_FIND="User.AdminFacade.onFind",
           EVENT_ADD="User.AdminFacade.onAdd",
           EVENT_REMOVE="User.AdminFacade.onRemove",
-          EVENT_CHANGE_STATUS="User.AdminFacade.onStatusChange";
+          EVENT_CHANGE_STATUS="User.AdminFacade.onStatusChange",
+          EVENT_RESET_PASSWORD="User.AdminFacade.onResetPassword";
 
     /**
      * @var array
@@ -63,14 +64,17 @@ final class AdminFacade extends BaseFacade
         "randomSecretLength"=>8,
         "passwordExpiration"=>"+90 Days",
         "defaultStatus"=>1,
-        "defaultLang"=>"cz"
+        "defaultLang"=>"cz",
+        "defaultQuestion"=>"default",
+        "defaultAnswer"=>"default"
     ];
 
     /**
      * load users
      * @return QueryBuilder
+     * @acl (resource=users, privilege=read)
      */
-    public function load(): QueryBuilder
+    protected function load(): QueryBuilder
     {
         // create query builder for datagrid
         $query = $this->em->createQueryBuilder()
@@ -91,12 +95,42 @@ final class AdminFacade extends BaseFacade
     }
 
     /**
+     * get user data
+     * @param int $userId
+     * @param bool $toHash
+     * @return UserEntity
+     * @acl (resource=users, privilege=read)
+     */
+    protected function get(int $userId,$toHash=false)
+    {
+        // get user entity
+        $user = $this->em->find(UserEntity::class, $userId);
+        // fire event
+        $this->on(
+            static::EVENT_GET,
+            new AdminEvent(
+                [
+                    AdminEvent::ENTITY=>$user
+                ],
+                static::EVENT_GET
+            )
+        );
+        // return entity
+        if($toHash==false){
+            return $user;
+        } else {
+            return $user->toArrayHash();
+        }
+    }
+
+    /**
      * save user data
      * @param array $data
      * @param array $exclude
      * @return void
+     * @acl (resource=users, privilege=write)
      */
-    public function save(array $data,array $exclude=[])
+    protected function save(array $data,array $exclude=[])
     {
         // find user
         $u = $this->em->find(UserEntity::class, $data[UserEntity::ID]);
@@ -130,9 +164,11 @@ final class AdminFacade extends BaseFacade
      * @param array $exclude
      * @return void
      * @throws AdminException
+     * @acl (resource=users, privilege=write)
      */
-    public function add(array $data,array $exclude=[])
+    protected function add(array $data,array $exclude=[])
     {
+        unset($data[UserEntity::ID]);
         // test user has unique username
         $_user = $this->em
                       ->getRepository(UserEntity::class)
@@ -147,12 +183,14 @@ final class AdminFacade extends BaseFacade
 
         // generate password
         $password = Random::generate($this->config["randomPasswordLength"]);
-        $data[UserEntity::PASSWORD] = $password;
 
         // create new entity and fill with data
         $u = new UserEntity;
-        $u->fill($this->exclude($data, $exclude));       
-        $secret = $this->setDefaults($u);
+        $u->fill($this->exclude($data, $exclude));
+        $u->setPassword($password, false)
+          ->setCQuestion($this->config["defaultQuestion"])
+          ->setCAnswer($this->config["defaultAnswer"]);
+        $secret = $this->setDefaults($u,true);
         $this->em->persist($u);
 
         // save into DB
@@ -177,8 +215,9 @@ final class AdminFacade extends BaseFacade
      * delete user
      * @param int $id
      * @return void
+     * @acl (resource=users, privilege=delete)
      */
-    public function remove(int $id)
+    protected function remove(int $id)
     {
         // find entity
         $user = $this->em->find(UserEntity::class, $id);
@@ -210,8 +249,9 @@ final class AdminFacade extends BaseFacade
      * @param int $id
      * @param bool $status
      * @return void
+     * @acl (resource=users, privilege=write)
      */
-    public function changeStatus(int $id,bool $status)
+    protected function changeStatus(int $id,bool $status)
     {
         // find user entity
         $user = $this->em->find(UserEntity::class, $id);
@@ -257,5 +297,43 @@ final class AdminFacade extends BaseFacade
         }
         
         return $users;
+    }
+
+    /**
+     * reset users password
+     *
+     * @param int $id
+     * @return void
+     * @acl (resource=users, privilege=write)
+     */
+    protected function resetPassword(int $id)
+    {
+        // find user entity
+        $user = $this->em->find(UserEntity::class, $id);
+        $this->testFound($user, AdminException::class);
+        
+        // generate new password
+        $newPassword = Random::generate($this->config["randomPasswordLength"]);
+        $datetime = $this->datetimeFactory->create();
+
+        // set new password and expire it
+        $user->setPassword($newPassword,false)
+             ->setPasswordExpiration($datetime);
+
+        // save it
+        $this->em->flush();
+
+        // fire event
+        $this->on(
+            static::EVENT_RESET_PASSWORD,
+            new AdminEvent(
+                [
+                    AdminEvent::ENTITY=>$user,
+                    AdminEvent::PASSWORD=>$newPassword
+                ],
+                static::EVENT_RESET_PASSWORD
+            )
+        );
+        return;
     }
 }

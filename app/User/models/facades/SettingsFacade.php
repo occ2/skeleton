@@ -79,19 +79,18 @@ final class SettingsFacade extends BaseFacade
 
     /**
      * load settings by user
-     * @param int $userId
+     * @param int | UserEntity $user
      * @return Collection | null
      */
-    public function load(int $userId=null): ?Collection
+    public function load($user): ?Collection
     {
         // try to find settings of user
-        $user = $this->em
-                     ->find(UserEntity::class, $userId);
         $this->testFound($user, ProfileException::class);
-        if($user!=null){
+        if($user instanceof UserEntity){
             $settings = $user->getSettings();
         } else {
-            $settings = null;
+            $user = $this->em->find(UserEntity::class, $user);
+            $settings = $user==null ? null : $user->getSettings();
         }
         
         // fire event

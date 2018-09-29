@@ -26,6 +26,7 @@
 namespace app\User\controls\grids;
 
 use app\Base\controls\GridControl\GridControl;
+use app\User\models\facades\AuthorizationFacade;
 
 /**
  * UsersGrid
@@ -41,8 +42,8 @@ use app\Base\controls\GridControl\GridControl;
  * @action (name="history",href="history",title="user.usersAdminGrid.action.history",icon="history",class="btn-dark ajax")
  * @action (name="settings",href="settings",title="user.usersAdminGrid.action.settings",icon="cogs",class="btn-dark ajax")
  * @action (name="roles",href="roles",title="user.usersAdminGrid.action.roles",icon="users",class="btn-dark ajax")
- * @action (name="reset",title="user.usersAdminGrid.action.reset",icon="unlock-alt",class="btn-dark ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.reset")
- * @action (name="delete",title="user.usersAdminGrid.action.delete",icon="trash",class="btn-danger ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.delete")
+ * @action (event="User.UserAdminGrid.reset.onConfirm", name="reset",title="user.usersAdminGrid.action.reset",icon="unlock-alt",class="btn-dark ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.reset")
+ * @action (event="User.UserAdminGrid.delete.onConfirm", name="delete",title="user.usersAdminGrid.action.delete",icon="trash",class="btn-danger ajax",confirmCol="realname",confirm="user.usersAdminGrid.confirm.delete")
  */
 final class UsersAdminGrid extends GridControl
 {
@@ -63,6 +64,8 @@ final class UsersAdminGrid extends GridControl
           ACTION_DELETE="delete",
           EVENT_DELETE="User.UserAdminGrid.delete.onConfirm",
           EVENT_RESET="User.UserAdminGrid.reset.onConfirm",
+          EVENT_CHANGE_STATUS="User.UserAdminGrid.changeStatus.onSelect",
+          ACL_RESOURCE="users",
           STATUSES=[
               0=>"user.usersAdminGrid.column.status.inactive",
               1=>"user.usersAdminGrid.column.status.active"
@@ -122,23 +125,69 @@ final class UsersAdminGrid extends GridControl
     /**
      * @label user.usersAdminGrid.column.status.title
      * @type status
+     * @event User.UserAdminGrid.changeStatus.onSelect
      * @filter (type=select)
      * @option (text='user.usersAdminGrid.column.status.inactive',class='ajax btn btn-xs btn-danger', classInDropdown="ajax dropdown-item")
      * @option (text='user.usersAdminGrid.column.status.active',class='ajax btn btn-xs btn-success', classInDropdown="ajax dropdown-item")
      */
     public $status;
 
+    /**
+     * initial setup of datagrid
+     * @return void
+     */
     public function startup()
     {
         parent::startup();
-        $this->setStatusChangeCallback(self::STATUS,function($id,$value,$control){
-
-        });
-        $this->setLoadOptionsCallback(self::STATUS,function($control){
+        $t = $this;
+        // load statuses
+        $this->setLoadOptionsCallback(self::STATUS,function($control) use ($t){
             return [
-                0=>$this->_(self::STATUSES[0]),
-                1=>$this->_(self::STATUSES[1]),
+                0=>$t->_(self::STATUSES[0]),
+                1=>$t->_(self::STATUSES[1]),
             ];
+        });
+        // check if add user action allowed
+        $this->setAllowToolbarButtonCallback(self::TOOLBAR_BUTTON_ADD,function($control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_WRITE);
+        });
+        // check if delete user action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_DELETE,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_DELETE);            
+        });
+        // check if edit user action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_EDIT,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_WRITE);            
+        });
+        // check if history action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_HISTORY,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_READ);
+        });
+        // check if reset action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_RESET,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_WRITE);
+        });
+        // check if show roles action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_ROLES,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_READ);
+        });
+        // check if show setting action allowed
+        $this->setAllowRowsActionCallback(self::ACTION_SETTINGS,function($item,$control) use ($t){
+            return $t->getPresenter()
+                     ->getUser()
+                     ->isAllowed(self::ACL_RESOURCE, AuthorizationFacade::PRIVILEGE_READ);
         });
     }
 }
