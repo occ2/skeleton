@@ -1,16 +1,9 @@
-database:
-    dsn: 'mysql:host=127.0.0.1;dbname=inventory'
-    user:   'root'
-    password:   '532114'
-    options:
-        lazy: yes
-
 dbal:
     connection:
         host: "127.0.0.1"
-        user: "application"
-        password:   "application"
-        dbname: "application"
+        user: ""
+        password:   ""
+        dbname: ""
         driver: "pdo_mysql"
 
 parameters:
@@ -20,8 +13,8 @@ parameters:
         type:   'smtp'
         host:   'smtp.forpsi.com'
         port:   '587'
-        username:   'no-reply@occ2.cz'
-        password:   'vmwq22pq1'
+        username:   ''
+        password:   ''
         secure:   'tls'
         timeout: 20
         fromAddr:   'no-reply@occ2.cz'
