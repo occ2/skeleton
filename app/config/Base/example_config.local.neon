@@ -1,0 +1,27 @@
+dbal:
+    connection:
+        host: "127.0.0.1"
+        user: ""
+        password:   ""
+        dbname: ""
+        driver: "pdo_mysql"
+
+parameters:
+    navbar:
+    acl:
+    mailer:
+        type:   'smtp'
+        host:   'smtp.forpsi.com'
+        port:   '587'
+        username:   ''
+        password:   ''
+        secure:   'tls'
+        timeout: 20
+        fromAddr:   'no-reply@occ2.cz'
+        fromName:  'INVENTAR.CLOUD Administrátor'
+        replyAddr:  'info@occ2.cz'
+        replyName:  'INVENTAR.CLOUD Administrátor'
+        returnPath: 'info@occ2.cz'
+        priority:  '3'
+                
+    installer:  true
